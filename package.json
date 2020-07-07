@@ -8,9 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@creativebulma/bulma-divider": "^1.1.0",
     "buefy": "^0.8.20",
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-choropleth": "^0.3.1",
+    "vue2-leaflet": "^2.5.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",
