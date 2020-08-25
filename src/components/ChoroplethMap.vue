@@ -2,7 +2,7 @@
   <l-map 
   :center="center" 
   :zoom="zoom" 
-  style="height: 500px;">
+  style="height: 100%;">
    
     <l-tile-layer
       :url="url"

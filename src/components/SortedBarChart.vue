@@ -14,8 +14,6 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 
 am4core.useTheme(am4themes_animated);
 
-
-
 export default {
     name: 'SortedBarChart',
     props: {
@@ -92,6 +90,6 @@ export default {
 <style scoped>
 .chartdiv {
     width: 100%;
-    height: 350px;
+    height: 400px;
 }
 </style>

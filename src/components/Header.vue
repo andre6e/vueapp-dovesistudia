@@ -1,13 +1,13 @@
 <template>
     <div id="introcontainer">
-        <section class="hero is-medium is-bold">
+        <section class="hero is-small is-bold">
             <div class="hero-body">
                 <div class="container has-text-centered">
                     <h1 class="title whitecolor">
                         Come ci si sposta per gli studi universitari?
                     </h1>
                     <h2 class="subtitle whitecolor">
-                        Analisi interattiva dello spostamento dei ragazzi italiani nel momento della scelta universitaria.
+                        Analisi interattiva dello spostamento degli studenti Italiani al momento della scelta Universitaria.
                     </h2>
                 </div>
             </div>
