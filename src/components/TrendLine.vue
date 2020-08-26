@@ -1,6 +1,6 @@
 <template>
     <section class="section">
-        <div class="chartdivvv" :id="chartId"> </div>
+        <div class="trendlinediv" :id="chartId"> </div>
     </section>
 </template>
 
@@ -34,7 +34,7 @@ export default {
             this.chart.data = this.chartData
         },
         mountChart() {
-            let chart = am4core.create("chartdivvv", am4charts.XYChart);
+            let chart = am4core.create("trendlinediv", am4charts.XYChart);
 
             // Enable chart cursor
             chart.cursor = new am4charts.XYCursor();
@@ -79,7 +79,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.chartdivvv {
+.trendlinediv {
     width: 100%;
     height: 300px;
 }

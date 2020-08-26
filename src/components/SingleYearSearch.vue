@@ -30,7 +30,7 @@
 
                 <div class="column">
                     <h2 class="subtitle"> Corso di studi </h2>
-                    <BarChart :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY"/>
+                    <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY"/>
                 </div>
             </div>
         </section>
@@ -112,24 +112,16 @@
                             <b-checkbox>Basic</b-checkbox>
                         </div>
 
-                        <div class="field">
-                        </div>
+            
+                        
 
-                        <div class="columns">
-                            <div class="column">
-                                <p class="subtitle"> Verso dove </p>
-                                <div> istogramma verso dove </div>
+                        <p class="subtitle"> Verso dove </p>
+                        <PieChartComponent :chart-data="PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="OUTGOING_REGION_PIECHART_ID"/>
 
-                            </div>
+                        <p class="subtitle"> Tipologia corso di studi scelto </p>
+                        <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUTGOING_BAR_CHART_FIELD_OF_STUDY" /> 
 
-                            <div class="column">
-
-                                <p class="subtitle">  A studiare cosa </p>
-                                <BarChart :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUTGOING_BAR_CHART_FIELD_OF_STUDY" /> 
-                            </div>
-                        </div>
-
-                        <p class="subtitle"> Trend studenti uscenti dalla regione NOMEREGIONE </p>
+                        <p class="subtitle"> Trend globale studenti uscenti dalla regione NOMEREGIONE </p>
                         <TrendLine :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="OUTGOING_REGION_TREND_ID"/>
                         
 
@@ -157,26 +149,29 @@
 
 import ChoroplethMap from './ChoroplethMap.vue'
 import ChordDiagram from './ChordDiagram.vue'
-import BarChart from './BarChart.vue'
+import BarChartComponent from './BarChartComponent.vue'
 import SortedBarChart from './SortedBarChart.vue'
 import TrendLine from './TrendLine.vue'
+import PieChartComponent from './PieChartComponent.vue'
 
 import { REGIONS_MOCK_DATA, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
 import { CHORD_DATA, CHORD_DATA2, CHORD_CONFIG } from '../data/chord_diagram_mock'
 import { BARCHART_DATA, BARCHART_DATA2, BARCHART_OPTIONS } from '../data/barchart_mock'
 import { SORTED_BARCHART_DATA, SORTED_BARCHART_DATA2, SORTED_BARCHART_CONFIG } from '../data/sortedbarchart_mock'
 import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
+import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
 
-import { SORTED_BARCHART_GLOBAL_OUTGOING_ID, SORTED_BARCHART_GLOBAL_INCOMING_ID, MAIN_BAR_CHART_FIELD_OF_STUDY, OUTGOING_BAR_CHART_FIELD_OF_STUDY, OUTGOING_REGION_TREND_ID } from '../constants/constants'
+import { SORTED_BARCHART_GLOBAL_OUTGOING_ID, SORTED_BARCHART_GLOBAL_INCOMING_ID, MAIN_BAR_CHART_FIELD_OF_STUDY, OUTGOING_BAR_CHART_FIELD_OF_STUDY, OUTGOING_REGION_TREND_ID, OUTGOING_REGION_PIECHART_ID } from '../constants/constants'
 
 export default {
     name: 'SingleYearSearch',
     components: {
         ChoroplethMap,
         ChordDiagram,
-        BarChart,
+        BarChartComponent,
         SortedBarChart,
-        TrendLine
+        TrendLine,
+        PieChartComponent
     },
     data: function() {
         return {
@@ -230,11 +225,14 @@ export default {
             MAIN_BAR_CHART_FIELD_OF_STUDY,
             OUTGOING_BAR_CHART_FIELD_OF_STUDY,
             OUTGOING_REGION_TREND_ID,
+            OUTGOING_REGION_PIECHART_ID,
             SORTED_BARCHART_DATA,
             SORTED_BARCHART_CONFIG,
             SORTED_BARCHART_DATA2,
             TRENDLINE_DATA,
-            TRENDLINE_CONF
+            TRENDLINE_CONF,
+            PIECHART_DATA,
+            PIECHART_CONF
         }
     },
     methods: {
