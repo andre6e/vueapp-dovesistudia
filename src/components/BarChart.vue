@@ -1,9 +1,6 @@
 <template>
-    <section class="section is-small">
-        <div class="container">
-            <div class="chartdiv" id="barchartglobaldiv">
-            </div>
-        </div>
+    <section class="section">
+        <div class="chartdiv" :id="chartId"> </div>
     </section>
 </template>
 
@@ -24,6 +21,9 @@ export default {
         chartConfig: {
             type: Object,
             default: () => ({})
+        },
+        chartId: {
+            type: String
         }
     },
     mounted() {
@@ -34,9 +34,10 @@ export default {
             this.chart.data = this.chartData
         },
         mountChart() {
-            let chart = am4core.create("barchartglobaldiv", am4charts.XYChart);
+            let chart = am4core.create(this.chartId, am4charts.XYChart);
 
             // Add data
+            console.log(this.chartData)
             chart.data = this.chartData;
 
             // Create axes
@@ -68,6 +69,8 @@ export default {
             columnTemplate.strokeWidth = this.chartConfig.columnTemplate.strokeWidth;
             columnTemplate.strokeOpacity = this.chartConfig.columnTemplate.strokeOpacity;
 
+            chart.logo.disabled = true;
+
             this.chart = chart
         }
     },
@@ -86,6 +89,6 @@ export default {
 <style scoped>
 .chartdiv {
     width: 100%;
-    height: 350px;
+    height: 400px;
 }
 </style>

@@ -1,9 +1,6 @@
 <template>
-    <section class="section is-small">
-        <div class="container">
-            <div class="chartdiv" :id="chartId">
-            </div>
-        </div>
+    <section class="section">
+        <div class="chartdiv" :id="chartId"> </div>
     </section>
 </template>
 
@@ -70,7 +67,9 @@ export default {
             });
 
             categoryAxis.sortBySeries = series;
-            chart.data = this.chartData
+            chart.data = this.chartData;
+
+            chart.logo.disabled = true;
 
             this.chart = chart
         }

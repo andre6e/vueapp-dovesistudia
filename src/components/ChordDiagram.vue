@@ -1,9 +1,6 @@
 <template>
-    <section class="section is-small">
-        <div class="container">
-            <div class="chartdiv" id="chortglobaldiv">
-            </div>
-        </div>
+    <section class="section">
+        <div class="chartdiv" id="chortglobaldiv"> </div>
     </section>
 </template>
 
@@ -28,6 +25,8 @@ export default {
     },
     mounted() {
         this.chart = am4core.create("chortglobaldiv", am4charts.ChordDiagram);
+        this.chart.logo.disabled = true;
+
         this.updateChartData()
         this.updateChartConfig()
     },

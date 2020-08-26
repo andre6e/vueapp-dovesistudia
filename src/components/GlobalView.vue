@@ -1,15 +1,11 @@
 <template>
-    <section class="section-1rem-pad">
-
-        <b-tabs position="is-centered" class="block">
+    <section>
+        <b-tabs position="is-centered">
             <b-tab-item label="Singolo anno">
                 <SingleYearSeach></SingleYearSeach>
             </b-tab-item>
             <b-tab-item label="Intervallo temporale"><p>Intervallo temporale search</p></b-tab-item>
         </b-tabs>
-
-        
-    
     </section>
 </template>
 
