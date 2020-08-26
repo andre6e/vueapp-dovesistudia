@@ -12,7 +12,7 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 am4core.useTheme(am4themes_animated);
 
 export default {
-    name: 'SortedBarChart',
+    name: 'SortedBarChartComponent',
     props: {
         chartData: {
             type: Array,

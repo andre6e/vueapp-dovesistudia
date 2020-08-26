@@ -25,7 +25,7 @@
 
                 <div class="column">
                     <h2 class="subtitle"> Flusso degli studenti </h2>
-                    <ChordDiagram :chart-data="CHORD_DATA" :chart-config="CHORD_CONFIG" />
+                    <ChordDiagramComponent :chart-data="CHORD_DATA" :chart-config="CHORD_CONFIG" />
                 </div>
 
                 <div class="column">
@@ -39,7 +39,7 @@
             <h1 class="title"> Studenti uscenti dalle regioni </h1> 
             <div class="columns">
                 <div class="column">
-                    <ChoroplethMap :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" />
+                    <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" />
                 </div>
     
                 <div class="column">
@@ -50,7 +50,7 @@
                         </div>
                     </b-field>
 
-                    <SortedBarChart :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" :chart-id="SORTED_BARCHART_GLOBAL_OUTGOING_ID"/>
+                    <SortedBarChartComponent :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" :chart-id="SORTED_BARCHART_GLOBAL_OUTGOING_ID"/>
                 </div>
             </div>
         </section>
@@ -59,7 +59,7 @@
             <h1 class="title"> Studenti entranti nelle regioni </h1> 
             <div class="columns">
                 <div class="column">
-                    <ChoroplethMap :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" />
+                    <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" />
                 </div>
     
                 <div class="column">
@@ -69,7 +69,7 @@
                         </div>
                     </b-field>
 
-                    <SortedBarChart :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" :chart-id="SORTED_BARCHART_GLOBAL_INCOMING_ID"/>
+                    <SortedBarChartComponent :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" :chart-id="SORTED_BARCHART_GLOBAL_INCOMING_ID"/>
                 </div>
             </div>
         </section>
@@ -122,7 +122,7 @@
                         <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUTGOING_BAR_CHART_FIELD_OF_STUDY" /> 
 
                         <p class="subtitle"> Trend globale studenti uscenti dalla regione NOMEREGIONE </p>
-                        <TrendLine :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="OUTGOING_REGION_TREND_ID"/>
+                        <TrendLineComponent :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="OUTGOING_REGION_TREND_ID"/>
                         
 
                     </section>
@@ -147,11 +147,11 @@
 
 <script>
 
-import ChoroplethMap from './ChoroplethMap.vue'
-import ChordDiagram from './ChordDiagram.vue'
+import ChoroplethMapComponent from './ChoroplethMapComponent.vue'
+import ChordDiagramComponent from './ChordDiagramComponent.vue'
 import BarChartComponent from './BarChartComponent.vue'
-import SortedBarChart from './SortedBarChart.vue'
-import TrendLine from './TrendLine.vue'
+import SortedBarChartComponent from './SortedBarChartComponent.vue'
+import TrendLineComponent from './TrendLineComponent.vue'
 import PieChartComponent from './PieChartComponent.vue'
 
 import { REGIONS_MOCK_DATA, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
@@ -166,11 +166,11 @@ import { SORTED_BARCHART_GLOBAL_OUTGOING_ID, SORTED_BARCHART_GLOBAL_INCOMING_ID,
 export default {
     name: 'SingleYearSearch',
     components: {
-        ChoroplethMap,
-        ChordDiagram,
+        ChoroplethMapComponent,
+        ChordDiagramComponent,
         BarChartComponent,
-        SortedBarChart,
-        TrendLine,
+        SortedBarChartComponent,
+        TrendLineComponent,
         PieChartComponent
     },
     data: function() {

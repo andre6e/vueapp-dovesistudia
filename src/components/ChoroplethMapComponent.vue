@@ -46,7 +46,7 @@ import { InfoControl, ReferenceChart, ChoroplethLayer } from 'vue-choropleth'
 import italyGeojson from '../data/italy_regions.json'
 
 export default {
-  name: 'ChoroplethMap',
+  name: 'ChoroplethMapComponent',
   props: {
     mapData: {
       type: Array,
