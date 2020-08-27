@@ -34,7 +34,7 @@ export default {
             this.chart.data = this.chartData
         },
         mountChart() {
-            let chart = am4core.create("trendlinediv", am4charts.XYChart);
+            let chart = am4core.create(this.chartId, am4charts.XYChart);
 
             // Enable chart cursor
             chart.cursor = new am4charts.XYCursor();
@@ -47,7 +47,6 @@ export default {
             // Create axes
             var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
             dateAxis.renderer.grid.template.location = this.chartConfig.dateAxis.location;
-            // dateAxis.dateFormatter.inputDateFormat = "yyyy";
             dateAxis.renderer.minGridDistance = this.chartConfig.dateAxis.minGridDistance;
 
 

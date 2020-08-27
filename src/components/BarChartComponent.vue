@@ -37,7 +37,6 @@ export default {
             let chart = am4core.create(this.chartId, am4charts.XYChart);
 
             // Add data
-            console.log(this.chartData)
             chart.data = this.chartData;
 
             // Create axes

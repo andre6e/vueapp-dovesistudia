@@ -36,43 +36,24 @@
         </section>
     
         <section class="box">
-            <h1 class="title"> Studenti uscenti dalle regioni </h1> 
+            <h1 class="title"> Studenti uscenti ed entranti per regione </h1> 
             <div class="columns">
-                <div class="column">
-                    <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" />
-                </div>
     
                 <div class="column">
+                    <h2 class="subtitle"> Studenti che vanno via dalle regioni </h2>
+                    <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" :chart-id="MAP_OUTGOING_ID"/>
+                </div>
 
-                    <b-field  label="Top 3 regioni con magggior numero studenti uscenti  ">
-                        <div class="field">
-                            <b-switch size="is-medium" type="is-danger"> Maggior numero </b-switch>
-                        </div>
-                    </b-field>
-
-                    <SortedBarChartComponent :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" :chart-id="SORTED_BARCHART_GLOBAL_OUTGOING_ID"/>
+                
+                <div class="column">
+                    <h2 class="subtitle"> Studenti che arrivano nelle regioni </h2>
+                    <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" :chart-id="MAP_INCOMING_ID"/>
                 </div>
             </div>
         </section>
 
-        <section class="box">
-            <h1 class="title"> Studenti entranti nelle regioni </h1> 
-            <div class="columns">
-                <div class="column">
-                    <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" />
-                </div>
-    
-                <div class="column">
-                    <b-field  label="Top 3 regioni con magggior numero studenti entranti  ">
-                        <div class="field">
-                            <b-switch size="is-medium" type="is-success"> Maggior numero </b-switch>
-                        </div>
-                    </b-field>
 
-                    <SortedBarChartComponent :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" :chart-id="SORTED_BARCHART_GLOBAL_INCOMING_ID"/>
-                </div>
-            </div>
-        </section>
+        <!-- FOCUS REGIONI -->
 
         <section class="box">
             <h1 class="title">Seleziona una singola regione</h1>
@@ -91,6 +72,8 @@
                     <section class="box"> 
                         <h1 class="title">Focus studenti uscenti da: NOMEREGIONE</h1>
                         <h2 class="subtitle">Totale studenti: {{totalNumber}} </h2>
+
+                        <!--
 
                         <p class="subtitle"> Province di partenza </p>
 
@@ -112,8 +95,7 @@
                             <b-checkbox>Basic</b-checkbox>
                         </div>
 
-            
-                        
+                        -->
 
                         <p class="subtitle"> Verso dove </p>
                         <PieChartComponent :chart-data="PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="OUTGOING_REGION_PIECHART_ID"/>
@@ -131,6 +113,17 @@
                 <div class="column"> 
                     <section class="box">
                         <h1 class="title">Focus studenti entranti da: NOMEREGIONE</h1>
+                        <h2 class="subtitle">Totale studenti: {{totalNumber}} </h2>
+
+                        <p class="subtitle"> Da dove arrivano </p>
+                        <PieChartComponent :chart-data="PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="INCOMING_REGION_PIECHART_ID"/>
+
+                        <p class="subtitle"> Tipologia corso di studi scelto </p>
+                        <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" /> 
+
+                        <p class="subtitle"> Trend globale studenti entranti dalla regione NOMEREGIONE </p>
+                        <TrendLineComponent :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="INCOMING_REGION_TREND_ID"/>
+
                     </section>
                 </div>
 
@@ -150,18 +143,26 @@
 import ChoroplethMapComponent from './ChoroplethMapComponent.vue'
 import ChordDiagramComponent from './ChordDiagramComponent.vue'
 import BarChartComponent from './BarChartComponent.vue'
-import SortedBarChartComponent from './SortedBarChartComponent.vue'
 import TrendLineComponent from './TrendLineComponent.vue'
 import PieChartComponent from './PieChartComponent.vue'
 
 import { REGIONS_MOCK_DATA, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
 import { CHORD_DATA, CHORD_DATA2, CHORD_CONFIG } from '../data/chord_diagram_mock'
 import { BARCHART_DATA, BARCHART_DATA2, BARCHART_OPTIONS } from '../data/barchart_mock'
-import { SORTED_BARCHART_DATA, SORTED_BARCHART_DATA2, SORTED_BARCHART_CONFIG } from '../data/sortedbarchart_mock'
 import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
 
-import { SORTED_BARCHART_GLOBAL_OUTGOING_ID, SORTED_BARCHART_GLOBAL_INCOMING_ID, MAIN_BAR_CHART_FIELD_OF_STUDY, OUTGOING_BAR_CHART_FIELD_OF_STUDY, OUTGOING_REGION_TREND_ID, OUTGOING_REGION_PIECHART_ID } from '../constants/constants'
+import { 
+    MAP_INCOMING_ID,
+    MAP_OUTGOING_ID,
+    MAIN_BAR_CHART_FIELD_OF_STUDY,
+    OUTGOING_BAR_CHART_FIELD_OF_STUDY, 
+    OUTGOING_REGION_TREND_ID, 
+    OUTGOING_REGION_PIECHART_ID,
+    INCOMING_BAR_CHART_FIELD_OF_STUDY, 
+    INCOMING_REGION_TREND_ID, 
+    INCOMING_REGION_PIECHART_ID
+} from '../constants/constants'
 
 export default {
     name: 'SingleYearSearch',
@@ -169,7 +170,6 @@ export default {
         ChoroplethMapComponent,
         ChordDiagramComponent,
         BarChartComponent,
-        SortedBarChartComponent,
         TrendLineComponent,
         PieChartComponent
     },
@@ -220,15 +220,15 @@ export default {
             BARCHART_DATA,
             BARCHART_OPTIONS,
             BARCHART_DATA2,
-            SORTED_BARCHART_GLOBAL_OUTGOING_ID,
-            SORTED_BARCHART_GLOBAL_INCOMING_ID,
+            MAP_INCOMING_ID,
+            MAP_OUTGOING_ID,
             MAIN_BAR_CHART_FIELD_OF_STUDY,
             OUTGOING_BAR_CHART_FIELD_OF_STUDY,
             OUTGOING_REGION_TREND_ID,
             OUTGOING_REGION_PIECHART_ID,
-            SORTED_BARCHART_DATA,
-            SORTED_BARCHART_CONFIG,
-            SORTED_BARCHART_DATA2,
+            INCOMING_BAR_CHART_FIELD_OF_STUDY, 
+            INCOMING_REGION_TREND_ID, 
+            INCOMING_REGION_PIECHART_ID,
             TRENDLINE_DATA,
             TRENDLINE_CONF,
             PIECHART_DATA,
