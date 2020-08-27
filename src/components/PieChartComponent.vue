@@ -53,15 +53,7 @@ export default {
             pieSeries.hiddenState.properties.endAngle = this.chartConfig.pieSeries.endAngle;
             pieSeries.hiddenState.properties.startAngle = this.chartConfig.pieSeries.startAngle;
 
-            pieSeries.slices.template.tooltipText = "{category}: {value.percent.formatNumber('#.#')}% ({value.value})"
-            
-            pieSeries.slices.template.events.on("over", (event) => {
-                // event.target is the clicked Slice
-                console.log(event.target)
-            });
-
             chart.hiddenState.properties.radius = am4core.percent(0);
-
             chart.logo.disabled = true;
         }
     },

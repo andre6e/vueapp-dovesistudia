@@ -3,7 +3,7 @@
     <l-map 
     :center="center" 
     :zoom="zoom" 
-    style="height: 100px%;">
+    style="height: 100%">
 
     <div class="my-info-container">
       <div class="info">
@@ -106,7 +106,8 @@ export default {
 }
 
 .my-map-container {
-  height: 500px
+  height: 500px;
+  width: 100%;
 }
 
 .minimize-icon-position {
