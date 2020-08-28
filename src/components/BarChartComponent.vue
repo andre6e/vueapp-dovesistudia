@@ -1,7 +1,5 @@
 <template>
-    <section class="section">
-        <div class="chartdiv" :id="chartId"> </div>
-    </section>
+    <div class="chartdiv min-height" v-bind:class="{ 'full-height': chartHeight == 'full', 'fixed-height' : chartHeight != 'full'}" :id="chartId"> </div>
 </template>
 
 <script>
@@ -24,6 +22,9 @@ export default {
         },
         chartId: {
             type: String
+        },
+        chartHeight: {
+            type: String
         }
     },
     mounted() {
@@ -43,7 +44,7 @@ export default {
             let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
             categoryAxis.dataFields.category = this.chartConfig.xaxes_name;
             categoryAxis.renderer.grid.template.location = 0;
-            categoryAxis.renderer.minGridDistance = 30;
+            // categoryAxis.renderer.minGridDistance = 30;
 
             categoryAxis.renderer.labels.template.adapter.add("dy", function(dy, target) {
                 if (target.dataItem && target.dataItem.index & 2 == 2) {
@@ -88,6 +89,17 @@ export default {
 <style scoped>
 .chartdiv {
     width: 100%;
-    height: 400px;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.fixed-height {
+    height: 300px;
+}
+
+.min-height {
+    min-height: 300px;
 }
 </style>

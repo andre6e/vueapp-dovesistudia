@@ -1,7 +1,5 @@
 <template>
-    <section class="section">
-        <div class="chartdiv" id="chortglobaldiv"> </div>
-    </section>
+    <div class="chartdiv min-height" id="chortglobaldiv"> </div>
 </template>
 
 <script>
@@ -26,6 +24,9 @@ export default {
     mounted() {
         this.chart = am4core.create("chortglobaldiv", am4charts.ChordDiagram);
         this.chart.logo.disabled = true;
+
+        this.chart.nodes.template.clickable = false;
+        this.chart.nodes.template.draggable = false;
 
         this.updateChartData()
         this.updateChartConfig()
@@ -54,6 +55,10 @@ export default {
 <style scoped>
 .chartdiv {
     width: 100%;
-    height: 400px;
+    height: 100%;
+}
+
+.min-height {
+    min-height: 400px;
 }
 </style>

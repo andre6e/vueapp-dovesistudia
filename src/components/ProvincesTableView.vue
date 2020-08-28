@@ -1,6 +1,12 @@
 <template>
     <div class="myb-table-wrapper">
-        <b-table detailed :data="provincesData.data" :columns="provincesData.columns" detail-key="name" custom-detail-row>
+        <b-table detailed 
+            :data="provincesData.data" 
+            :columns="provincesData.columns" 
+            detail-key="name" 
+            custom-detail-row 
+            :paginated="true"
+            :per-page="5">
             <template slot="detail" slot-scope="props">
                 <tr v-for="item in props.row.items" :key="item.name">
                     <td> </td>
@@ -18,8 +24,8 @@ export default {
     name: 'ProvincesTableView',
     props: {
         provincesData: {
-            type: Array,
-            default: () => ([])
+            type: Object,
+            default: () => ({})
         }
     }
 }
