@@ -67,7 +67,7 @@
                     
                     <div class="columns">
                         <div class="column has-text-centered ">
-                            <p> Informazioni iscritti </p>
+                            <p> Informazioni studenti immatricolati </p>
                             <TableComponent :chart-data="SIMPLETABLE_MOCK"/>
                         </div>
 
@@ -112,12 +112,16 @@
                      <div class="columns">
     
                     <div class="column">
-                        <h2 class="subtitle"> Studenti che vanno via dalle regioni </h2>
+                        <h2 class="subtitle has-text-centered"> Studenti in uscita dalle regioni </h2>
+
+                        
                         <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" :chart-id="MAP_OUTGOING_ID"/>
                     </div>
 
                     <div class="column">
-                        <h2 class="subtitle"> Studenti che arrivano nelle regioni </h2>
+                        <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
+
+                        
                         <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" :chart-id="MAP_INCOMING_ID"/>
                     </div>
                 </div>
@@ -128,8 +132,21 @@
 
 
         
-        
+            
+                    
+                   
+    
+                    
 
+
+                
+        
+       
+
+
+        
+        
+        
         
         
 
@@ -256,6 +273,7 @@ import BarChartComponent from './BarChartComponent.vue'
 import PieChartComponent from './PieChartComponent.vue'
 import ProvincesTableView from './ProvincesTableView.vue'
 import TableComponent from './TableComponent.vue'
+// import MultiSelectComponent from './MultiSelectComponent.vue'
 
 import { REGIONS_MOCK_DATA, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
 import { CHORD_DATA, CHORD_DATA2, CHORD_CONFIG } from '../data/chord_diagram_mock'
@@ -286,7 +304,8 @@ export default {
         // TrendLineComponent,
         PieChartComponent,
         ProvincesTableView,
-        TableComponent
+        TableComponent,
+        // MultiSelectComponent
     },
     data: function() {
         return {
