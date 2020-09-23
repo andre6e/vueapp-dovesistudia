@@ -1,28 +1,6 @@
 <template>
   <div class="my-map-container" :id="chartId">
-    <l-map :center="center" :zoom="zoom" style="height: 100%">
-      <!--
-    <div class="my-info-container">
-      <div class="info">
-        <div v-bind:class="{ 'minimize-icon-position': isBodyOpen }" v-on:click="isBodyOpen = !isBodyOpen">
-          <b-icon
-              :icon="(isBodyOpen) ? 'window-minimize' : 'plus-thick'"
-              size="is-small">
-          </b-icon>
-        </div>
-        
-        <b v-show="isBodyOpen">TITLE GOES HERE</b>
-        
-        <div class="my-info-body" v-show="isBodyOpen">
-          <ul>
-              <li v-for="(value) in mapData" v-bind:key="value.department_name">   {{value.department_name}} : <strong> {{value.amount_student}} </strong> </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    
-
-    -->
+    <l-map :center="center" :zoom="zoom" style="height: 100%" ref="map">
 
       <l-tile-layer :url="url" :attribution="attribution" />
 
@@ -62,7 +40,9 @@ export default {
   },
   data() {
     let that = this;
+
     this.saveMapDataWorkingCopy();
+    this.updateMinAndMax();
     
     let geoJsonOptions = {
       onEachFeature: function(feature, layer) {
@@ -77,16 +57,10 @@ export default {
         });
       },
       style: function(feature) {
-        return {
-          fillColor: that.getColor(feature.properties.reg_name),
-          weight: 1,
-          opacity: 1,
-          color: "white",
-          // dashArray: "5",
-          fillOpacity: 0.5,
-        };
+        return that.getActiveColorByRegName(feature.properties.reg_name);
       },
     };
+
 
     return {
       zoom: 5,
@@ -107,8 +81,6 @@ export default {
       for (const region in this.mapDataCopy.data) {
         this.mapDataCopy.data[region].active = true;
       }
-
-      this.updateMinAndMax()
     },
     updateMinAndMax () {
       var max = 0;
@@ -130,6 +102,8 @@ export default {
 
       this.mapDataCopy.max = max;
       this.mapDataCopy.min = min;
+
+      console.log('min and max have been updated to', max, min)
     },
     updateRegionActiveState (region_name) {
       for (const region in this.mapDataCopy.data) {
@@ -141,42 +115,65 @@ export default {
     },
     onFeatureClick(e) {
       var clicked_reg = e.target.feature.properties.reg_name.toUpperCase();
+
       this.updateRegionActiveState(clicked_reg)
       this.updateMinAndMax()
 
-      // e.target.setStyle({
-      //   fillColor: this.getColor(clicked_reg)
-      // });
+      // updating the clicked region color
+      e.target.setStyle(this.updateRegionColorByRegName(clicked_reg));
 
-      var styles = this.getColor(clicked_reg);
-
-      e.target.setStyle(styles);
+      // updating the remaning regions color
+      this.updateRemainingRegion(clicked_reg);
     },
-    getColor(region_name) {
-      // console.log('getcolor')
-      // let region_name = d.toUpperCase();
-
+    updateRegionColorByRegName(region_name) {
+      var region_data = this.mapDataCopy.data[region_name.toUpperCase()];
+      return region_data.active ? this.getActiveColorByRegName(region_name) : this.deactivateRegionColor()
+    },
+    getActiveColorByRegName(region_name) {
       var region_data = this.mapDataCopy.data[region_name.toUpperCase()];
 
-      if (region_data.active) {
-        // devo disattiivare
-        return {
-          fillColor: "#000000",
-          fillOpacity: 1,
-          opacity: 1
-        }
-      } else {
-        var linear = d3
+      var linear = d3
           .scaleLinear()
           .domain([this.mapDataCopy.min, this.mapDataCopy.max])
           .range([this.mapData.min_color, this.mapData.max_color]);
 
-
         return {
-          fillColor: linear(region_data.amount)
+          fillColor: linear(region_data.amount),
+          weight: 2,
+          opacity: 1,
+          color: 'white',
+          dashArray: '3',
+          fillOpacity: 0.7,
+          bubblingMouseEvents: false
         }
+    },
+    deactivateRegionColor() {
+      return {
+        weight: 2,
+        opacity: 1,
+        color: 'red',
+        dashArray: '5',
+        fillOpacity: 1,
+        fillColor: '#000000'
       }
     },
+    updateRemainingRegion(clicked_reg) {
+      var layers = this.$refs.map.mapObject._layers
+      var changed = [] // mi serve un riferimento altrimenti ciclerebbe piu volte sulla stessa feature
+
+      for (var el in layers) {
+        var feature = layers[el].feature
+
+        if (feature && feature.properties) {
+          var reg_name = feature.properties.reg_name
+
+          if (!changed.includes(reg_name) && reg_name.toUpperCase() !== clicked_reg.toUpperCase()) {
+            changed.push(reg_name)
+            layers[el].setStyle(this.updateRegionColorByRegName(reg_name))
+          } 
+        }
+      }
+    }
   },
   components: {
     LMap,

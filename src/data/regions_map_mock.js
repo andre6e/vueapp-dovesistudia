@@ -103,8 +103,8 @@
 
 export var REGIONS_MOCK_DATA = {
   data:  {"PIEMONTE":{"amount":91.11,"id":1},"VALLE D'AOSTA":{"amount":91.1,"id":2},"LOMBARDIA":{"amount":84.57,"id":3},"TRENTINO ALTO ADIGE":{"amount":68.97,"id":4},"VENETO":{"amount":83.18,"id":5},"FRIULI VENEZIA GIULIA":{"amount":77.55,"id":6},"LIGURIA":{"amount":83.51,"id":7},"EMILIA ROMAGNA":{"amount":88.64,"id":8},"TOSCANA":{"amount":76.12,"id":9},"UMBRIA":{"amount":81.72,"id":10},"MARCHE":{"amount":86.95,"id":11},"LAZIO":{"amount":80.06,"id":12},"ABRUZZO":{"amount":71.56,"id":13},"MOLISE":{"amount":87.64,"id":14},"CAMPANIA":{"amount":77.35,"id":15},"PUGLIA":{"amount":78.68,"id":16},"BASILICATA":{"amount":83.78,"id":17},"CALABRIA":{"amount":90.45,"id":18},"SICILIA":{"amount":90.45,"id":19},"SARDEGNA":{"amount":90.45,"id":20}},
-  min: 68,
-  max: 91,
+  // min: 68,
+  // max: 91,
   min_color: 'white',
   max_color: 'green'
 }
