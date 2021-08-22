@@ -42,6 +42,7 @@ export default {
     let that = this;
 
     this.saveMapDataWorkingCopy();
+    this.activateAllRegions();
     this.updateMinAndMax();
     
     let geoJsonOptions = {
@@ -77,8 +78,9 @@ export default {
   methods: {
     saveMapDataWorkingCopy() {
       this.mapDataCopy = this.mapData;
-
-      for (const region in this.mapDataCopy.data) {
+    },
+    activateAllRegions() {
+       for (const region in this.mapDataCopy.data) {
         this.mapDataCopy.data[region].active = true;
       }
     },

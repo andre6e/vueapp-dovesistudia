@@ -1,18 +1,19 @@
 <template>
     <div class="container is-fluid">
-    
+
+    <!--
         <section>
             <div>
                 <div class="has-text-centered">
                     <p class="heading">Studenti immatricolati</p>
-                    <p class="title">123</p>
+                    <p class="title"> {{totalNumber}} </p>
                 </div>
 
                 <b-field class="is-hidden-mobile">
-                    <b-radio-button v-model="selectedYear"
+                    <b-radio-button v-model="selectedYear" @click.native="changeData()"
                         v-for="year in years" :value="year" v-bind:key="year"
-                        :native-value="year">
-                        {{year}} 
+                        :native-value="year" >
+                        {{year}}
                     </b-radio-button>
 
                     <b-radio-button v-model="selectedYear"
@@ -40,6 +41,32 @@
             </div>
 
             
+        </section>
+    -->
+
+
+        <section>
+
+            <div class="has-text-centered">
+                <b-field label="Selezione anno accademico">
+                    <b-select class="has-text-centered" placeholder="Select a name" @change.native="changeData()" v-model="selectedYear">
+                        <option
+                            v-for="year in years"
+                            :value="year"
+                            :key="year"
+                            >
+                            {{ year }}
+                        </option>
+                    </b-select>
+                </b-field>
+            </div>
+
+            <div class="has-text-centered">
+                <p class="heading">Studenti immatricolati</p>
+                <p class="title"> {{totalNumber}} </p> 
+            </div>
+
+
         </section>
 
 
@@ -109,30 +136,66 @@
 
                 <div class="my-card-content">
                     
-                     <div class="columns">
+                    <div class="columns">
     
-                    <div class="column">
-                        <h2 class="subtitle has-text-centered"> Studenti in uscita dalle regioni </h2>
+                        <div class="column">
+                            <h2 class="subtitle has-text-centered"> Studenti in uscita dalle regioni </h2>
 
-                        
-                        <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" :chart-id="MAP_OUTGOING_ID"/>
+                            
+                            <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" :chart-id="MAP_OUTGOING_ID"/>
 
-                        
+                            
+                            
+                        </div>
+
+                        <div class="column">
+                            <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
+
+                            
+                            <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" :chart-id="MAP_INCOMING_ID"/>
+
+                           
+                            
+                        </div>
                     </div>
 
-                    <div class="column">
-                        <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
 
+                    <div class="columns">
+                        <div class="column">
+                            <h2 class="subtitle has-text-centered"> Province provenienza </h2>
+
+                            <b-collapse
+                                aria-id="contentIdForA11y2"
+                                class="panel"
+                                animation="slide"
+                                v-model="isIncomingProvincesInfoOpen">
+                                <div
+                                    slot="trigger"
+                                    class="panel-heading"
+                                    role="button"
+                                    aria-controls="contentIdForA11y2">
+                                    <strong> Da quali province arrivano </strong>
+                                </div>
+                                
+                                <div class="panel-block">
+                                    <ProvincesTableView :provinces-data="PROVINCESTABLE_MOCK" />
+                                </div>
+                            </b-collapse>
+                        </div>
                         
-                        <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" :chart-id="MAP_INCOMING_ID"/>
+                        <div class="column">
+                            <h2 class="subtitle has-text-centered"> Tipologia corso di studio </h2>
+
+                            <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
+                        </div>
                     </div>
-                </div>
         
                 </div>
             </b-collapse>
         </section>
 
 
+        <!--
         <section class="margin-10-tb">
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3"  v-model="isThirdBoxOpen">
                 
@@ -144,7 +207,7 @@
                     aria-controls="contentIdForA11y3"
                    >
                     <p class="card-header-title">
-                        Studenti in uscita/entrata
+                        Provenienza e corso di studio
                     </p>
                     <a class="card-header-icon">
                         <b-icon
@@ -158,59 +221,23 @@
                      <div class="columns">
     
                     <div class="column">
-                        <h2 class="subtitle has-text-centered"> Studenti in uscita dalle regioni </h2>
-
-                        <b-collapse
-                            aria-id="contentIdForA11y2"
-                            class="panel"
-                            animation="slide"
-                            v-model="isIncomingProvincesInfoOpen">
-                            <div
-                                slot="trigger"
-                                class="panel-heading"
-                                role="button"
-                                aria-controls="contentIdForA11y2">
-                                <strong> Da quali province arrivano </strong>
-                            </div>
-                            
-                            <div class="panel-block">
-                                <ProvincesTableView :provinces-data="PROVINCESTABLE_MOCK" />
-                            </div>
-                        </b-collapse>
+                        
                        
                     </div>
 
                     <div class="column">
-                        <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
-
                         
-                        <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
                     </div>
                 </div>
         
                 </div>
             </b-collapse>
         </section>
+        -->
 
 
         
             
-                    
-                   
-    
-                    
-
-
-                
-        
-       
-
-
-        
-        
-        
-
-
         
     
         <!-- <button v-on:click="changeData">Change it</button> -->
@@ -267,10 +294,9 @@ export default {
             isGeneralStatisticSingleYearSearchOpen: true,
             isSecondBoxOpen: true,
             isThirdBoxOpen: true,
-            years: ["2010/11", "2011/12", "2012/13", "2014/15"],
-            years2: ["2015/16", "2016/17", "2017/18", "2018/19"],
+            years: ["2010/11", "2011/12", "2012/13", "2014/15", "2015/16", "2016/17", "2017/18", "2018/19"],
             selectedYear: "2018/19",
-            totalNumber: 100,
+            totalNumber: 900,
             totalStudentsNumber: {
                 "2010/11": 100,
                 "2011/12": 200,
@@ -313,9 +339,11 @@ export default {
             this.totalNumber = this.totalStudentsNumber[this.selectedYear]
         },
         changeData() {
-            this.CHORD_DATA = this.CHORD_DATA2
-            this.BARCHART_DATA = this.BARCHART_DATA2
-            this.SORTED_BARCHART_DATA = this.SORTED_BARCHART_DATA2
+            console.log("change data triggered")
+            this.getStudentsTotalNumber();
+            // this.CHORD_DATA = this.CHORD_DATA2;
+            // this.BARCHART_DATA = this.BARCHART_DATA2;
+            // this.SORTED_BARCHART_DATA = this.SORTED_BARCHART_DATA2;
         }
 
     },
