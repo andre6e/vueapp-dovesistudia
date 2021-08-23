@@ -10,7 +10,19 @@
         :geojson="GEOJSON"
         :options="geoJsonOptions"
       ></l-geo-json>
+
+      <!--
+      <div class="my-info-container">
+        <ul>
+          <li v-for="region in activatedRegions" :key="region">
+            {{region}} : {{mapDataCopy.data[region].amount}}
+          </li>
+        </ul>
+      </div>
+      -->
+
     </l-map>
+  
 
   </div>
 </template>
@@ -39,29 +51,10 @@ export default {
     },
   },
   data() {
-    let that = this;
-
+    // initializing working data and map colors
     this.saveMapDataWorkingCopy();
     this.activateAllRegions();
-    this.updateMinAndMax();
-    
-    let geoJsonOptions = {
-      onEachFeature: function(feature, layer) {
-        layer.getLatLng = function() {
-          return this.getBounds().getCenter();
-        };
-        layer.setLatLng = function() {};
-        layer._latlng = layer.getLatLng();
-
-        layer.on({
-          click: that.onFeatureClick,
-        });
-      },
-      style: function(feature) {
-        return that.getActiveColorByRegName(feature.properties.reg_name);
-      },
-    };
-
+    this.updateMinAndMaxValue();
 
     return {
       zoom: 5,
@@ -71,20 +64,50 @@ export default {
         '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
       italyGeojson,
       GEOJSON,
-      isBodyOpen: true,
-      geoJsonOptions: geoJsonOptions,
+      geoJsonOptions: this.getGeoJsonOptions(),
+      firstFocus: false
     };
   },
   methods: {
+    getGeoJsonOptions() {
+      var that = this;
+
+      return {
+        onEachFeature: function(feature, layer) {
+          layer.getLatLng = function() {
+            return this.getBounds().getCenter();
+          };
+          layer.setLatLng = function() {};
+          layer._latlng = layer.getLatLng();
+
+          layer.on({
+            click: that.onFeatureClick,
+          });
+        },
+        style: function(feature) {
+          return that.getActiveColorByRegName(feature.properties.reg_name);
+        },
+      };
+    },
     saveMapDataWorkingCopy() {
       this.mapDataCopy = this.mapData;
     },
     activateAllRegions() {
-       for (const region in this.mapDataCopy.data) {
+      this.activatedRegions = [];
+
+      for (const region in this.mapDataCopy.data) {
         this.mapDataCopy.data[region].active = true;
+        this.activatedRegions.push(region);
+      }
+
+      this.allRegionsBackup = this.activatedRegions;
+    },
+    updateWorkingDataStatus() {
+      for (const region in this.mapDataCopy.data) {
+        this.mapDataCopy.data[region].active = this.activatedRegions.includes(region) ? true : false
       }
     },
-    updateMinAndMax () {
+    updateMinAndMaxValue () {
       var max = 0;
       var min = null;
 
@@ -104,32 +127,42 @@ export default {
 
       this.mapDataCopy.max = max;
       this.mapDataCopy.min = min;
-
-      console.log('min and max have been updated to', max, min)
-    },
-    updateRegionActiveState (region_name) {
-      for (const region in this.mapDataCopy.data) {
-        if (region === region_name) {
-          this.mapDataCopy.data[region].active = !this.mapDataCopy.data[region].active
-          break;
-        }
-      }
     },
     onFeatureClick(e) {
-      var clicked_reg = e.target.feature.properties.reg_name.toUpperCase();
+      let clicked_reg = e.target.feature.properties.reg_name.toUpperCase();
 
-      this.updateRegionActiveState(clicked_reg)
-      this.updateMinAndMax()
+      if (this.firstFocus == false) {
+        this.firstFocus = true;
+        this.activatedRegions = [clicked_reg];
+      } else {
+        let index = this.activatedRegions.indexOf(clicked_reg);
+        
+        if (index != -1) {
+          this.activatedRegions.splice(index, 1);
 
-      // updating the clicked region color
-      e.target.setStyle(this.updateRegionColorByRegName(clicked_reg));
+          if (this.activatedRegions.length == 0) {
+            // se rimuovo l'ultima le resetto tutte di default
+            this.activatedRegions = this.allRegionsBackup;
+            this.firstFocus = false;
+          }
+        } else {
+          this.activatedRegions.push(clicked_reg);
+        }
+      }
 
-      // updating the remaning regions color
-      this.updateRemainingRegion(clicked_reg);
+      this.updateWorkingDataStatus();
+      this.updateMinAndMaxValue();
+      this.updateAllRegionsColor(clicked_reg);
+
+      // emit for parent component
+      this.$emit('region-click', {
+        activatedRegions: this.activatedRegions, 
+        chartId: this.chartId
+      });
     },
     updateRegionColorByRegName(region_name) {
       var region_data = this.mapDataCopy.data[region_name.toUpperCase()];
-      return region_data.active ? this.getActiveColorByRegName(region_name) : this.deactivateRegionColor()
+      return region_data.active ? this.getActiveColorByRegName(region_name) : this.getNonActiveColor()
     },
     getActiveColorByRegName(region_name) {
       var region_data = this.mapDataCopy.data[region_name.toUpperCase()];
@@ -143,38 +176,35 @@ export default {
           fillColor: linear(region_data.amount),
           weight: 2,
           opacity: 1,
-          color: 'white',
-          dashArray: '3',
+          color: 'rgb(150,150,150)',
           fillOpacity: 0.7,
           bubblingMouseEvents: false
         }
     },
-    deactivateRegionColor() {
+    getNonActiveColor() {
       return {
-        weight: 2,
+        stroke: true,
+        color: 'rgb(150,150,150)',
+        dashArray: null,
         opacity: 1,
-        color: 'red',
-        dashArray: '5',
         fillOpacity: 1,
-        fillColor: '#000000'
+        fillColor: 'rgba(0,0,0,0)'
       }
     },
-    updateRemainingRegion(clicked_reg) {
+    updateAllRegionsColor() {
       var layers = this.$refs.map.mapObject._layers
-      var changed = [] // mi serve un riferimento altrimenti ciclerebbe piu volte sulla stessa feature
 
       for (var el in layers) {
         var feature = layers[el].feature
 
         if (feature && feature.properties) {
           var reg_name = feature.properties.reg_name
-
-          if (!changed.includes(reg_name) && reg_name.toUpperCase() !== clicked_reg.toUpperCase()) {
-            changed.push(reg_name)
-            layers[el].setStyle(this.updateRegionColorByRegName(reg_name))
-          } 
+          layers[el].setStyle(this.updateRegionColorByRegName(reg_name))
         }
       }
+    },
+    getCurrentActivatedRegion() {
+      return this.activatedRegions;
     }
   },
   components: {
@@ -195,6 +225,10 @@ export default {
   right: 0;
   margin-top: 10px;
   margin-right: 10px;
+  background-color: white;
+  padding: 6px 8px;
+  box-shadow: 0 0 15px rgb(0 0 0 / 20%);
+  border-radius: 5px;
 }
 
 .my-map-container {

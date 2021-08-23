@@ -115,7 +115,7 @@
 
 
         <section class="margin-10-tb">
-            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3"  v-model="isSecondBoxOpen">
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isSecondBoxOpen">
                 
                 <div
                     slot="trigger" 
@@ -134,7 +134,7 @@
                     </a>
                 </div>
 
-                <div class="my-card-content">
+                <div class="my-card-content" >
                     
                     <div class="columns">
     
@@ -142,17 +142,17 @@
                             <h2 class="subtitle has-text-centered"> Studenti in uscita dalle regioni </h2>
 
                             
-                            <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" :chart-id="MAP_OUTGOING_ID"/>
+                            <ChoroplethMapComponent ref="MAP_OUTGOING" @region-click="onRegionClick" :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" :chart-id="MAP_OUTGOING_ID"/>
 
                             
                             
                         </div>
 
-                        <div class="column">
+                        <div class="column" >
                             <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
 
                             
-                            <ChoroplethMapComponent :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG2" :chart-id="MAP_INCOMING_ID"/>
+                            <ChoroplethMapComponent ref="MAP_INCOMING" @region-click="onRegionClick" :map-data="REGIONS_MOCK_DATA2" :map-config="MAP_CONFIG2" :chart-id="MAP_INCOMING_ID"/>
 
                            
                             
@@ -256,7 +256,7 @@ import ProvincesTableView from './ProvincesTableView.vue'
 import TableComponent from './TableComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
-import { REGIONS_MOCK_DATA, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
+import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
 import { CHORD_DATA, CHORD_DATA2, CHORD_CONFIG } from '../data/chord_diagram_mock'
 import { BARCHART_DATA, BARCHART_DATA2, BARCHART_OPTIONS } from '../data/barchart_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
@@ -309,6 +309,7 @@ export default {
                 "2018/19": 900,
             },
             REGIONS_MOCK_DATA,
+            REGIONS_MOCK_DATA2,
             PROVINCESTABLE_MOCK,
             SIMPLETABLE_MOCK,
             MAP_CONFIG,
@@ -344,6 +345,21 @@ export default {
             // this.CHORD_DATA = this.CHORD_DATA2;
             // this.BARCHART_DATA = this.BARCHART_DATA2;
             // this.SORTED_BARCHART_DATA = this.SORTED_BARCHART_DATA2;
+        },
+        onRegionClick(param) {
+            let outgoing, incoming;
+
+            if (param.chartId == this.MAP_OUTGOING_ID) {
+                outgoing = param.activatedRegions;
+                incoming = this.$refs.MAP_INCOMING.getCurrentActivatedRegion();
+            } else {
+                incoming = param.activatedRegions;
+                outgoing = this.$refs.MAP_OUTGOING.getCurrentActivatedRegion();
+            }
+
+            console.log("INCOMING", incoming)
+            console.log("OUTGOING", outgoing)
+            
         }
 
     },
