@@ -1,52 +1,8 @@
 <template>
     <div class="container is-fluid">
 
-    <!--
+ 
         <section>
-            <div>
-                <div class="has-text-centered">
-                    <p class="heading">Studenti immatricolati</p>
-                    <p class="title"> {{totalNumber}} </p>
-                </div>
-
-                <b-field class="is-hidden-mobile">
-                    <b-radio-button v-model="selectedYear" @click.native="changeData()"
-                        v-for="year in years" :value="year" v-bind:key="year"
-                        :native-value="year" >
-                        {{year}}
-                    </b-radio-button>
-
-                    <b-radio-button v-model="selectedYear"
-                        v-for="year in years2" :value="year" v-bind:key="year"
-                        :native-value="year">
-                        {{year}} 
-                    </b-radio-button>
-                </b-field>
-
-                <b-field position="is-centered" class="is-hidden-tablet">
-                    <b-radio-button v-model="selectedYear"
-                        v-for="year in years" :value="year" v-bind:key="year"
-                        :native-value="year">
-                        {{year}} 
-                    </b-radio-button>
-                </b-field>
-
-                <b-field position="is-centered" class="is-hidden-tablet">
-                    <b-radio-button v-model="selectedYear"
-                        v-for="year in years2" :value="year" v-bind:key="year"
-                        :native-value="year">
-                        {{year}} 
-                    </b-radio-button>
-                </b-field>
-            </div>
-
-            
-        </section>
-    -->
-
-
-        <section>
-
             <div class="has-text-centered">
                 <b-field label="Selezione anno accademico">
                     <b-select class="has-text-centered" placeholder="Select a name" @change.native="changeData()" v-model="selectedYear">
