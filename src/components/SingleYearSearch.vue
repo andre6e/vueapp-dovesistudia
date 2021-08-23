@@ -1,7 +1,7 @@
 <template>
     <div class="container is-fluid">
 
- 
+        <!-- COUNTER STUDENTI SECTION -->
         <section>
             <div class="has-text-centered">
                 <b-field label="Selezione anno accademico">
@@ -21,11 +21,9 @@
                 <p class="heading">Studenti immatricolati</p>
                 <p class="title"> {{totalNumber}} </p> 
             </div>
-
-
         </section>
 
-
+        <!-- STATISTICHE GENERALI SECTION -->
         <section>
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3"  v-model="isGeneralStatisticSingleYearSearchOpen">
                 
@@ -46,8 +44,7 @@
                     </a>
                 </div>
 
-                <div class="my-card-content">
-                    
+                <div class="my-card-content"> 
                     <div class="columns">
                         <div class="column has-text-centered ">
                             <p> Informazioni studenti immatricolati </p>
@@ -64,12 +61,11 @@
                             <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>
                         </div>
                     </div>
-        
                 </div>
             </b-collapse>
         </section>
 
-
+        <!-- STATISTICHE DETAILED INTERATTIVE SECTION-->
         <section class="margin-10-tb">
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isSecondBoxOpen">
                 
@@ -190,11 +186,6 @@
             </b-collapse>
         </section>
         -->
-
-
-        
-            
-        
     
         <!-- <button v-on:click="changeData">Change it</button> -->
             
@@ -203,6 +194,8 @@
 
 <script>
 
+// import * as d3 from "d3";
+import * as SingleYearSearchService from '../services/SingleYearSearchService.js'
 import ChoroplethMapComponent from './ChoroplethMapComponent.vue'
 import ChordDiagramComponent from './ChordDiagramComponent.vue'
 import BarChartComponent from './BarChartComponent.vue'
@@ -214,7 +207,7 @@ import TableComponent from './TableComponent.vue'
 
 import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
 import { CHORD_DATA, CHORD_DATA2, CHORD_CONFIG } from '../data/chord_diagram_mock'
-import { BARCHART_DATA, BARCHART_DATA2, BARCHART_OPTIONS } from '../data/barchart_mock'
+import { BARCHART_DATA, BARCHART_DATA2 } from '../data/barchart_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
 import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
@@ -229,8 +222,12 @@ import {
     OUTGOING_REGION_PIECHART_ID,
     INCOMING_BAR_CHART_FIELD_OF_STUDY, 
     INCOMING_REGION_TREND_ID, 
-    INCOMING_REGION_PIECHART_ID
-} from '../constants/constants'
+    INCOMING_REGION_PIECHART_ID,
+    ACCADEMIC_YEARS,
+    DEFAULT_SELECTED_YEAR,
+    BARCHART_OPTIONS
+    // CSV_KEYS
+} from '../constants/constants';
 
 export default {
     name: 'SingleYearSearch',
@@ -250,19 +247,19 @@ export default {
             isGeneralStatisticSingleYearSearchOpen: true,
             isSecondBoxOpen: true,
             isThirdBoxOpen: true,
-            years: ["2010/11", "2011/12", "2012/13", "2014/15", "2015/16", "2016/17", "2017/18", "2018/19"],
-            selectedYear: "2018/19",
-            totalNumber: 900,
+            years: ACCADEMIC_YEARS,
+            selectedYear: DEFAULT_SELECTED_YEAR,
+            totalNumber: 0,
             totalStudentsNumber: {
-                "2010/11": 100,
-                "2011/12": 200,
-                "2012/13": 300,
-                "2013/14": 400,
-                "2014/15": 500,
-                "2015/16": 600,
-                "2016/17": 700,
-                "2017/18": 800,
-                "2018/19": 900,
+                "2010-11": 100,
+                "2011-12": 200,
+                "2012-13": 300,
+                "2013-14": 400,
+                "2014-15": 500,
+                "2015-16": 600,
+                "2016-17": 700,
+                "2017-18": 800,
+                "2018-19": 900,
             },
             REGIONS_MOCK_DATA,
             REGIONS_MOCK_DATA2,
@@ -292,13 +289,29 @@ export default {
             // PIECHART_CONF
         }
     },
+    mounted: function() {
+        // ci sarà da controllare se al cambio tab si ripassa da qui e si fa un refresh non richiesto
+        console.log("mounted")
+        this.initializeSingleYearSearch();
+    },
     methods: {
+        initializeSingleYearSearch() {
+            var that = this;
+
+            SingleYearSearchService.getSingleYearData(this.selectedYear).then(function (data) {
+                console.log(data)
+                that.totalNumber = data.totalNumber;
+                that.SIMPLETABLE_MOCK = data.generalTabData;
+                that.BARCHART_DATA = data.generalBarChartData;
+            }).catch(function (err) {
+                console.log(err)
+            });
+        },
         getStudentsTotalNumber() {
             this.totalNumber = this.totalStudentsNumber[this.selectedYear]
         },
         changeData() {
-            console.log("change data triggered")
-            this.getStudentsTotalNumber();
+            this.initializeSingleYearSearch();
             // this.CHORD_DATA = this.CHORD_DATA2;
             // this.BARCHART_DATA = this.BARCHART_DATA2;
         },

@@ -1,3 +1,6 @@
+export var DEGREE_FIELD = "degree"
+export var STUDENTS_FIELD = "students"
+
 export var BARCHART_DATA = [{
     "degree": "LM",
     "students": 2025
@@ -18,8 +21,8 @@ export var BARCHART_DATA2 = [{
     }];
 
 export var BARCHART_OPTIONS = {
-    xaxes_name: 'degree',
-    yaxes_name: 'students',
+    xaxes_name: DEGREE_FIELD,
+    yaxes_name: STUDENTS_FIELD,
     series: {
         tooltipText: "{categoryX}: [bold]{valueY}[/]",
         fillOpacity: .8
