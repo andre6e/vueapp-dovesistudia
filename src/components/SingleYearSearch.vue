@@ -217,7 +217,7 @@ import { CHORD_DATA, CHORD_DATA2, CHORD_CONFIG } from '../data/chord_diagram_moc
 import { BARCHART_DATA, BARCHART_DATA2, BARCHART_OPTIONS } from '../data/barchart_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
-import { PROVINCESTABLE_MOCK } from '../data/provincestable_mock'
+import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
 import { SIMPLETABLE_MOCK } from '../data/simpletable_mock'
 
 import { 
@@ -267,6 +267,7 @@ export default {
             REGIONS_MOCK_DATA,
             REGIONS_MOCK_DATA2,
             PROVINCESTABLE_MOCK,
+            PROVINCESTABLE_MOCK2,
             SIMPLETABLE_MOCK,
             MAP_CONFIG,
             MAP_CONFIG2,
@@ -300,7 +301,9 @@ export default {
             this.getStudentsTotalNumber();
             // this.CHORD_DATA = this.CHORD_DATA2;
             // this.BARCHART_DATA = this.BARCHART_DATA2;
-            // this.SORTED_BARCHART_DATA = this.SORTED_BARCHART_DATA2;
+        },
+        updateDetailedView() {
+            this.PROVINCESTABLE_MOCK = this.PROVINCESTABLE_MOCK2;
         },
         onRegionClick(param) {
             let outgoing, incoming;
@@ -315,11 +318,10 @@ export default {
 
             console.log("INCOMING", incoming)
             console.log("OUTGOING", outgoing)
-            
+
+            this.updateDetailedView();
         }
-
-    },
-
+    }
 }
 
 </script>
