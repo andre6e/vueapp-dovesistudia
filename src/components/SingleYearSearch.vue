@@ -51,14 +51,18 @@
                             <TableComponent :chart-data="SIMPLETABLE_MOCK"/>
                         </div>
 
-                        <div class="column has-text-centered ">
-                            <p> Flusso degli studenti </p>
-                            <ChordDiagramComponent :chart-data="CHORD_DATA" :chart-config="CHORD_CONFIG" />
-                        </div>
+                        
 
                         <div class="column has-text-centered">
                             <p> Tipologia corso di Laurea </p>
                             <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>
+                        </div>
+                    </div>
+
+                    <div class="columns">
+                        <div class="column has-text-centered">
+                            <p> Flusso degli studenti </p>
+                            <ChordDiagramComponent :chart-data="CHORD_DATA" :chart-config="CHORD_CONFIG" />
                         </div>
                     </div>
                 </div>
@@ -206,7 +210,7 @@ import TableComponent from './TableComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
 import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
-import { CHORD_DATA, CHORD_DATA2, CHORD_CONFIG } from '../data/chord_diagram_mock'
+import { CHORD_DATA } from '../data/chord_diagram_mock'
 import { BARCHART_DATA, BARCHART_DATA2 } from '../data/barchart_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
@@ -225,7 +229,8 @@ import {
     INCOMING_REGION_PIECHART_ID,
     ACCADEMIC_YEARS,
     DEFAULT_SELECTED_YEAR,
-    BARCHART_OPTIONS
+    BARCHART_OPTIONS,
+    CHORD_CONFIG
     // CSV_KEYS
 } from '../constants/constants';
 
@@ -245,22 +250,11 @@ export default {
         return {
             isIncomingProvincesInfoOpen: false,
             isGeneralStatisticSingleYearSearchOpen: true,
-            isSecondBoxOpen: true,
-            isThirdBoxOpen: true,
+            isSecondBoxOpen: false,
+            isThirdBoxOpen: false,
             years: ACCADEMIC_YEARS,
             selectedYear: DEFAULT_SELECTED_YEAR,
             totalNumber: 0,
-            totalStudentsNumber: {
-                "2010-11": 100,
-                "2011-12": 200,
-                "2012-13": 300,
-                "2013-14": 400,
-                "2014-15": 500,
-                "2015-16": 600,
-                "2016-17": 700,
-                "2017-18": 800,
-                "2018-19": 900,
-            },
             REGIONS_MOCK_DATA,
             REGIONS_MOCK_DATA2,
             PROVINCESTABLE_MOCK,
@@ -269,7 +263,6 @@ export default {
             MAP_CONFIG,
             MAP_CONFIG2,
             CHORD_DATA,
-            CHORD_DATA2,
             CHORD_CONFIG,
             BARCHART_DATA,
             BARCHART_OPTIONS,
@@ -303,12 +296,10 @@ export default {
                 that.totalNumber = data.totalNumber;
                 that.SIMPLETABLE_MOCK = data.generalTabData;
                 that.BARCHART_DATA = data.generalBarChartData;
+                that.CHORD_DATA = data.generalChordData
             }).catch(function (err) {
                 console.log(err)
             });
-        },
-        getStudentsTotalNumber() {
-            this.totalNumber = this.totalStudentsNumber[this.selectedYear]
         },
         changeData() {
             this.initializeSingleYearSearch();

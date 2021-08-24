@@ -67,3 +67,16 @@ export var BARCHART_OPTIONS = {
         strokeOpacity: 1
     }
 };
+
+// Chord
+export var FROM_CHORD_FIELD = "from"
+export var TO_CHORD_FIELD = "to"
+export var VALUE_CHORD_FIELD = "value"
+
+export var CHORD_CONFIG = {
+    dataFields: {
+        fromName: FROM_CHORD_FIELD,
+        toName: TO_CHORD_FIELD,
+        value: VALUE_CHORD_FIELD
+    }
+}

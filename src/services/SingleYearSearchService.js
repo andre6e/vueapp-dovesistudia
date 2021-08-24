@@ -9,7 +9,11 @@ import {
     NAME_FIELD,
     // barchart
     DEGREE_FIELD,
-    STUDENTS_FIELD
+    STUDENTS_FIELD,
+    // chord
+    FROM_CHORD_FIELD,
+    TO_CHORD_FIELD,
+    VALUE_CHORD_FIELD
 } from '../constants/constants';
 
 
@@ -43,8 +47,6 @@ var elabGeneralTabData = function (data) {
 
 var elabGenaralTypologyChart = function (data) {
     var typology = d3.rollup(data, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
-    console.log(typology);
-
     var toReturn = [];
 
     typology.forEach(function (value, key) {
@@ -61,7 +63,21 @@ var elabGenaralTypologyChart = function (data) {
 
 var elabGeneralChordData = function(data) {
     // serve doble grouping per ognuna delle regioni bisogna avere il numero di ognuna delle altre
-    console.log(data)
+    var toReturn = []
+    var from_to_map = d3.rollup(data, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+
+    from_to_map.forEach(function (value, key) {
+       value.forEach(function (subValue, subKey) {
+            var obj = {}
+            obj[FROM_CHORD_FIELD] = key
+            obj[TO_CHORD_FIELD] = subKey
+            obj[VALUE_CHORD_FIELD] = subValue
+
+            toReturn.push(obj)
+        });
+    });
+
+    return toReturn;
 }
 
 var loadGeneralStatistics = function(data) {
@@ -70,7 +86,8 @@ var loadGeneralStatistics = function(data) {
     var elabResponse = {
         totalNumber: elabTotalIscritti(data),
         generalTabData: elabGeneralTabData(data),
-        generalBarChartData: elabGenaralTypologyChart(data)
+        generalBarChartData: elabGenaralTypologyChart(data),
+        generalChordData: elabGeneralChordData(data)
     }
     
     return elabResponse;
