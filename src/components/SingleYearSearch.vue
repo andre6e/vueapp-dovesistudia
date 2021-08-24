@@ -8,7 +8,7 @@
         <section>
             <div class="has-text-centered">
                 <b-field label="Selezione anno accademico">
-                    <b-select class="has-text-centered" placeholder="Select a name" @change.native="changeData()" v-model="selectedYear">
+                    <b-select class="has-text-centered" placeholder="Select a name" @change.native="onYearSelection()" v-model="selectedYear">
                         <option
                             v-for="year in years"
                             :value="year"
@@ -60,19 +60,24 @@
                         </div>
                     </div>
 
+                    <!-- 
+
                     <div class="columns">
                         <div class="column">
                             <p class=" has-text-centered"> Tipologia corso di Laurea </p>
                             <BarChartComponent v-if="GENERAL_BARCHART_DATA" :chart-data="GENERAL_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>
                         </div>
                     </div>
+
+                    -->
+
                 </div>
             </b-collapse>
         </section>
 
         <!-- STATISTICHE DETAILED INTERATTIVE SECTION-->
         <section class="margin-10-tb">
-            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isSecondBoxOpen">
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedStatisticSectionOpen">
                 
                 <div
                     slot="trigger" 
@@ -92,24 +97,18 @@
                 </div>
 
                 <div class="my-card-content" >
-                    
                     <div class="columns">
-    
                         <div class="column">
                             <h2 class="subtitle has-text-centered"> Studenti in uscita dalle regioni </h2>
 
-                            
-                            <ChoroplethMapComponent ref="MAP_OUTGOING" @region-click="onRegionClick" :map-data="REGIONS_MOCK_DATA" :map-config="MAP_CONFIG" :chart-id="MAP_OUTGOING_ID"/>
-
-                            
-                            
+                            <ChoroplethMapComponent ref="MAP_OUTGOING" @region-click="onRegionClick" :map-data="DETAILED_OUT_MAP_DATA" v-if="DETAILED_OUT_MAP_DATA" :chart-id="MAP_OUTGOING_ID"/>
                         </div>
 
                         <div class="column" >
                             <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
 
                             
-                            <ChoroplethMapComponent ref="MAP_INCOMING" @region-click="onRegionClick" :map-data="REGIONS_MOCK_DATA2" :map-config="MAP_CONFIG2" :chart-id="MAP_INCOMING_ID"/>
+                            <ChoroplethMapComponent ref="MAP_INCOMING" @region-click="onRegionClick" :map-data="DETAILED_IN_MAP_DATA" v-if="DETAILED_IN_MAP_DATA" :chart-id="MAP_INCOMING_ID"/>
 
                            
                             
@@ -191,9 +190,7 @@
             </b-collapse>
         </section>
         -->
-    
-        <!-- <button v-on:click="changeData">Change it</button> -->
-            
+      
     </div> 
 </template>
 
@@ -210,7 +207,7 @@ import ProvincesTableView from './ProvincesTableView.vue'
 import TableComponent from './TableComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
-import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
+// import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
 import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
@@ -229,7 +226,6 @@ import {
     DEFAULT_SELECTED_YEAR,
     BARCHART_OPTIONS,
     CHORD_CONFIG
-    // CSV_KEYS
 } from '../constants/constants';
 
 export default {
@@ -247,22 +243,22 @@ export default {
     data: function() {
         return {
             isIncomingProvincesInfoOpen: true,
-            isGeneralStatisticSingleYearSearchOpen: true,
-            isSecondBoxOpen: false,
+            isGeneralStatisticSingleYearSearchOpen: false,
+            isDetailedStatisticSectionOpen: true,
             isThirdBoxOpen: false,
             years: ACCADEMIC_YEARS,
             selectedYear: DEFAULT_SELECTED_YEAR,
             totalNumber: 0,
-            REGIONS_MOCK_DATA,
-            REGIONS_MOCK_DATA2,
+            // REGIONS_MOCK_DATA,
+            // REGIONS_MOCK_DATA2,
             PROVINCESTABLE_MOCK,
             PROVINCESTABLE_MOCK2,
             GENERAL_TABLE_DATA: null,
             GENERAL_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
+            DETAILED_OUT_MAP_DATA: null,
+            DETAILED_IN_MAP_DATA: null,
             isLoading: false,
-            MAP_CONFIG,
-            MAP_CONFIG2,
             CHORD_CONFIG,
             BARCHART_OPTIONS,
             MAP_INCOMING_ID,
@@ -286,6 +282,7 @@ export default {
     },
     methods: {
         initializeSingleYearSearch() {
+            // alla search al cambio dell'anno resetto le mappe alla totalità
             var that = this;
             this.isLoading = true;
 
@@ -295,35 +292,42 @@ export default {
                 that.GENERAL_TABLE_DATA = data.generalTabData;
                 that.GENERAL_BARCHART_DATA = data.generalBarChartData;
                 that.GENERAL_CHORD_DATA = data.generalChordData;
+                that.DETAILED_OUT_MAP_DATA = data.outMapData;
+                that.DETAILED_IN_MAP_DATA = data.inMapData;
 
                 that.isLoading = false;
             }).catch(function (err) {
                 console.log(err)
             });
         },
-        changeData() {
+        onYearSelection() {
             this.initializeSingleYearSearch();
-            // this.CHORD_DATA = this.CHORD_DATA2;
             // this.BARCHART_DATA = this.BARCHART_DATA2;
-        },
-        updateDetailedView() {
-            this.PROVINCESTABLE_MOCK = this.PROVINCESTABLE_MOCK2;
         },
         onRegionClick(param) {
             let outgoing, incoming;
 
             if (param.chartId == this.MAP_OUTGOING_ID) {
                 outgoing = param.activatedRegions;
-                incoming = this.$refs.MAP_INCOMING.getCurrentActivatedRegion();
+                // incoming = this.$refs.MAP_INCOMING.getCurrentActivatedRegion();
+                //this.updateDetailedView(outgoing, null);
+
+                let data = SingleYearSearchService.updateDetailedView(outgoing, null);
+                console.log(data)
+                this.DETAILED_OUT_MAP_DATA = data.outMapData;
+                this.DETAILED_IN_MAP_DATA = data.inMapData;
+                this.$refs.MAP_INCOMING.setRegionsAsActive(data.incomingList);
             } else {
                 incoming = param.activatedRegions;
-                outgoing = this.$refs.MAP_OUTGOING.getCurrentActivatedRegion();
+                // outgoing = this.$refs.MAP_OUTGOING.getCurrentActivatedRegion();
+                // this.updateDetailedView(null, incoming);
+
+                let data = SingleYearSearchService.updateDetailedView(null, incoming);
+                console.log(data)
+                this.DETAILED_OUT_MAP_DATA = data.outMapData;
+                this.DETAILED_IN_MAP_DATA = data.inMapData;
+                this.$refs.MAP_OUTGOING.setRegionsAsActive(data.outgoingList);
             }
-
-            console.log("INCOMING", incoming)
-            console.log("OUTGOING", outgoing)
-
-            this.updateDetailedView();
         }
     }
 }

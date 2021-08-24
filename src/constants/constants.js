@@ -80,3 +80,14 @@ export var CHORD_CONFIG = {
         value: VALUE_CHORD_FIELD
     }
 }
+
+// DETAILED SINGLE SEARCH
+export var REGIONS_LIST = ["PIEMONTE","VALLE D'AOSTA","LOMBARDIA","TRENTINO ALTO ADIGE","VENETO","FRIULI VENEZIA GIULIA","LIGURIA","EMILIA ROMAGNA","TOSCANA","UMBRIA","MARCHE","LAZIO","ABRUZZO","MOLISE","CAMPANIA","PUGLIA","BASILICATA","CALABRIA","SICILIA","SARDEGNA"]
+
+// Map
+export var MIN_OUT_COLOR = "white"
+export var MAX_OUT_COLOR = "green"
+export var MIN_INC_COLOR = "white"
+export var MAX_INC_COLOR = "blue"
+export var AMOUNT_FIELD = "amount"
+export var ID_FIELD = "id"

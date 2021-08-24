@@ -42,10 +42,6 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    mapConfig: {
-      type: Object,
-      default: () => ({}),
-    },
     chartId: {
       type: String,
     },
@@ -101,6 +97,7 @@ export default {
         this.activatedRegions.push(region);
       }
 
+      // mi serve solo come backup
       this.allRegionsBackup = this.activatedRegions;
     },
     updateWorkingDataStatus() {
@@ -153,7 +150,7 @@ export default {
 
       this.updateWorkingDataStatus();
       this.updateMinAndMaxValue();
-      this.updateAllRegionsColor(clicked_reg);
+      this.updateAllRegionsColor();
 
       // emit for parent component
       this.$emit('region-click', {
@@ -206,6 +203,12 @@ export default {
     },
     getCurrentActivatedRegion() {
       return this.activatedRegions;
+    },
+    setRegionsAsActive(activedRegionList) {
+      this.activatedRegions = activedRegionList == null ? this.allRegionsBackup: activedRegionList;
+      this.updateWorkingDataStatus();
+      this.updateMinAndMaxValue();
+      this.updateAllRegionsColor();
     }
   },
   components: {
