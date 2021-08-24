@@ -45,6 +45,14 @@ var elabGeneralTabData = function (data) {
     return toReturn;
 }
 
+var sortTypologyDescending = function(list) {
+    return list.sort(function (a, b){
+        if (a.students > b.students) return -1;
+        else if (b.students > a.students) return 1;
+        else return 0;
+    })
+}
+
 var elabGenaralTypologyChart = function (data) {
     var typology = d3.rollup(data, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
     var toReturn = [];
@@ -58,7 +66,7 @@ var elabGenaralTypologyChart = function (data) {
         toReturn.push(obj);
     });
 
-    return toReturn;
+    return sortTypologyDescending(toReturn);
 }
 
 var elabGeneralChordData = function(data) {
@@ -94,6 +102,6 @@ var loadGeneralStatistics = function(data) {
 }
 
 export async function getSingleYearData(year) {
-    var data = await d3.csv(year + ".csv")
+    var data = await d3.csv('dataset/' + year + ".csv")
     return loadGeneralStatistics(data)
 }

@@ -47,23 +47,23 @@
                     </a>
                 </div>
 
-                <div class="my-card-content"> 
+                <div class="my-card-content">
                     <div class="columns">
-                        <div class="column has-text-centered ">
-                            <p> Informazioni studenti immatricolati </p>
+                        <div class="column is-one-third">
+                            <p class=" has-text-centered"> Informazioni studenti immatricolati </p>
                             <TableComponent v-if="GENERAL_TABLE_DATA" :chart-data="GENERAL_TABLE_DATA"/>
                         </div>
 
-                        <div class="column has-text-centered">
-                            <p> Tipologia corso di Laurea </p>
-                            <BarChartComponent v-if="GENERAL_BARCHART_DATA" :chart-data="GENERAL_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>
+                        <div class="column is-two-third">
+                            <p class="has-text-centered"> Flusso degli studenti </p>
+                            <ChordDiagramComponent v-if="GENERAL_CHORD_DATA" :chart-data="GENERAL_CHORD_DATA" :chart-config="CHORD_CONFIG" />
                         </div>
                     </div>
 
                     <div class="columns">
-                        <div class="column has-text-centered">
-                            <p> Flusso degli studenti </p>
-                            <ChordDiagramComponent v-if="GENERAL_CHORD_DATA" :chart-data="GENERAL_CHORD_DATA" :chart-config="CHORD_CONFIG" />
+                        <div class="column">
+                            <p class=" has-text-centered"> Tipologia corso di Laurea </p>
+                            <BarChartComponent v-if="GENERAL_BARCHART_DATA" :chart-data="GENERAL_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>
                         </div>
                     </div>
                 </div>

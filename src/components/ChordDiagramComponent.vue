@@ -59,6 +59,6 @@ export default {
 }
 
 .min-height {
-    min-height: 400px;
+    min-height: 600px;
 }
 </style>
