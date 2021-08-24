@@ -48,21 +48,19 @@
                     <div class="columns">
                         <div class="column has-text-centered ">
                             <p> Informazioni studenti immatricolati </p>
-                            <TableComponent :chart-data="SIMPLETABLE_MOCK"/>
+                            <TableComponent v-if="GENERAL_TABLE_DATA" :chart-data="GENERAL_TABLE_DATA"/>
                         </div>
-
-                        
 
                         <div class="column has-text-centered">
                             <p> Tipologia corso di Laurea </p>
-                            <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>
+                            <BarChartComponent v-if="GENERAL_BARCHART_DATA" :chart-data="GENERAL_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="MAIN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>
                         </div>
                     </div>
 
                     <div class="columns">
                         <div class="column has-text-centered">
                             <p> Flusso degli studenti </p>
-                            <ChordDiagramComponent :chart-data="CHORD_DATA" :chart-config="CHORD_CONFIG" />
+                            <ChordDiagramComponent v-if="GENERAL_CHORD_DATA" :chart-data="GENERAL_CHORD_DATA" :chart-config="CHORD_CONFIG" />
                         </div>
                     </div>
                 </div>
@@ -142,7 +140,7 @@
                         <div class="column">
                             <h2 class="subtitle has-text-centered"> Tipologia corso di studio </h2>
 
-                            <BarChartComponent :chart-data="BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
+                            <BarChartComponent v-if="GENERAL_BARCHART_DATA" :chart-data="GENERAL_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
                         </div>
                     </div>
         
@@ -210,12 +208,9 @@ import TableComponent from './TableComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
 import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2, MAP_CONFIG, MAP_CONFIG2 } from '../data/regions_map_mock'
-import { CHORD_DATA } from '../data/chord_diagram_mock'
-import { BARCHART_DATA, BARCHART_DATA2 } from '../data/barchart_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
 import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
-import { SIMPLETABLE_MOCK } from '../data/simpletable_mock'
 
 import { 
     MAP_INCOMING_ID,
@@ -259,14 +254,13 @@ export default {
             REGIONS_MOCK_DATA2,
             PROVINCESTABLE_MOCK,
             PROVINCESTABLE_MOCK2,
-            SIMPLETABLE_MOCK,
+            GENERAL_TABLE_DATA: null,
+            GENERAL_BARCHART_DATA: null,
+            GENERAL_CHORD_DATA: null,
             MAP_CONFIG,
             MAP_CONFIG2,
-            CHORD_DATA,
             CHORD_CONFIG,
-            BARCHART_DATA,
             BARCHART_OPTIONS,
-            BARCHART_DATA2,
             MAP_INCOMING_ID,
             MAP_OUTGOING_ID,
             MAIN_BAR_CHART_FIELD_OF_STUDY,
@@ -294,9 +288,9 @@ export default {
             SingleYearSearchService.getSingleYearData(this.selectedYear).then(function (data) {
                 console.log(data)
                 that.totalNumber = data.totalNumber;
-                that.SIMPLETABLE_MOCK = data.generalTabData;
-                that.BARCHART_DATA = data.generalBarChartData;
-                that.CHORD_DATA = data.generalChordData
+                that.GENERAL_TABLE_DATA = data.generalTabData;
+                that.GENERAL_BARCHART_DATA = data.generalBarChartData;
+                that.GENERAL_CHORD_DATA = data.generalChordData
             }).catch(function (err) {
                 console.log(err)
             });
