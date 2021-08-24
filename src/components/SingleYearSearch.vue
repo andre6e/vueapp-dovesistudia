@@ -1,6 +1,9 @@
 <template>
     <div class="container is-fluid">
 
+        <!-- LOADING GIF -->
+        <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="true"></b-loading>
+
         <!-- COUNTER STUDENTI SECTION -->
         <section>
             <div class="has-text-centered">
@@ -243,7 +246,7 @@ export default {
     },
     data: function() {
         return {
-            isIncomingProvincesInfoOpen: false,
+            isIncomingProvincesInfoOpen: true,
             isGeneralStatisticSingleYearSearchOpen: true,
             isSecondBoxOpen: false,
             isThirdBoxOpen: false,
@@ -257,6 +260,7 @@ export default {
             GENERAL_TABLE_DATA: null,
             GENERAL_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
+            isLoading: false,
             MAP_CONFIG,
             MAP_CONFIG2,
             CHORD_CONFIG,
@@ -278,19 +282,21 @@ export default {
     },
     mounted: function() {
         // ci sarà da controllare se al cambio tab si ripassa da qui e si fa un refresh non richiesto
-        console.log("mounted")
         this.initializeSingleYearSearch();
     },
     methods: {
         initializeSingleYearSearch() {
             var that = this;
+            this.isLoading = true;
 
             SingleYearSearchService.getSingleYearData(this.selectedYear).then(function (data) {
                 console.log(data)
                 that.totalNumber = data.totalNumber;
                 that.GENERAL_TABLE_DATA = data.generalTabData;
                 that.GENERAL_BARCHART_DATA = data.generalBarChartData;
-                that.GENERAL_CHORD_DATA = data.generalChordData
+                that.GENERAL_CHORD_DATA = data.generalChordData;
+
+                that.isLoading = false;
             }).catch(function (err) {
                 console.log(err)
             });
