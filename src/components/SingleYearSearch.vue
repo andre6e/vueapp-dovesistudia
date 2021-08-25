@@ -87,7 +87,7 @@
                     aria-controls="contentIdForA11y3"
                    >
                     <p class="card-header-title">
-                        Studenti in uscita/entrata
+                        Studenti in uscita
                     </p>
                     <a class="card-header-icon">
                         <b-icon
@@ -99,23 +99,28 @@
                 <div class="my-card-content" >
                     <div class="columns">
                         <div class="column">
-                            <h2 class="subtitle has-text-centered"> Studenti in uscita dalle regioni </h2>
+                            <h2 class="subtitle has-text-centered"> Da quali regioni si va via? </h2>
 
                             <ChoroplethMapComponent ref="MAP_OUTGOING" @region-click="onRegionClick" :map-data="DETAILED_OUT_MAP_DATA" v-if="DETAILED_OUT_MAP_DATA" :chart-id="MAP_OUTGOING_ID"/>
                         </div>
 
-                        <div class="column" >
-                            <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
-                            
-                            <ChoroplethMapComponent ref="MAP_INCOMING" @region-click="onRegionClick" :map-data="DETAILED_IN_MAP_DATA" v-if="DETAILED_IN_MAP_DATA" :chart-id="MAP_INCOMING_ID"/>
-
+                        <div class="column">
+                            <h2 class="subtitle has-text-centered"> Verso dove ci si sposta? </h2>
+                            <PieChartComponent :chart-data="OUTGOING_PIE_DATA" v-if="OUTGOING_PIE_DATA" :chart-config="PIECHART_CONF" :chart-id="OUTGOING_REGION_PIECHART_ID"/>
                         </div>
+
+                    <!--
+                        <div class="column">
+                                <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
+                                <ChoroplethMapComponent ref="MAP_INCOMING" @region-click="onRegionClick" :map-data="DETAILED_IN_MAP_DATA" v-if="DETAILED_IN_MAP_DATA" :chart-id="MAP_INCOMING_ID"/>
+                        </div>
+                    -->
                     </div>
 
 
                     <div class="columns">
                         <div class="column">
-                            <h2 class="subtitle has-text-centered"> Province provenienza </h2>
+                            <h2 class="subtitle has-text-centered"> Da quali province si va via? </h2>
 
                             <b-collapse
                                 aria-id="contentIdForA11y2"
@@ -137,7 +142,7 @@
                         </div>
                         
                         <div class="column">
-                            <h2 class="subtitle has-text-centered"> Tipologia corso di studio </h2>
+                            <h2 class="subtitle has-text-centered"> A conseguire quale titolo? </h2>
 
                             <BarChartComponent v-if="DETAILED_BARCHART_DATA" :chart-data="DETAILED_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
                         </div>
@@ -199,14 +204,14 @@ import ChoroplethMapComponent from './ChoroplethMapComponent.vue'
 import ChordDiagramComponent from './ChordDiagramComponent.vue'
 import BarChartComponent from './BarChartComponent.vue'
 // import TrendLineComponent from './TrendLineComponent.vue'
-// import PieChartComponent from './PieChartComponent.vue'
+import PieChartComponent from './PieChartComponent.vue'
 import ProvincesTableView from './ProvincesTableView.vue'
 import TableComponent from './TableComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
 // import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
-// import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
+import {  PIECHART_CONF } from '../data/piechart_mock'
 // import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
 
 import { 
@@ -222,7 +227,8 @@ import {
     ACCADEMIC_YEARS,
     DEFAULT_SELECTED_YEAR,
     BARCHART_OPTIONS,
-    CHORD_CONFIG
+    CHORD_CONFIG,
+    REGIONS_LIST
 } from '../constants/constants';
 
 export default {
@@ -232,7 +238,7 @@ export default {
         ChordDiagramComponent,
         BarChartComponent,
         // TrendLineComponent,
-        // PieChartComponent,
+        PieChartComponent,
         ProvincesTableView,
         TableComponent,
         // MultiSelectComponent
@@ -252,8 +258,9 @@ export default {
             DETAILED_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
             DETAILED_OUT_MAP_DATA: null,
-            DETAILED_IN_MAP_DATA: null,
+            // DETAILED_IN_MAP_DATA: null,
             DETAILED_PROVINCES_TAB_DATA: null,
+            OUTGOING_PIE_DATA: null,
             isLoading: false,
             CHORD_CONFIG,
             BARCHART_OPTIONS,
@@ -268,8 +275,8 @@ export default {
             INCOMING_REGION_PIECHART_ID,
             // TRENDLINE_DATA,
             // TRENDLINE_CONF,
-            // PIECHART_DATA,
-            // PIECHART_CONF
+            //PIECHART_DATA,
+            PIECHART_CONF
         }
     },
     mounted: function() {
@@ -288,9 +295,10 @@ export default {
                 that.GENERAL_TABLE_DATA = data.generalTabData;
                 that.GENERAL_CHORD_DATA = data.generalChordData;
                 that.DETAILED_OUT_MAP_DATA = data.outMapData;
-                that.DETAILED_IN_MAP_DATA = data.inMapData;
+                // that.DETAILED_IN_MAP_DATA = data.inMapData;
                 that.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
                 that.DETAILED_BARCHART_DATA = data.detailedBarChartData;
+                that.OUTGOING_PIE_DATA = data.outGoingPieChartData;
 
                 //that.isGeneralStatisticSingleYearSearchOpen = true;
                 that.isDetailedStatisticSectionOpen = true;
@@ -300,11 +308,14 @@ export default {
             });
         },
         onYearSelection() {
+            this.$refs.MAP_OUTGOING.setRegionsAsActive(REGIONS_LIST);
             this.initializeSingleYearSearch();
-            // this.BARCHART_DATA = this.BARCHART_DATA2;
+
+            // c'è da forzare la selezione reset su tutte le regioni di outgoing
+            
         },
         onRegionClick(param) {
-            let outgoing, incoming;
+            let outgoing;
 
             if (param.chartId == this.MAP_OUTGOING_ID) {
                 outgoing = param.activatedRegions;
@@ -312,18 +323,11 @@ export default {
                 let data = SingleYearSearchService.updateDetailedView(outgoing, null);
                 console.log(data)
                 this.DETAILED_OUT_MAP_DATA = data.outMapData;
-                this.DETAILED_IN_MAP_DATA = data.inMapData;
+                //this.DETAILED_IN_MAP_DATA = data.inMapData;
                 this.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
                 this.DETAILED_BARCHART_DATA = data.detailedBarChartData;
-                this.$refs.MAP_INCOMING.setRegionsAsActive(data.incomingList);
-            } else {
-                incoming = param.activatedRegions;
-                
-                let data = SingleYearSearchService.updateDetailedView(null, incoming);
-                console.log(data)
-                this.DETAILED_OUT_MAP_DATA = data.outMapData;
-                this.DETAILED_IN_MAP_DATA = data.inMapData;
-                this.$refs.MAP_OUTGOING.setRegionsAsActive(data.outgoingList);
+                this.OUTGOING_PIE_DATA = data.outGoingPieChartData;
+                //this.$refs.MAP_INCOMING.setRegionsAsActive(data.incomingList);
             }
         }
     }
@@ -340,5 +344,6 @@ export default {
 .my-card-content {
     padding: 1rem;
 }
+
 
 </style>

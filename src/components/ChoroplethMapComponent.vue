@@ -206,6 +206,7 @@ export default {
     },
     setRegionsAsActive(activedRegionList) {
       this.activatedRegions = activedRegionList == null ? this.allRegionsBackup: activedRegionList;
+      this.firstFocus = false;
       this.updateWorkingDataStatus();
       this.updateMinAndMaxValue();
       this.updateAllRegionsColor();

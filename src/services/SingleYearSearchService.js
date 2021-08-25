@@ -220,8 +220,43 @@ var elabProvincesData = function(outgoing_list_param) {
     };
 }
 
+var elabOutgoingPieChartData = function(outgoing_list_param) {
+    var outgoingFilteredData = outgoing_list_param ? 
+        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+
+    var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+
+    var SAME_GRAND_TOTAL = 0;
+    var OTHER_GRAND_TOTAL = 0;
+
+    outgoing_students.forEach(function (value, key) {
+        var same_region = value.get(key);
+        var other_regions = 0;
+
+        value.forEach(function (subValue, subKey) {
+            if (key != subKey) {
+                other_regions += subValue
+            }
+        });
+
+        SAME_GRAND_TOTAL += same_region;
+        OTHER_GRAND_TOTAL += other_regions;
+    });
+
+    return [
+        {
+            "region" : "Stessa regione",
+            "students": SAME_GRAND_TOTAL
+        },
+        {
+            "region": "Altre regioni",
+            "students": OTHER_GRAND_TOTAL
+        }
+    ]
+}
+
 var loadGeneralStatistics = function() {
-    var mapData = safeElabMapData(null, null, false)
+    var mapData = safeElabMapData(null, null, false);
 
     var elabResponse = {
         totalNumber: elabTotalIscritti(),
@@ -231,6 +266,7 @@ var loadGeneralStatistics = function() {
         inMapData: mapData.inMapData,
         detailedTabData: elabProvincesData(),
         detailedBarChartData: elabGenaralTypologyChart(),
+        outGoingPieChartData: elabOutgoingPieChartData()
     }
     
     return elabResponse;
@@ -251,7 +287,8 @@ export function updateDetailedView(outgoing_list_param, incoming_list_param) {
         detailedTabData: elabProvincesData(outgoing_list_param),
         detailedBarChartData: elabGenaralTypologyChart(outgoing_list_param),
         outMapData: mapData.outMapData,
-        inMapData: mapData.inMapData
+        inMapData: mapData.inMapData,
+        outGoingPieChartData: elabOutgoingPieChartData(outgoing_list_param)
     };
     
     return elabResponse;

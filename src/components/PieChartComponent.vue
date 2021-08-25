@@ -38,7 +38,7 @@ export default {
             let chart = am4core.create(this.chartId, am4charts.PieChart);
 
             // Add data
-            chart.data = this.chartData
+            chart.data = this.chartData;
 
             // Add and configure Series
             let pieSeries = chart.series.push(new am4charts.PieSeries());
@@ -55,6 +55,8 @@ export default {
 
             chart.hiddenState.properties.radius = am4core.percent(0);
             chart.logo.disabled = true;
+
+            this.chart = chart;
         }
     },
     watch: {

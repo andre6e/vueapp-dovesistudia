@@ -1,31 +1,31 @@
 export var PIECHART_DATA = [ {
-    "country": "Lithuania",
-    "litres": 501.9
+    "region": "Lithuania",
+    "students": 501.9
     }, {
-    "country": "Czechia",
-    "litres": 301.9
+    "region": "Czechia",
+    "students": 301.9
     }, {
-    "country": "Ireland",
-    "litres": 201.1
+    "region": "Ireland",
+    "students": 201.1
     }, {
-    "country": "Germany",
-    "litres": 165.8
+    "region": "Germany",
+    "students": 165.8
     }, {
-    "country": "Australia",
-    "litres": 139.9
+    "region": "Australia",
+    "students": 139.9
     }, {
-    "country": "Austria",
-    "litres": 128.3
+    "region": "Austria",
+    "students": 128.3
     }, {
-    "country": "UK",
-    "litres": 99
+    "region": "UK",
+    "students": 99
     }
 ];
 
 export var PIECHART_CONF = {
     pieSeries: {
-        value: "litres",
-        category: "country",
+        value: "students",
+        category: "region",
         strokeOpacity: 1,
         opacity: 1,
         endAngle: -90,
