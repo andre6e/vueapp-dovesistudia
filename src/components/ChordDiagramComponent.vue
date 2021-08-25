@@ -1,5 +1,10 @@
 <template>
-    <div class="chartdiv min-height" :id="chartId"> </div>
+    <div>
+        <div class="has-text-centered">
+            <b-button v-if="archsHidable" @click="onHideAutoArchs"> {{autoArchsHidden ? 'Attiva' : 'Disattiva'}} Auto archi </b-button>
+        </div>
+        <div class="chartdiv min-height" :id="chartId"> </div>
+    </div>
 </template>
 
 <script>
@@ -13,8 +18,8 @@ export default {
     name: 'ChordDiagramComponent',
     props: {
         chartData: {
-            type: Array,
-            default: () => ([])
+            type: Object,
+            default: () => ({})
         },
         chartConfig: {
             type: Object,
@@ -22,6 +27,15 @@ export default {
         },
         chartId: {
             type: String
+        },
+        archsHidable: {
+            type: Boolean,
+            default: () => (false)
+        }
+    },
+    data: function() {
+        return {
+            autoArchsHidden: false
         }
     },
     mounted() {
@@ -36,10 +50,21 @@ export default {
     },
     methods: {
         updateChartData() {
-            this.chart.data = this.chartData
+            if (this.archsHidable) {
+                this.chart.data = this.autoArchsHidden ? this.chartData.noAutoArchsData : this.chartData.completeData
+            } else {
+                this.chart.data = this.chartData.completeData
+            }
         },
         updateChartConfig() {
             this.chart.dataFields = this.chartConfig.dataFields
+        },
+        onHideAutoArchs() {
+            this.autoArchsHidden = !this.autoArchsHidden;
+            this.updateChartData()
+        },
+        resetHiddenArchState() {
+            this.autoArchsHidden = false;
         }
     },
     watch: {

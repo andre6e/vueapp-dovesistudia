@@ -15,7 +15,7 @@ import {
     TO_CHORD_FIELD,
     VALUE_CHORD_FIELD,
     // map
-    // REGIONS_LIST,
+    REGIONS_LIST,
     MIN_OUT_COLOR,
     MAX_OUT_COLOR,
     MIN_INC_COLOR,
@@ -90,12 +90,9 @@ var elabGenaralTypologyChart = function (outgoing_list_param) {
     return sortStudentsDescending(toReturn);
 };
 
-var elabChordData = function(outgoing_list_param) {
-    var outgoingFilteredData = outgoing_list_param ? 
-        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
-
+var elabGeneralChordData = function() {
     var toReturn = []
-    var from_to_map = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+    var from_to_map = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
 
     from_to_map.forEach(function (value, key) {
        value.forEach(function (subValue, subKey) {
@@ -108,7 +105,7 @@ var elabChordData = function(outgoing_list_param) {
         });
     });
 
-    return toReturn;
+    return { completeData: toReturn };
 };
 
 var safeElabMapData = function(outgoing_list_param, incoming_list_param, updatingDetailedView) {
@@ -223,6 +220,39 @@ var elabProvincesData = function(outgoing_list_param) {
     };
 }
 
+var elabDetailedChordData = function(outgoing_list_param) {
+    outgoing_list_param = outgoing_list_param ? outgoing_list_param : REGIONS_LIST;
+    var outgoingFilteredData = DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])});
+
+    var completeData = [];
+    var noAutoArchsData = [];
+
+    var from_to_map = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+
+    console.log(from_to_map)
+
+    from_to_map.forEach(function (value, key) {
+
+        value.forEach(function (subValue, subKey) {
+            var obj = {}
+            obj[FROM_CHORD_FIELD] = key
+            obj[TO_CHORD_FIELD] = subKey
+            obj[VALUE_CHORD_FIELD] = subValue
+
+            completeData.push(obj);
+
+            if (key != subKey) {
+                noAutoArchsData.push(obj)
+            }
+        });
+    });
+
+    return {
+        completeData: completeData,
+        noAutoArchsData: noAutoArchsData
+    };
+}
+
 
 // var elabOutgoingPieChartData = function(outgoing_list_param) {
 //     var outgoingFilteredData = outgoing_list_param ? 
@@ -269,12 +299,12 @@ var loadGeneralStatistics = function() {
     var elabResponse = {
         totalNumber: elabTotalIscritti(),
         generalTabData: elabGeneralTabData(),
-        generalChordData: elabChordData(),
+        generalChordData: elabGeneralChordData(),
         detailedOutMapData: mapData.outMapData,
         inMapData: mapData.inMapData,
         detailedTabData: elabProvincesData(),
         detailedBarChartData: elabGenaralTypologyChart(),
-        detailedOutChordData: elabChordData()
+        detailedOutChordData: elabDetailedChordData()
     }
     
     return elabResponse;
@@ -296,7 +326,7 @@ export function updateDetailedView(outgoing_list_param, incoming_list_param) {
         detailedBarChartData: elabGenaralTypologyChart(outgoing_list_param),
         detailedOutMapData: mapData.outMapData,
         inMapData: mapData.inMapData,
-        detailedOutChordData: elabChordData(outgoing_list_param)
+        detailedOutChordData: elabDetailedChordData(outgoing_list_param)
     };
     
     return elabResponse;

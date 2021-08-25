@@ -101,18 +101,10 @@
                         <div class="column">
                             <h2 class="subtitle has-text-centered"> Da quali regioni si va via? </h2>
 
-                            <ChoroplethMapComponent ref="MAP_OUTGOING" @region-click="onRegionClick" :map-data="DETAILED_OUT_MAP_DATA" v-if="DETAILED_OUT_MAP_DATA" :chart-id="MAP_OUTGOING_ID"/>
+                            <ChoroplethMapComponent ref="MAP_OUTGOING_SY" @region-click="onRegionClick" :map-data="DETAILED_OUT_MAP_DATA" v-if="DETAILED_OUT_MAP_DATA" :chart-id="MAP_OUTGOING_ID"/>
                         </div>
                         
-                        <div class="column">
-                            <h2 class="subtitle has-text-centered"> A conseguire quale titolo? </h2>
-                            <BarChartComponent v-if="DETAILED_BARCHART_DATA" :chart-data="DETAILED_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUT_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
-
-                            
-                        </div>
-
-                        
-
+                       
                     <!--
                         <div class="column">
                                 <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
@@ -146,8 +138,15 @@
                         </div>
                         
                         <div class="column is-two-third">
-                            <h2 class="subtitle has-text-centered"> Da quali regioni si va via? </h2>
-                            <ChordDiagramComponent v-if="DETAILED_OUT_CHORD_DATA" :chart-data="DETAILED_OUT_CHORD_DATA" :chart-id="CHORD_DETAILED_OUT_SINGLEY_ID" :chart-config="CHORD_CONFIG" />
+                            <h2 class="subtitle has-text-centered"> Flusso studenti che vanno via </h2>
+                            <ChordDiagramComponent ref="DETAILED_CHORD_OUT_SY" v-if="DETAILED_OUT_CHORD_DATA" :chart-data="DETAILED_OUT_CHORD_DATA" :chart-id="CHORD_DETAILED_OUT_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
+                        </div>
+                    </div>
+
+                    <div class="columns">
+                        <div class="column">
+                            <h2 class="subtitle has-text-centered"> A conseguire quale titolo? </h2>
+                            <BarChartComponent v-if="DETAILED_BARCHART_DATA" :chart-data="DETAILED_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUT_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
                         </div>
                     </div>
 
@@ -310,7 +309,8 @@ export default {
             });
         },
         onYearSelection() {
-            this.$refs.MAP_OUTGOING.setRegionsAsActive(REGIONS_LIST);
+            this.$refs.MAP_OUTGOING_SY.setRegionsAsActive(REGIONS_LIST);
+            this.$refs.DETAILED_CHORD_OUT_SY.resetHiddenArchState();
             this.initializeSingleYearSearch();
 
             // c'è da forzare la selezione reset su tutte le regioni di outgoing
@@ -329,6 +329,7 @@ export default {
                 this.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
                 this.DETAILED_BARCHART_DATA = data.detailedBarChartData;
                 this.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
+
                 // this.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
                 //this.$refs.MAP_INCOMING.setRegionsAsActive(data.incomingList);
             }
