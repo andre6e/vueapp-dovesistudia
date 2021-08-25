@@ -63,8 +63,8 @@ export var BARCHART_OPTIONS = {
         fillOpacity: .8
     },
     columnTemplate: {
-        strokeWidth: 2,
-        strokeOpacity: 1
+        strokeWidth: 0,
+        strokeOpacity: 0
     }
 };
 
@@ -220,3 +220,10 @@ export var DETAILED_TAB_COLUMNS_CONFIG = [
         numeric: true
     }
 ]
+
+export var TYPOLOGY_LEGEND = {
+    "LAUREA" : "LAUREA",
+    "LAUREA MAGISTRALE": "L.M.",
+    "LAUREA MAGISTRALE CICLO UNICO": "LM C.U.",
+    "VECCHIO ORDINAMENTO": "V.O."
+}

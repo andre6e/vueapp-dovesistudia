@@ -27,7 +27,8 @@ import {
     DETAILED_TAB_NAME_FIELD,
     DETAILED_TAB_STUDENTS_FIELD,
     DETAILED_TAB_ITEMS_FIELD,
-    DETAILED_TAB_COLUMNS_CONFIG
+    DETAILED_TAB_COLUMNS_CONFIG,
+    TYPOLOGY_LEGEND
 } from '../constants/constants';
 
 var DATA = []
@@ -42,11 +43,7 @@ var elabGeneralTabData = function () {
         columns: TAB_CONFIG.columns
     };
 
-    // console.log(DATA)
-
-    // raggruppo per regione from e poi conto
     var outgoing_students = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM])
-    // raggruppo per regione to e poi conto
     var incoming_students = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO])
 
     outgoing_students.forEach(function (value, key) {
@@ -70,15 +67,21 @@ var sortStudentsDescending = function(list) {
     });
 };
 
-var elabGenaralTypologyChart = function () {
-    var typology = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
-    var toReturn = [];
+var getTypologyLegend = function(key) {
+    return TYPOLOGY_LEGEND[key];
+};
 
+var elabGenaralTypologyChart = function (outgoing_list_param) {
+    var outgoingFilteredData = outgoing_list_param ? 
+        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+
+    var typology = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
+    var toReturn = [];
 
     typology.forEach(function (value, key) {
         var obj = {};
 
-        obj[DEGREE_FIELD] = key;
+        obj[DEGREE_FIELD] = getTypologyLegend(key);
         obj[STUDENTS_FIELD] = value;
 
         toReturn.push(obj);
@@ -182,16 +185,11 @@ var elabMapData = function(outgoing_students, incoming_students) {
     }
 }
 
-// var getRegionFromProvince = function(province) {
-//     return PROVINCES_REGIONS_MAP[province];
-// }
-
 var elabProvincesData = function(outgoing_list_param) {
     var outgoingFilteredData = outgoing_list_param ? 
         DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
 
     var outgoing_region_provinces = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.PROVINCIA_FROM])
-
     var data = []
 
     outgoing_region_provinces.forEach(function (provinces, key) {
@@ -216,10 +214,8 @@ var elabProvincesData = function(outgoing_list_param) {
         data.push(REG_OBJ);
     });
 
-    data = sortStudentsDescending(data);
-
     return {
-        data: data,
+        data: sortStudentsDescending(data),
         columns: DETAILED_TAB_COLUMNS_CONFIG
     };
 }
@@ -230,11 +226,11 @@ var loadGeneralStatistics = function() {
     var elabResponse = {
         totalNumber: elabTotalIscritti(),
         generalTabData: elabGeneralTabData(),
-        generalBarChartData: elabGenaralTypologyChart(),
         generalChordData: elabGeneralChordData(),
         outMapData: mapData.outMapData,
         inMapData: mapData.inMapData,
         detailedTabData: elabProvincesData(),
+        detailedBarChartData: elabGenaralTypologyChart(),
     }
     
     return elabResponse;
@@ -245,7 +241,7 @@ var loadGeneralStatistics = function() {
 export async function getSingleYearData(year) {
     var data = await d3.csv('dataset/' + year + ".csv");
     DATA = data;
-    return loadGeneralStatistics()
+    return loadGeneralStatistics();
 }
 
 export function updateDetailedView(outgoing_list_param, incoming_list_param) {
@@ -253,6 +249,7 @@ export function updateDetailedView(outgoing_list_param, incoming_list_param) {
 
     var elabResponse = {
         detailedTabData: elabProvincesData(outgoing_list_param),
+        detailedBarChartData: elabGenaralTypologyChart(outgoing_list_param),
         outMapData: mapData.outMapData,
         inMapData: mapData.inMapData
     };

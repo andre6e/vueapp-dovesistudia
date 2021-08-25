@@ -20,7 +20,7 @@
                 </b-field>
             </div>
 
-            <div class="has-text-centered">
+            <div v-if="!isLoading" class="has-text-centered">
                 <p class="heading">Studenti immatricolati</p>
                 <p class="title"> {{totalNumber}} </p> 
             </div>
@@ -106,12 +106,9 @@
 
                         <div class="column" >
                             <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
-
                             
                             <ChoroplethMapComponent ref="MAP_INCOMING" @region-click="onRegionClick" :map-data="DETAILED_IN_MAP_DATA" v-if="DETAILED_IN_MAP_DATA" :chart-id="MAP_INCOMING_ID"/>
 
-                           
-                            
                         </div>
                     </div>
 
@@ -142,7 +139,7 @@
                         <div class="column">
                             <h2 class="subtitle has-text-centered"> Tipologia corso di studio </h2>
 
-                            <BarChartComponent v-if="GENERAL_BARCHART_DATA" :chart-data="GENERAL_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
+                            <BarChartComponent v-if="DETAILED_BARCHART_DATA" :chart-data="DETAILED_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="INCOMING_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/> 
                         </div>
                     </div>
         
@@ -210,6 +207,7 @@ import TableComponent from './TableComponent.vue'
 // import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
+// import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
 
 import { 
     MAP_INCOMING_ID,
@@ -243,7 +241,7 @@ export default {
         return {
             isIncomingProvincesInfoOpen: true,
             isGeneralStatisticSingleYearSearchOpen: false,
-            isDetailedStatisticSectionOpen: true,
+            isDetailedStatisticSectionOpen: false,
             isThirdBoxOpen: false,
             years: ACCADEMIC_YEARS,
             selectedYear: DEFAULT_SELECTED_YEAR,
@@ -251,7 +249,7 @@ export default {
             // REGIONS_MOCK_DATA,
             // REGIONS_MOCK_DATA2,
             GENERAL_TABLE_DATA: null,
-            GENERAL_BARCHART_DATA: null,
+            DETAILED_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
             DETAILED_OUT_MAP_DATA: null,
             DETAILED_IN_MAP_DATA: null,
@@ -288,12 +286,14 @@ export default {
                 console.log(data)
                 that.totalNumber = data.totalNumber;
                 that.GENERAL_TABLE_DATA = data.generalTabData;
-                that.GENERAL_BARCHART_DATA = data.generalBarChartData;
                 that.GENERAL_CHORD_DATA = data.generalChordData;
                 that.DETAILED_OUT_MAP_DATA = data.outMapData;
                 that.DETAILED_IN_MAP_DATA = data.inMapData;
                 that.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
+                that.DETAILED_BARCHART_DATA = data.detailedBarChartData;
 
+                //that.isGeneralStatisticSingleYearSearchOpen = true;
+                that.isDetailedStatisticSectionOpen = true;
                 that.isLoading = false;
             }).catch(function (err) {
                 console.log(err)
@@ -314,6 +314,7 @@ export default {
                 this.DETAILED_OUT_MAP_DATA = data.outMapData;
                 this.DETAILED_IN_MAP_DATA = data.inMapData;
                 this.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
+                this.DETAILED_BARCHART_DATA = data.detailedBarChartData;
                 this.$refs.MAP_INCOMING.setRegionsAsActive(data.incomingList);
             } else {
                 incoming = param.activatedRegions;
