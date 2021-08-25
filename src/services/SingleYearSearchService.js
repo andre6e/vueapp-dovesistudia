@@ -21,7 +21,13 @@ import {
     MIN_INC_COLOR,
     MAX_INC_COLOR,
     AMOUNT_FIELD,
-    ID_FIELD
+    ID_FIELD,
+    // provinces tab
+    //PROVINCES_REGIONS_MAP
+    DETAILED_TAB_NAME_FIELD,
+    DETAILED_TAB_STUDENTS_FIELD,
+    DETAILED_TAB_ITEMS_FIELD,
+    DETAILED_TAB_COLUMNS_CONFIG
 } from '../constants/constants';
 
 var DATA = []
@@ -56,12 +62,12 @@ var elabGeneralTabData = function () {
     return toReturn;
 };
 
-var sortTypologyDescending = function(list) {
-    return list.sort(function (a, b){
+var sortStudentsDescending = function(list) {
+    return list.sort(function (a, b) {
         if (a.students > b.students) return -1;
         else if (b.students > a.students) return 1;
         else return 0;
-    })
+    });
 };
 
 var elabGenaralTypologyChart = function () {
@@ -78,7 +84,7 @@ var elabGenaralTypologyChart = function () {
         toReturn.push(obj);
     });
 
-    return sortTypologyDescending(toReturn);
+    return sortStudentsDescending(toReturn);
 };
 
 var elabGeneralChordData = function() {
@@ -176,6 +182,48 @@ var elabMapData = function(outgoing_students, incoming_students) {
     }
 }
 
+// var getRegionFromProvince = function(province) {
+//     return PROVINCES_REGIONS_MAP[province];
+// }
+
+var elabProvincesData = function(outgoing_list_param) {
+    var outgoingFilteredData = outgoing_list_param ? 
+        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+
+    var outgoing_region_provinces = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.PROVINCIA_FROM])
+
+    var data = []
+
+    outgoing_region_provinces.forEach(function (provinces, key) {
+        var totalRegionStudents = 0;
+        var REG_OBJ = {};
+        var items = [];
+
+        provinces.forEach(function (value, key) {
+            totalRegionStudents += value;
+            var province_obj = {};
+
+            province_obj[DETAILED_TAB_NAME_FIELD] = key;
+            province_obj[DETAILED_TAB_STUDENTS_FIELD] = value;
+
+            items.push(province_obj)
+        });
+
+        REG_OBJ[DETAILED_TAB_NAME_FIELD] = key;
+        REG_OBJ[DETAILED_TAB_ITEMS_FIELD] = sortStudentsDescending(items);
+        REG_OBJ[DETAILED_TAB_STUDENTS_FIELD] = totalRegionStudents;
+
+        data.push(REG_OBJ);
+    });
+
+    data = sortStudentsDescending(data);
+
+    return {
+        data: data,
+        columns: DETAILED_TAB_COLUMNS_CONFIG
+    };
+}
+
 var loadGeneralStatistics = function() {
     var mapData = safeElabMapData(null, null, false)
 
@@ -185,12 +233,15 @@ var loadGeneralStatistics = function() {
         generalBarChartData: elabGenaralTypologyChart(),
         generalChordData: elabGeneralChordData(),
         outMapData: mapData.outMapData,
-        inMapData: mapData.inMapData
+        inMapData: mapData.inMapData,
+        detailedTabData: elabProvincesData(),
     }
     
     return elabResponse;
 }
 
+
+// API
 export async function getSingleYearData(year) {
     var data = await d3.csv('dataset/' + year + ".csv");
     DATA = data;
@@ -198,5 +249,13 @@ export async function getSingleYearData(year) {
 }
 
 export function updateDetailedView(outgoing_list_param, incoming_list_param) {
-    return safeElabMapData(outgoing_list_param, incoming_list_param, true);
+    var mapData = safeElabMapData(outgoing_list_param, incoming_list_param, true);
+
+    var elabResponse = {
+        detailedTabData: elabProvincesData(outgoing_list_param),
+        outMapData: mapData.outMapData,
+        inMapData: mapData.inMapData
+    };
+    
+    return elabResponse;
 }

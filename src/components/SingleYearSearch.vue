@@ -130,11 +130,11 @@
                                     class="panel-heading"
                                     role="button"
                                     aria-controls="contentIdForA11y2">
-                                    <strong> Da quali province arrivano </strong>
+                                    <strong> Suddivisione province di provenienza </strong>
                                 </div>
                                 
                                 <div class="panel-block">
-                                    <ProvincesTableView :provinces-data="PROVINCESTABLE_MOCK" />
+                                    <ProvincesTableView :provinces-data="DETAILED_PROVINCES_TAB_DATA" v-if="DETAILED_PROVINCES_TAB_DATA"/>
                                 </div>
                             </b-collapse>
                         </div>
@@ -210,7 +210,6 @@ import TableComponent from './TableComponent.vue'
 // import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import { PIECHART_DATA, PIECHART_CONF } from '../data/piechart_mock'
-import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
 
 import { 
     MAP_INCOMING_ID,
@@ -251,13 +250,12 @@ export default {
             totalNumber: 0,
             // REGIONS_MOCK_DATA,
             // REGIONS_MOCK_DATA2,
-            PROVINCESTABLE_MOCK,
-            PROVINCESTABLE_MOCK2,
             GENERAL_TABLE_DATA: null,
             GENERAL_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
             DETAILED_OUT_MAP_DATA: null,
             DETAILED_IN_MAP_DATA: null,
+            DETAILED_PROVINCES_TAB_DATA: null,
             isLoading: false,
             CHORD_CONFIG,
             BARCHART_OPTIONS,
@@ -294,6 +292,7 @@ export default {
                 that.GENERAL_CHORD_DATA = data.generalChordData;
                 that.DETAILED_OUT_MAP_DATA = data.outMapData;
                 that.DETAILED_IN_MAP_DATA = data.inMapData;
+                that.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
 
                 that.isLoading = false;
             }).catch(function (err) {
@@ -309,19 +308,16 @@ export default {
 
             if (param.chartId == this.MAP_OUTGOING_ID) {
                 outgoing = param.activatedRegions;
-                // incoming = this.$refs.MAP_INCOMING.getCurrentActivatedRegion();
-                //this.updateDetailedView(outgoing, null);
-
+                
                 let data = SingleYearSearchService.updateDetailedView(outgoing, null);
                 console.log(data)
                 this.DETAILED_OUT_MAP_DATA = data.outMapData;
                 this.DETAILED_IN_MAP_DATA = data.inMapData;
+                this.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
                 this.$refs.MAP_INCOMING.setRegionsAsActive(data.incomingList);
             } else {
                 incoming = param.activatedRegions;
-                // outgoing = this.$refs.MAP_OUTGOING.getCurrentActivatedRegion();
-                // this.updateDetailedView(null, incoming);
-
+                
                 let data = SingleYearSearchService.updateDetailedView(null, incoming);
                 console.log(data)
                 this.DETAILED_OUT_MAP_DATA = data.outMapData;
