@@ -1,5 +1,5 @@
 <template>
-    <div class="chartdiv min-height" id="chortglobaldiv"> </div>
+    <div class="chartdiv min-height" :id="chartId"> </div>
 </template>
 
 <script>
@@ -19,10 +19,13 @@ export default {
         chartConfig: {
             type: Object,
             default: () => ({})
+        },
+        chartId: {
+            type: String
         }
     },
     mounted() {
-        this.chart = am4core.create("chortglobaldiv", am4charts.ChordDiagram);
+        this.chart = am4core.create(this.chartId, am4charts.ChordDiagram);
         this.chart.logo.disabled = true;
 
         this.chart.nodes.template.clickable = false;

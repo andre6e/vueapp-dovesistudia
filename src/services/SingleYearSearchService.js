@@ -90,9 +90,12 @@ var elabGenaralTypologyChart = function (outgoing_list_param) {
     return sortStudentsDescending(toReturn);
 };
 
-var elabGeneralChordData = function() {
+var elabChordData = function(outgoing_list_param) {
+    var outgoingFilteredData = outgoing_list_param ? 
+        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+
     var toReturn = []
-    var from_to_map = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+    var from_to_map = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
 
     from_to_map.forEach(function (value, key) {
        value.forEach(function (subValue, subKey) {
@@ -220,40 +223,45 @@ var elabProvincesData = function(outgoing_list_param) {
     };
 }
 
-var elabOutgoingPieChartData = function(outgoing_list_param) {
-    var outgoingFilteredData = outgoing_list_param ? 
-        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
 
-    var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+// var elabOutgoingPieChartData = function(outgoing_list_param) {
+//     var outgoingFilteredData = outgoing_list_param ? 
+//         DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
 
-    var SAME_GRAND_TOTAL = 0;
-    var OTHER_GRAND_TOTAL = 0;
+//     var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
 
-    outgoing_students.forEach(function (value, key) {
-        var same_region = value.get(key);
-        var other_regions = 0;
+//     var SAME_GRAND_TOTAL = 0;
+//     var OTHER_GRAND_TOTAL = 0;
 
-        value.forEach(function (subValue, subKey) {
-            if (key != subKey) {
-                other_regions += subValue
-            }
-        });
+//     outgoing_students.forEach(function (value, key) {
+//         var same_region = value.get(key);
+//         var other_regions = 0;
 
-        SAME_GRAND_TOTAL += same_region;
-        OTHER_GRAND_TOTAL += other_regions;
-    });
+//         value.forEach(function (subValue, subKey) {
+//             if (key != subKey) {
+//                 other_regions += subValue
+//             }
+//         });
 
-    return [
-        {
-            "region" : "Stessa regione",
-            "students": SAME_GRAND_TOTAL
-        },
-        {
-            "region": "Altre regioni",
-            "students": OTHER_GRAND_TOTAL
-        }
-    ]
-}
+//         SAME_GRAND_TOTAL += same_region;
+//         OTHER_GRAND_TOTAL += other_regions;
+//     });
+
+//     return [
+//         {
+//             "region" : "Stessa regione",
+//             "students": SAME_GRAND_TOTAL
+//         },
+//         {
+//             "region": "Altre regioni",
+//             "students": OTHER_GRAND_TOTAL
+//         }
+//     ]
+// }
+
+// var elabDetailedOutTabData = function(outgoing_list_param) {
+
+// }
 
 var loadGeneralStatistics = function() {
     var mapData = safeElabMapData(null, null, false);
@@ -261,12 +269,12 @@ var loadGeneralStatistics = function() {
     var elabResponse = {
         totalNumber: elabTotalIscritti(),
         generalTabData: elabGeneralTabData(),
-        generalChordData: elabGeneralChordData(),
-        outMapData: mapData.outMapData,
+        generalChordData: elabChordData(),
+        detailedOutMapData: mapData.outMapData,
         inMapData: mapData.inMapData,
         detailedTabData: elabProvincesData(),
         detailedBarChartData: elabGenaralTypologyChart(),
-        outGoingPieChartData: elabOutgoingPieChartData()
+        detailedOutChordData: elabChordData()
     }
     
     return elabResponse;
@@ -286,9 +294,9 @@ export function updateDetailedView(outgoing_list_param, incoming_list_param) {
     var elabResponse = {
         detailedTabData: elabProvincesData(outgoing_list_param),
         detailedBarChartData: elabGenaralTypologyChart(outgoing_list_param),
-        outMapData: mapData.outMapData,
+        detailedOutMapData: mapData.outMapData,
         inMapData: mapData.inMapData,
-        outGoingPieChartData: elabOutgoingPieChartData(outgoing_list_param)
+        detailedOutChordData: elabChordData(outgoing_list_param)
     };
     
     return elabResponse;
