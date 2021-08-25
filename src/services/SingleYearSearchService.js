@@ -289,9 +289,36 @@ var elabDetailedChordData = function(outgoing_list_param) {
 //     ]
 // }
 
-// var elabDetailedOutTabData = function(outgoing_list_param) {
+var elabDetailedPercentageData = function (outgoing_list_param) {
+    var outgoingFilteredData = outgoing_list_param ? 
+        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
 
-// }
+    var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+
+    var SAME_GRAND_TOTAL = 0;
+    var OTHER_GRAND_TOTAL = 0;
+
+    outgoing_students.forEach(function (value, key) {
+        var same_region = value.get(key);
+        var other_regions = 0;
+
+        value.forEach(function (subValue, subKey) {
+            if (key != subKey) {
+                other_regions += subValue
+            }
+        });
+
+        SAME_GRAND_TOTAL += same_region;
+        OTHER_GRAND_TOTAL += other_regions;
+    });
+
+    return {
+        samePercentage: Math.round((SAME_GRAND_TOTAL / (SAME_GRAND_TOTAL + OTHER_GRAND_TOTAL)) * 100),
+        othersPercentage: Math.round((OTHER_GRAND_TOTAL / (SAME_GRAND_TOTAL + OTHER_GRAND_TOTAL)) * 100),
+        sameGrandTotal: SAME_GRAND_TOTAL,
+        othersGrandTotal: OTHER_GRAND_TOTAL
+    }
+}
 
 var loadGeneralStatistics = function() {
     var mapData = safeElabMapData(null, null, false);
@@ -304,7 +331,8 @@ var loadGeneralStatistics = function() {
         inMapData: mapData.inMapData,
         detailedTabData: elabProvincesData(),
         detailedBarChartData: elabGenaralTypologyChart(),
-        detailedOutChordData: elabDetailedChordData()
+        detailedOutChordData: elabDetailedChordData(),
+        detailedOutPercentage: elabDetailedPercentageData()
     }
     
     return elabResponse;
@@ -326,7 +354,8 @@ export function updateDetailedView(outgoing_list_param, incoming_list_param) {
         detailedBarChartData: elabGenaralTypologyChart(outgoing_list_param),
         detailedOutMapData: mapData.outMapData,
         inMapData: mapData.inMapData,
-        detailedOutChordData: elabDetailedChordData(outgoing_list_param)
+        detailedOutChordData: elabDetailedChordData(outgoing_list_param),
+        detailedOutPercentage: elabDetailedPercentageData(outgoing_list_param)
     };
     
     return elabResponse;

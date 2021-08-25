@@ -19,11 +19,6 @@
                     </b-select>
                 </b-field>
             </div>
-
-            <div v-if="!isLoading" class="has-text-centered">
-                <p class="heading">Studenti immatricolati</p>
-                <p class="title"> {{totalNumber}} </p> 
-            </div>
         </section>
 
         <!-- STATISTICHE GENERALI SECTION -->
@@ -48,6 +43,11 @@
                 </div>
 
                 <div class="my-card-content">
+                    <div v-if="!isLoading" class="has-text-centered margin-10-tb">
+                        <p class="heading">Studenti immatricolati</p>
+                        <p class="title"> {{totalNumber}} </p> 
+                    </div>
+
                     <div class="columns">
                         <div class="column is-one-third">
                             <p class=" has-text-centered"> Informazioni studenti immatricolati </p>
@@ -78,6 +78,14 @@
         <!-- STATISTICHE DETAILED INTERATTIVE SECTION-->
         <section class="margin-10-tb">
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedStatisticSectionOpen">
+
+                <div class="has-text-centered">
+                    <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedInfo()}} </h2>
+                    
+                    <div class="has-text-centered">
+                        <b-button @click="resetDetailedOutSelection"> Reset selezione </b-button>
+                    </div>
+                </div>
                 
                 <div
                     slot="trigger" 
@@ -98,12 +106,22 @@
 
                 <div class="my-card-content" >
                     <div class="columns">
-                        <div class="column">
+                        <div class="column is-two-third">
                             <h2 class="subtitle has-text-centered"> Da quali regioni si va via? </h2>
-
                             <ChoroplethMapComponent ref="MAP_OUTGOING_SY" @region-click="onRegionClick" :map-data="DETAILED_OUT_MAP_DATA" v-if="DETAILED_OUT_MAP_DATA" :chart-id="MAP_OUTGOING_ID"/>
                         </div>
                         
+                        <div class="column is-one-third">
+                            <h2 class="subtitle has-text-centered"> Verso dove ci si sposta? </h2>
+
+                            <div class="has-text-centered">
+                                <p class="heading"> Verso la stessa regione </p>
+                                <p class="title"> {{DETAILED_OUT_SAME_GRAND_TOTAL}} ({{DETAILED_OUT_SAME_PERCENTAGE}}%) </p> 
+
+                                <p class="heading"> Verso altre regioni</p>
+                                <p class="title"> {{DETAILED_OUT_OTHERS_GRAND_TOTAL}} ({{DETAILED_OUT_OTHERS_PERCENTAGE}}%) </p> 
+                            </div>
+                        </div>
                        
                     <!--
                         <div class="column">
@@ -259,11 +277,16 @@ export default {
             DETAILED_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
             DETAILED_OUT_MAP_DATA: null,
+            DETAILED_OUT_MAP_CURRENT_SELECTION: REGIONS_LIST,
             // DETAILED_IN_MAP_DATA: null,
             DETAILED_PROVINCES_TAB_DATA: null,
             // OUTGOING_PIE_DATA: null,
             DETAILED_OUT_TABLE_DATA: null,
             DETAILED_OUT_CHORD_DATA: null,
+            DETAILED_OUT_SAME_PERCENTAGE : null,
+            DETAILED_OUT_SAME_GRAND_TOTAL : null,
+            DETAILED_OUT_OTHERS_PERCENTAGE: null,
+            DETAILED_OUT_OTHERS_GRAND_TOTAL: null,
             isLoading: false,
             CHORD_CONFIG,
             BARCHART_OPTIONS,
@@ -300,6 +323,10 @@ export default {
                 that.DETAILED_BARCHART_DATA = data.detailedBarChartData;
                 // that.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
                 that.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
+                that.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
+                that.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
+                that.DETAILED_OUT_SAME_PERCENTAGE = data.detailedOutPercentage.samePercentage;
+                that.DETAILED_OUT_OTHERS_PERCENTAGE = data.detailedOutPercentage.othersPercentage;
 
                 //that.isGeneralStatisticSingleYearSearchOpen = true;
                 that.isDetailedStatisticSectionOpen = true;
@@ -309,30 +336,63 @@ export default {
             });
         },
         onYearSelection() {
-            this.$refs.MAP_OUTGOING_SY.setRegionsAsActive(REGIONS_LIST);
-            this.$refs.DETAILED_CHORD_OUT_SY.resetHiddenArchState();
+            this.DETAILED_OUT_MAP_CURRENT_SELECTION = REGIONS_LIST;
+            this.forceDetailedOutComponentReset();
             this.initializeSingleYearSearch();
-
-            // c'è da forzare la selezione reset su tutte le regioni di outgoing
-            
+        },
+        updateDetailedOutSectionData() {
+            let data = SingleYearSearchService.updateDetailedView(this.DETAILED_OUT_MAP_CURRENT_SELECTION, null);
+            console.log(data)
+            this.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
+            this.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
+            this.DETAILED_BARCHART_DATA = data.detailedBarChartData;
+            this.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
+            this.DETAILED_OUT_SAME_PERCENTAGE = data.detailedOutPercentage.samePercentage;
+            this.DETAILED_OUT_OTHERS_PERCENTAGE = data.detailedOutPercentage.othersPercentage;
+            this.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
+            this.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
         },
         onRegionClick(param) {
-            let outgoing;
-
             if (param.chartId == this.MAP_OUTGOING_ID) {
-                outgoing = param.activatedRegions;
-                
-                let data = SingleYearSearchService.updateDetailedView(outgoing, null);
-                console.log(data)
-                this.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
-                //this.DETAILED_IN_MAP_DATA = data.inMapData;
-                this.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
-                this.DETAILED_BARCHART_DATA = data.detailedBarChartData;
-                this.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
-
-                // this.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
-                //this.$refs.MAP_INCOMING.setRegionsAsActive(data.incomingList);
+                this.DETAILED_OUT_MAP_CURRENT_SELECTION = param.activatedRegions;
+                this.updateDetailedOutSectionData();
             }
+        },
+        forceDetailedOutComponentReset() {
+            this.$refs.MAP_OUTGOING_SY.setRegionsAsActive(this.DETAILED_OUT_MAP_CURRENT_SELECTION);
+            this.$refs.DETAILED_CHORD_OUT_SY.resetHiddenArchState();
+        },
+        resetDetailedOutSelection () {
+            this.DETAILED_OUT_MAP_CURRENT_SELECTION = REGIONS_LIST;
+            this.forceDetailedOutComponentReset();
+            this.updateDetailedOutSectionData();
+        },
+        formatCurrentRegionsName() {
+            var str = "";
+
+            for (var i=0; i<this.DETAILED_OUT_MAP_CURRENT_SELECTION.length;i++) {
+                str += this.DETAILED_OUT_MAP_CURRENT_SELECTION[i];
+
+                if (i != this.DETAILED_OUT_MAP_CURRENT_SELECTION.length - 1) {
+                    str += ", "
+                }
+            }
+
+            return str;
+        },
+        getDetailedInfo() {
+            var base_str = "Stai analizzando gli studenti che vanno via ";
+
+            
+            if (this.DETAILED_OUT_MAP_CURRENT_SELECTION.length == REGIONS_LIST.length) {
+                base_str += "da tutte le regioni";
+            } else if (this.DETAILED_OUT_MAP_CURRENT_SELECTION.length == 1) {
+                base_str += "dalla regione " + this.DETAILED_OUT_MAP_CURRENT_SELECTION[0];
+            } else {
+                base_str += "dalle regioni " + this.formatCurrentRegionsName()
+            }
+
+            return base_str;
         }
     }
 }
