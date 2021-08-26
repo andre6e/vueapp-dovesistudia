@@ -27,15 +27,69 @@ import {
     DETAILED_TAB_NAME_FIELD,
     DETAILED_TAB_STUDENTS_FIELD,
     DETAILED_TAB_ITEMS_FIELD,
+    DETAILED_TAB_PERCENTAGE_FIELD,
     DETAILED_TAB_COLUMNS_CONFIG,
     TYPOLOGY_LEGEND
 } from '../constants/constants';
 
 var DATA = []
 
+// HELPERS
+
+var sortStudentsDescending = function(list) {
+    return list.sort(function (a, b) {
+        if (a.students > b.students) return -1;
+        else if (b.students > a.students) return 1;
+        else return 0;
+    });
+};
+
+var getTypologyLegend = function(key) {
+    return TYPOLOGY_LEGEND[key];
+};
+
+// SHARED ELAB FUNCTIONS
+
+var elabChordData = function(outgoing_list_param) {
+    // il parametro mi serve per capire se sto agendo per il chord del general o delle detailed statistics
+    var completeData = [];
+    var noAutoArchsData = [];
+
+    var from_to_map = null;
+    var outgoingFilteredData = [];
+
+    if (outgoing_list_param) {
+        outgoingFilteredData = DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])});
+    }
+    
+    from_to_map = d3.rollup(outgoing_list_param ? outgoingFilteredData: DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO]);
+
+    from_to_map.forEach(function (value, key) {
+        value.forEach(function (subValue, subKey) {
+            var obj = {}
+            obj[FROM_CHORD_FIELD] = key
+            obj[TO_CHORD_FIELD] = subKey
+            obj[VALUE_CHORD_FIELD] = subValue
+
+            completeData.push(obj);
+
+            if (key != subKey && outgoing_list_param) {
+                noAutoArchsData.push(obj)
+            }
+        });
+    });
+
+    return {
+        completeData: completeData,
+        noAutoArchsData: noAutoArchsData
+    };
+};
+
+// GENERAL SECTION
+
 var elabTotalIscritti = function () {
     return d3.sum(DATA, d =>  d[CSV_KEYS.ISCRITTI]);
-}
+};
 
 var elabGeneralTabData = function () {
     var toReturn = {
@@ -59,54 +113,7 @@ var elabGeneralTabData = function () {
     return toReturn;
 };
 
-var sortStudentsDescending = function(list) {
-    return list.sort(function (a, b) {
-        if (a.students > b.students) return -1;
-        else if (b.students > a.students) return 1;
-        else return 0;
-    });
-};
-
-var getTypologyLegend = function(key) {
-    return TYPOLOGY_LEGEND[key];
-};
-
-var elabGenaralTypologyChart = function (outgoing_list_param) {
-    var outgoingFilteredData = outgoing_list_param ? 
-        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
-
-    var typology = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
-    var toReturn = [];
-
-    typology.forEach(function (value, key) {
-        var obj = {};
-
-        obj[DEGREE_FIELD] = getTypologyLegend(key);
-        obj[STUDENTS_FIELD] = value;
-
-        toReturn.push(obj);
-    });
-
-    return sortStudentsDescending(toReturn);
-};
-
-var elabGeneralChordData = function() {
-    var toReturn = []
-    var from_to_map = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
-
-    from_to_map.forEach(function (value, key) {
-       value.forEach(function (subValue, subKey) {
-            var obj = {}
-            obj[FROM_CHORD_FIELD] = key
-            obj[TO_CHORD_FIELD] = subKey
-            obj[VALUE_CHORD_FIELD] = subValue
-
-            toReturn.push(obj)
-        });
-    });
-
-    return { completeData: toReturn };
-};
+// DETAILED OUT SECTION
 
 var safeElabMapData = function(outgoing_list_param, incoming_list_param, updatingDetailedView) {
     var outgoing_students = null;
@@ -183,33 +190,40 @@ var elabMapData = function(outgoing_students, incoming_students) {
         outgoingList: outKeyList,
         incomingList: inKeyList
     }
-}
+};
 
-var elabProvincesData = function(outgoing_list_param) {
+var elabDetailedOutTabData = function(outgoing_list_param) {
     var outgoingFilteredData = outgoing_list_param ? 
         DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
 
-    var outgoing_region_provinces = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.PROVINCIA_FROM])
     var data = []
 
-    outgoing_region_provinces.forEach(function (provinces, key) {
+    var from_to_map = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO]);
+    var total_outgoing = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM]);
+
+    from_to_map.forEach(function (out_regs, key) {
         var totalRegionStudents = 0;
         var REG_OBJ = {};
         var items = [];
 
-        provinces.forEach(function (value, key) {
+        var GRAND_TOTAL_OUTGOING = total_outgoing.get(key);
+
+        out_regs.forEach(function (value, subKey) {
             totalRegionStudents += value;
-            var province_obj = {};
+            var out_reg_obj = {};
 
-            province_obj[DETAILED_TAB_NAME_FIELD] = key;
-            province_obj[DETAILED_TAB_STUDENTS_FIELD] = value;
+            out_reg_obj[DETAILED_TAB_NAME_FIELD] = subKey;
+            out_reg_obj[DETAILED_TAB_STUDENTS_FIELD] = value;
+            out_reg_obj[DETAILED_TAB_PERCENTAGE_FIELD] = parseFloat((value / GRAND_TOTAL_OUTGOING) * 100).toFixed(3) + "%"
+            out_reg_obj["vueKey"] = key + subKey
 
-            items.push(province_obj)
+            items.push(out_reg_obj)
         });
 
         REG_OBJ[DETAILED_TAB_NAME_FIELD] = key;
         REG_OBJ[DETAILED_TAB_ITEMS_FIELD] = sortStudentsDescending(items);
         REG_OBJ[DETAILED_TAB_STUDENTS_FIELD] = totalRegionStudents;
+        REG_OBJ[DETAILED_TAB_PERCENTAGE_FIELD] = "100%"
 
         data.push(REG_OBJ);
     });
@@ -218,40 +232,106 @@ var elabProvincesData = function(outgoing_list_param) {
         data: sortStudentsDescending(data),
         columns: DETAILED_TAB_COLUMNS_CONFIG
     };
-}
+};
 
-var elabDetailedChordData = function(outgoing_list_param) {
-    outgoing_list_param = outgoing_list_param ? outgoing_list_param : REGIONS_LIST;
-    var outgoingFilteredData = DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])});
+var elabDetailedOutTypologyChart = function (outgoing_list_param) {
+    var outgoingFilteredData = outgoing_list_param ? 
+        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
 
-    var completeData = [];
-    var noAutoArchsData = [];
+    var typology = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
+    var toReturn = [];
 
-    var from_to_map = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+    typology.forEach(function (value, key) {
+        var obj = {};
 
-    console.log(from_to_map)
+        obj[DEGREE_FIELD] = getTypologyLegend(key);
+        obj[STUDENTS_FIELD] = value;
 
-    from_to_map.forEach(function (value, key) {
+        toReturn.push(obj);
+    });
+
+    return sortStudentsDescending(toReturn);
+};
+
+var elabDetailedPercentageData = function (outgoing_list_param) {
+    var outgoingFilteredData = outgoing_list_param ? 
+        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+
+    var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+
+    var SAME_GRAND_TOTAL = 0;
+    var OTHER_GRAND_TOTAL = 0;
+
+    outgoing_students.forEach(function (value, key) {
+        var same_region = value.get(key);
+        var other_regions = 0;
 
         value.forEach(function (subValue, subKey) {
-            var obj = {}
-            obj[FROM_CHORD_FIELD] = key
-            obj[TO_CHORD_FIELD] = subKey
-            obj[VALUE_CHORD_FIELD] = subValue
-
-            completeData.push(obj);
-
             if (key != subKey) {
-                noAutoArchsData.push(obj)
+                other_regions += subValue
             }
         });
+
+        SAME_GRAND_TOTAL += same_region;
+        OTHER_GRAND_TOTAL += other_regions;
     });
 
     return {
-        completeData: completeData,
-        noAutoArchsData: noAutoArchsData
+        samePercentage: Math.round((SAME_GRAND_TOTAL / (SAME_GRAND_TOTAL + OTHER_GRAND_TOTAL)) * 100),
+        othersPercentage: Math.round((OTHER_GRAND_TOTAL / (SAME_GRAND_TOTAL + OTHER_GRAND_TOTAL)) * 100),
+        sameGrandTotal: SAME_GRAND_TOTAL,
+        othersGrandTotal: OTHER_GRAND_TOTAL
+    }
+};
+
+// LOADERS
+
+var loadGeneralStatistics = function() {
+    var mapData = safeElabMapData(null, null, false);
+
+    var elabResponse = {
+        totalNumber: elabTotalIscritti(),
+        generalTabData: elabGeneralTabData(),
+        generalChordData: elabChordData(),
+        detailedOutMapData: mapData.outMapData,
+        inMapData: mapData.inMapData,
+        detailedOutTabData: elabDetailedOutTabData(),
+        detailedOutBarChartData: elabDetailedOutTypologyChart(),
+        detailedOutChordData: elabChordData(REGIONS_LIST),
+        detailedOutPercentage: elabDetailedPercentageData()
+    }
+    
+    return elabResponse;
+};
+
+var loadDetailedOutStatistics = function(outgoing_list_param, incoming_list_param) {
+    var mapData = safeElabMapData(outgoing_list_param, incoming_list_param, true);
+
+    var elabResponse = {
+        detailedOutTabData: elabDetailedOutTabData(outgoing_list_param),
+        detailedOutBarChartData: elabDetailedOutTypologyChart(outgoing_list_param),
+        detailedOutMapData: mapData.outMapData,
+        inMapData: mapData.inMapData,
+        detailedOutChordData: elabChordData(outgoing_list_param),
+        detailedOutPercentage: elabDetailedPercentageData(outgoing_list_param)
     };
+    
+    return elabResponse;
+};
+
+// API
+export async function getSingleYearData(year) {
+    var data = await d3.csv('dataset/' + year + ".csv");
+    DATA = data;
+    return loadGeneralStatistics();
 }
+
+export function updateDetailedView(outgoing_list_param, incoming_list_param) {
+    return loadDetailedOutStatistics(outgoing_list_param, incoming_list_param);
+}
+
+
+// BACKUPS
 
 
 // var elabOutgoingPieChartData = function(outgoing_list_param) {
@@ -288,75 +368,3 @@ var elabDetailedChordData = function(outgoing_list_param) {
 //         }
 //     ]
 // }
-
-var elabDetailedPercentageData = function (outgoing_list_param) {
-    var outgoingFilteredData = outgoing_list_param ? 
-        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
-
-    var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
-
-    var SAME_GRAND_TOTAL = 0;
-    var OTHER_GRAND_TOTAL = 0;
-
-    outgoing_students.forEach(function (value, key) {
-        var same_region = value.get(key);
-        var other_regions = 0;
-
-        value.forEach(function (subValue, subKey) {
-            if (key != subKey) {
-                other_regions += subValue
-            }
-        });
-
-        SAME_GRAND_TOTAL += same_region;
-        OTHER_GRAND_TOTAL += other_regions;
-    });
-
-    return {
-        samePercentage: Math.round((SAME_GRAND_TOTAL / (SAME_GRAND_TOTAL + OTHER_GRAND_TOTAL)) * 100),
-        othersPercentage: Math.round((OTHER_GRAND_TOTAL / (SAME_GRAND_TOTAL + OTHER_GRAND_TOTAL)) * 100),
-        sameGrandTotal: SAME_GRAND_TOTAL,
-        othersGrandTotal: OTHER_GRAND_TOTAL
-    }
-}
-
-var loadGeneralStatistics = function() {
-    var mapData = safeElabMapData(null, null, false);
-
-    var elabResponse = {
-        totalNumber: elabTotalIscritti(),
-        generalTabData: elabGeneralTabData(),
-        generalChordData: elabGeneralChordData(),
-        detailedOutMapData: mapData.outMapData,
-        inMapData: mapData.inMapData,
-        detailedTabData: elabProvincesData(),
-        detailedBarChartData: elabGenaralTypologyChart(),
-        detailedOutChordData: elabDetailedChordData(),
-        detailedOutPercentage: elabDetailedPercentageData()
-    }
-    
-    return elabResponse;
-}
-
-
-// API
-export async function getSingleYearData(year) {
-    var data = await d3.csv('dataset/' + year + ".csv");
-    DATA = data;
-    return loadGeneralStatistics();
-}
-
-export function updateDetailedView(outgoing_list_param, incoming_list_param) {
-    var mapData = safeElabMapData(outgoing_list_param, incoming_list_param, true);
-
-    var elabResponse = {
-        detailedTabData: elabProvincesData(outgoing_list_param),
-        detailedBarChartData: elabGenaralTypologyChart(outgoing_list_param),
-        detailedOutMapData: mapData.outMapData,
-        inMapData: mapData.inMapData,
-        detailedOutChordData: elabDetailedChordData(outgoing_list_param),
-        detailedOutPercentage: elabDetailedPercentageData(outgoing_list_param)
-    };
-    
-    return elabResponse;
-}

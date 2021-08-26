@@ -205,6 +205,7 @@ export var ID_FIELD = "id"
 export var DETAILED_TAB_NAME_FIELD = "name"
 export var DETAILED_TAB_STUDENTS_FIELD = "students"
 export var DETAILED_TAB_ITEMS_FIELD = "items"
+export var DETAILED_TAB_PERCENTAGE_FIELD = "percentage"
 export var DETAILED_TAB_COLUMNS_CONFIG = [
     {
         field: DETAILED_TAB_NAME_FIELD,
@@ -215,6 +216,11 @@ export var DETAILED_TAB_COLUMNS_CONFIG = [
         label: 'Studenti',
         width: '40',
         numeric: true
+    },
+    {
+        field: DETAILED_TAB_PERCENTAGE_FIELD,
+        label: '%',
+        width: '10'
     }
 ]
 

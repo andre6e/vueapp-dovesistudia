@@ -1,17 +1,18 @@
 <template>
     <div class="myb-table-wrapper">
         <b-table detailed 
-            :data="provincesData.data" 
-            :columns="provincesData.columns" 
+            :data="chartData.data" 
+            :columns="chartData.columns" 
             detail-key="name" 
             custom-detail-row 
             :paginated="true"
             :per-page="5">
             <template slot="detail" slot-scope="props">
-                <tr v-for="item in props.row.items" :key="item.name">
+                <tr v-for="item in props.row.items" :key="item.vueKey">
                     <td> </td>
                     <td > {{item.name}} </td>
                     <td class="has-text-right"> {{item.students}} </td>
+                    <td class="has-text-right"> {{item.percentage}} </td>
                 </tr>
             </template>
         </b-table>
@@ -21,9 +22,9 @@
 
 <script>
 export default {
-    name: 'ProvincesTableView',
+    name: 'DetailedTableView',
     props: {
-        provincesData: {
+        chartData: {
             type: Object,
             default: () => ({})
         }

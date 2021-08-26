@@ -134,23 +134,23 @@
 
                     <div class="columns">
                         <div class="column is-one-third">
-                            <h2 class="subtitle has-text-centered"> Da quali province si va via? </h2>
+                            <h2 class="subtitle has-text-centered"> Flusso studenti dettagliato </h2>
 
                             <b-collapse
                                 aria-id="contentIdForA11y2"
                                 class="panel"
                                 animation="slide"
-                                v-model="isIncomingProvincesInfoOpen">
+                                v-model="isDetailedOutTabInfoOpen">
                                 <div
                                     slot="trigger"
                                     class="panel-heading"
                                     role="button"
                                     aria-controls="contentIdForA11y2">
-                                    <strong> Suddivisione province di provenienza </strong>
+                                    <strong> Suddivisione regione partenza su regioni di destinazione </strong>
                                 </div>
                                 
                                 <div class="panel-block">
-                                    <ProvincesTableView :provinces-data="DETAILED_PROVINCES_TAB_DATA" v-if="DETAILED_PROVINCES_TAB_DATA"/>
+                                    <DetailedTableView :chart-data="DETAILED_OUT_TAB_DATA" v-if="DETAILED_OUT_TAB_DATA"/>
                                 </div>
                             </b-collapse>
                         </div>
@@ -164,7 +164,7 @@
                     <div class="columns">
                         <div class="column">
                             <h2 class="subtitle has-text-centered"> A conseguire quale titolo? </h2>
-                            <BarChartComponent v-if="DETAILED_BARCHART_DATA" :chart-data="DETAILED_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUT_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
+                            <BarChartComponent v-if="DETAILED_OUT_BARCHART_DATA" :chart-data="DETAILED_OUT_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUT_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
                         </div>
                     </div>
 
@@ -227,7 +227,7 @@ import ChordDiagramComponent from './ChordDiagramComponent.vue'
 import BarChartComponent from './BarChartComponent.vue'
 // import TrendLineComponent from './TrendLineComponent.vue'
 //import PieChartComponent from './PieChartComponent.vue'
-import ProvincesTableView from './ProvincesTableView.vue'
+import DetailedTableView from './DetailedTableView.vue'
 import TableComponent from './TableComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
@@ -258,13 +258,13 @@ export default {
         BarChartComponent,
         // TrendLineComponent,
         // PieChartComponent,
-        ProvincesTableView,
+        DetailedTableView,
         TableComponent,
         // MultiSelectComponent
     },
     data: function() {
         return {
-            isIncomingProvincesInfoOpen: true,
+            isDetailedOutTabInfoOpen: true,
             isGeneralStatisticSingleYearSearchOpen: false,
             isDetailedStatisticSectionOpen: false,
             isThirdBoxOpen: false,
@@ -274,12 +274,12 @@ export default {
             // REGIONS_MOCK_DATA,
             // REGIONS_MOCK_DATA2,
             GENERAL_TABLE_DATA: null,
-            DETAILED_BARCHART_DATA: null,
+            DETAILED_OUT_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
             DETAILED_OUT_MAP_DATA: null,
             DETAILED_OUT_MAP_CURRENT_SELECTION: REGIONS_LIST,
             // DETAILED_IN_MAP_DATA: null,
-            DETAILED_PROVINCES_TAB_DATA: null,
+            DETAILED_OUT_TAB_DATA: null,
             // OUTGOING_PIE_DATA: null,
             DETAILED_OUT_TABLE_DATA: null,
             DETAILED_OUT_CHORD_DATA: null,
@@ -319,8 +319,8 @@ export default {
                 that.GENERAL_CHORD_DATA = data.generalChordData;
                 that.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
                 // that.DETAILED_IN_MAP_DATA = data.inMapData;
-                that.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
-                that.DETAILED_BARCHART_DATA = data.detailedBarChartData;
+                that.DETAILED_OUT_TAB_DATA = data.detailedOutTabData;
+                that.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
                 // that.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
                 that.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
                 that.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
@@ -344,8 +344,8 @@ export default {
             let data = SingleYearSearchService.updateDetailedView(this.DETAILED_OUT_MAP_CURRENT_SELECTION, null);
             console.log(data)
             this.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
-            this.DETAILED_PROVINCES_TAB_DATA = data.detailedTabData;
-            this.DETAILED_BARCHART_DATA = data.detailedBarChartData;
+            this.DETAILED_OUT_TAB_DATA = data.detailedOutTabData;
+            this.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
             this.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
             this.DETAILED_OUT_SAME_PERCENTAGE = data.detailedOutPercentage.samePercentage;
             this.DETAILED_OUT_OTHERS_PERCENTAGE = data.detailedOutPercentage.othersPercentage;
