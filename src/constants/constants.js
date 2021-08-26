@@ -22,7 +22,7 @@ export var CSV_KEYS = {
 
 // GENERAL STATISTICS SINGLE SEARCH
 // Tab
-export var OUTGOING_STUDENTS_FIELD = 'outgoing_students'
+export var OUTGOING_STUDENTS_FIELD = 'students'
 export var INCOMING_STUDENTS_FIELD = 'incoming_students'
 export var NAME_FIELD = 'name'
 export var TAB_CONFIG = {
@@ -215,7 +215,8 @@ export var DETAILED_TAB_COLUMNS_CONFIG = [
         field: DETAILED_TAB_STUDENTS_FIELD,
         label: 'Studenti',
         width: '40',
-        numeric: true
+        numeric: true,
+        sortable: true
     },
     {
         field: DETAILED_TAB_PERCENTAGE_FIELD,

@@ -188,7 +188,7 @@ var elabMapData = function(outgoing_students, incoming_students) {
         outMapData: toReturnOut,
         inMapData: toReturnIn,
         outgoingList: outKeyList,
-        incomingList: inKeyList
+        incomingList: inKeyList,
     }
 };
 
@@ -196,6 +196,7 @@ var elabDetailedOutTabData = function(outgoing_list_param) {
     var outgoingFilteredData = outgoing_list_param ? 
         DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
 
+    // var outgoing_region_provinces = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.PROVINCIA_FROM])
     var data = []
 
     var from_to_map = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO]);

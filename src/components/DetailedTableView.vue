@@ -6,7 +6,9 @@
             detail-key="name" 
             custom-detail-row 
             :paginated="true"
-            :per-page="5">
+            default-sort="students"
+            default-sort-direction="desc"
+            :per-page="10">
             <template slot="detail" slot-scope="props">
                 <tr v-for="item in props.row.items" :key="item.vueKey">
                     <td> </td>

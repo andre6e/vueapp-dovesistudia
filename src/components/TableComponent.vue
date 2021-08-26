@@ -1,6 +1,6 @@
 <template>
     <div class="myb-table-wrapper">
-        <b-table :data="chartData.data" :columns="chartData.columns" :paginated="true" :per-page="10" default-sort="outgoing_students" default-sort-direction="desc"> </b-table>
+        <b-table :data="chartData.data" :columns="chartData.columns" :paginated="true" :per-page="10" default-sort="students" default-sort-direction="desc"> </b-table>
     </div>
 </template>
 

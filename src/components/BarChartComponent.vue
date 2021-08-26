@@ -97,6 +97,7 @@ export default {
 
             var legend = new am4charts.Legend();
             chart.legend = legend;
+            legend.itemContainers.template.togglable = false;
 
 
             var legendContainer = am4core.create("legenddiv", am4core.Container);

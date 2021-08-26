@@ -21,9 +21,21 @@
       </div>
       -->
 
-    </l-map>
-  
+      <div class="my-info-container">
+        <span> Studenti uscenti </span>
+        
+        <div class="gradient">
+          <span v-for="step in gradientSteps" :key="step" class="grad-step" :style="{'background-color': step}"> </span>
+        </div>
 
+        <div class="domain-values">
+          <span class="domain-min"> {{mapDataCopy.min}} </span>
+          <span class="domain-med"> {{ MEDIAN_VALUE }} </span>
+          <span class="domain-max"> {{mapDataCopy.max}} </span>
+        </div>
+      </div>
+
+    </l-map>
   </div>
 </template>
 
@@ -44,7 +56,7 @@ export default {
     },
     chartId: {
       type: String,
-    },
+    }
   },
   data() {
     // initializing working data and map colors
@@ -62,8 +74,13 @@ export default {
       italyGeojson,
       GEOJSON,
       geoJsonOptions: this.getGeoJsonOptions(),
-      firstFocus: false
+      firstFocus: false,
+      gradientSteps: [],
+      MEDIAN_VALUE: null
     };
+  },
+  mounted() {
+    this.updateGradientColor();
   },
   methods: {
     getGeoJsonOptions() {
@@ -168,6 +185,7 @@ export default {
       this.updateWorkingDataStatus();
       this.updateMinAndMaxValue();
       this.updateAllRegionsColor();
+      this.updateGradientColor();
 
       // emit for parent component
       this.$emit('region-click', {
@@ -218,6 +236,31 @@ export default {
         }
       }
     },
+    updateGradientColor() {
+      var linear = d3
+          .scaleLinear()
+          .domain([this.mapDataCopy.min, this.mapDataCopy.max])
+          .range([this.mapData.min_color, this.mapData.max_color]);
+
+      this.gradientSteps = []
+      var amounts = []
+
+      for (let i=0; i<this.activatedRegions.length; i++) {
+        amounts.push(this.mapDataCopy.data[this.activatedRegions[i]].amount)
+      }
+
+      amounts = amounts.sort(function (a, b) {
+        if (a < b) return -1;
+        else if (a > b) return 1;
+        else return 0;
+      });
+
+      this.MEDIAN_VALUE = Math.round(this.getMedianValue(amounts));
+      
+      for (let i=0; i<amounts.length; i++) {
+        this.gradientSteps.push(linear(amounts[i]))
+      }
+    },
     getCurrentActivatedRegion() {
       return this.activatedRegions;
     },
@@ -227,6 +270,13 @@ export default {
       this.updateWorkingDataStatus();
       this.updateMinAndMaxValue();
       this.updateAllRegionsColor();
+      this.updateGradientColor();
+    },
+    // HELPERS
+    getMedianValue(arr) {
+      const mid = Math.floor(arr.length / 2),
+        nums = [...arr].sort((a, b) => a - b);
+      return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
     }
   },
   components: {
@@ -243,10 +293,15 @@ export default {
   position: absolute;
   z-index: 1000;
   /* pointer-events: none; */
-  top: 0;
-  right: 0;
+  /* top: 0; */ 
+  /* right: 0; */
+  min-width: 200px;
+  max-width: 200px;
   margin-top: 10px;
-  margin-right: 10px;
+  /* margin-right: 10px; */
+  bottom: 0;
+  margin-bottom: 10px;
+  margin-left: 10px;
   background-color: white;
   padding: 6px 8px;
   box-shadow: 0 0 15px rgb(0 0 0 / 20%);
@@ -262,5 +317,49 @@ export default {
   position: absolute;
   right: 0;
   margin-right: 5px;
+}
+
+.gradient {
+  width: 95%;
+  margin: 0 auto;
+  white-space: nowrap;
+  position: relative;
+  top: 6px;
+  padding-bottom: 15px;
+  display: flex;
+}
+
+.grad-step {
+  height: 20px;
+  flex: 1;
+}
+
+.domain-max {
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+}
+
+.domain-med {
+  position: absolute;
+  right: 25%;
+  left: 25%;
+  text-align: center;
+  bottom: 3px;
+}
+
+.domain-min {
+  position: absolute;
+  left: 0;
+  bottom: 3px;
+}
+
+.domain-values {
+  width: 95%;
+  margin: 10 auto;
+  white-space: nowrap;
+  position: relative;
+  top: 6px;
+  padding-bottom: 15px;
 }
 </style>
