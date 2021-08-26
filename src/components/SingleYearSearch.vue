@@ -83,7 +83,7 @@
                     <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedInfo()}} </h2>
                     
                     <div class="has-text-centered">
-                        <b-button @click="resetDetailedOutSelection"> Reset selezione </b-button>
+                        <b-button @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
                     </div>
                 </div>
                 

@@ -57,8 +57,8 @@ export default {
       center: latLng(41.893121, 12.461145),
       // url: "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+      enableTooltip: true,
       italyGeojson,
       GEOJSON,
       geoJsonOptions: this.getGeoJsonOptions(),
@@ -77,6 +77,11 @@ export default {
           layer.setLatLng = function() {};
           layer._latlng = layer.getLatLng();
 
+          layer.bindTooltip(
+            that.returnTooltipText(feature.properties.reg_name),
+            { permanent: false, sticky: true }
+          );
+
           layer.on({
             click: that.onFeatureClick,
           });
@@ -85,6 +90,18 @@ export default {
           return that.getActiveColorByRegName(feature.properties.reg_name);
         },
       };
+    },
+    returnTooltipText(region_name) {
+      var reg = this.mapDataCopy.data[region_name.toUpperCase()];
+      var html = 
+          "<div> " +
+            "<strong> Regione: </strong>" + region_name + 
+          "</div>" +
+          "<div> "+
+            "<strong> Studenti uscenti: </strong> " + reg.amount + 
+          "</div>";
+      
+      return html;
     },
     saveMapDataWorkingCopy() {
       this.mapDataCopy = this.mapData;
