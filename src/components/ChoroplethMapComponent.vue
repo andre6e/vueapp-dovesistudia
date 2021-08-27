@@ -22,7 +22,7 @@
       -->
 
       <div class="my-info-container">
-        <span> Studenti uscenti </span>
+        <span> Studenti {{mapData.tooltip_text}} </span>
         
         <div class="gradient">
           <span v-for="step in gradientSteps" :key="''+ step + chartId" class="grad-step" :style="{'background-color': step}"> </span>
@@ -115,7 +115,7 @@ export default {
             "<strong> Regione: </strong>" + region_name + 
           "</div>" +
           "<div> "+
-            "<strong> Studenti uscenti: </strong> " + reg.amount + 
+            "<strong> Studenti " + this.mapData.tooltip_text + ": </strong> " + reg.amount + 
           "</div>";
       
       return html;

@@ -183,6 +183,7 @@ var elabOutMapData = function(outgoing_students) {
     toReturnOut["data"] = OBJ_OUT_DATA;
     toReturnOut["min_color"] = MIN_OUT_COLOR;
     toReturnOut["max_color"] = MAX_OUT_COLOR;
+    toReturnOut["tooltip_text"] = "uscenti";
 
     return toReturnOut;
 };
@@ -204,21 +205,39 @@ var elabInMapData = function(incoming_students) {
     toReturnIn["data"] = OBJ_IN_DATA;
     toReturnIn["min_color"] = MIN_INC_COLOR;
     toReturnIn["max_color"] = MAX_INC_COLOR;
+    toReturnIn["tooltip_text"] = "entranti";
 
     return toReturnIn;
 };
 
-var elabDetailedOutTabData = function(outgoing_list_param) {
-    var outgoingFilteredData = outgoing_list_param ? 
-        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+var elabDetailedTabData = function(regions_list, mode) {
+    var filteredData = DATA;
+    var students_map = null;
+    var total_outgoing = null;
+
+    if (mode == OUT_MODE) {
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_FROM])})
+        }
+
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO]);
+        total_outgoing = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM]);
+    } else {
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_TO])})
+        }
+
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_TO], d => d[CSV_KEYS.REGIONE_FROM]);
+        total_outgoing = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_TO]);
+    }
+
+    
 
     // var outgoing_region_provinces = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.PROVINCIA_FROM])
     var data = []
 
-    var from_to_map = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO]);
-    var total_outgoing = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM]);
 
-    from_to_map.forEach(function (out_regs, key) {
+    students_map.forEach(function (out_regs, key) {
         var totalRegionStudents = 0;
         var REG_OBJ = {};
         var items = [];
@@ -324,12 +343,13 @@ var loadGeneralStatistics = function() {
         generalTabData: elabGeneralTabData(),
         generalChordData: elabChordData(),
         detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
-        detailedOutTabData: elabDetailedOutTabData(),
+        detailedOutTabData: elabDetailedTabData(null, OUT_MODE),
         detailedOutBarChartData: elabDetailedOutTypologyChart(),
         detailedOutChordData: elabChordData(REGIONS_LIST),
         detailedOutPercentage: elabDetailedPercentageData(null, OUT_MODE),
         detailedInMapData: elabInMapData(safeMapData.incoming_students),
-        detailedInPercentage: elabDetailedPercentageData(null, IN_MODE)
+        detailedInPercentage: elabDetailedPercentageData(null, IN_MODE),
+        detailedInTabData: elabDetailedTabData(null, IN_MODE),
     }
     
     return elabResponse;
@@ -339,7 +359,7 @@ var loadDetailedOutStatistics = function(outgoing_list_param) {
     var safeMapData = safeElabMapData(outgoing_list_param, null, true);
 
     var elabResponse = {
-        detailedOutTabData: elabDetailedOutTabData(outgoing_list_param),
+        detailedOutTabData: elabDetailedTabData(outgoing_list_param, OUT_MODE),
         detailedOutBarChartData: elabDetailedOutTypologyChart(outgoing_list_param),
         detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
         detailedOutChordData: elabChordData(outgoing_list_param),
@@ -354,7 +374,8 @@ var loadDetailedInStatistics = function(incoming_list_param) {
 
     var elabResponse = {
         detailedInMapData: elabInMapData(safeMapData.incoming_students),
-        detailedInPercentage: elabDetailedPercentageData(incoming_list_param, IN_MODE)
+        detailedInPercentage: elabDetailedPercentageData(incoming_list_param, IN_MODE),
+        detailedInTabData: elabDetailedTabData(incoming_list_param, IN_MODE),
     };
     
     return elabResponse;
