@@ -68,7 +68,7 @@
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedOutSectionOpen">
 
                 <div class="has-text-centered">
-                    <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedInSelectionText()}} </h2>
+                    <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
                     
                     <div class="has-text-centered">
                         <b-button @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
@@ -170,7 +170,7 @@
                     </div>
 
                     <div class="has-text-centered">
-                        <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
+                        <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedInSelectionText()}} </h2>
                         
                         <div class="has-text-centered">
                             <b-button @click="resetDetailedInSelection"> Reset selezione regioni </b-button>
@@ -224,14 +224,11 @@
                             </b-collapse>
                         </div>
 
-                        <!--
-                        
                         <div class="column is-two-third">
-                            <h2 class="subtitle has-text-centered"> Flusso studenti che vanno via </h2>
-                            <ChordDiagramComponent ref="DETAILED_CHORD_OUT_SY" v-if="DETAILED_OUT_CHORD_DATA" :chart-data="DETAILED_OUT_CHORD_DATA" :chart-id="CHORD_DETAILED_OUT_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
+                            <h2 class="subtitle has-text-centered"> Flusso studenti arrivano </h2>
+                            <ChordDiagramComponent ref="DETAILED_CHORD_IN_SY" v-if="DETAILED_IN_CHORD_DATA" :chart-data="DETAILED_IN_CHORD_DATA" :chart-id="CHORD_DETAILED_IN_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
                         </div>
 
-                        -->
                     </div>
 
                 </div>
@@ -265,6 +262,7 @@ import {
     MAIN_BAR_CHART_FIELD_OF_STUDY,
     OUT_BAR_CHART_FIELD_OF_STUDY, 
     CHORD_DETAILED_OUT_SINGLEY_ID,
+    CHORD_DETAILED_IN_SINGLEY_ID,
     ACCADEMIC_YEARS,
     DEFAULT_SELECTED_YEAR,
     BARCHART_OPTIONS,
@@ -315,6 +313,7 @@ export default {
             DETAILED_IN_SAME_GRAND_TOTAL : null,
             DETAILED_IN_OTHERS_PERCENTAGE: null,
             DETAILED_IN_OTHERS_GRAND_TOTAL: null,
+            DETAILED_IN_CHORD_DATA: null,
             isLoading: false,
             CHORD_CONFIG,
             BARCHART_OPTIONS,
@@ -324,6 +323,7 @@ export default {
             MAIN_BAR_CHART_FIELD_OF_STUDY,
             OUT_BAR_CHART_FIELD_OF_STUDY,
             CHORD_DETAILED_OUT_SINGLEY_ID,
+            CHORD_DETAILED_IN_SINGLEY_ID,
             // TRENDLINE_DATA,
             // TRENDLINE_CONF,
             //PIECHART_DATA,
@@ -355,6 +355,7 @@ export default {
                 that.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
                 // that.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
                 that.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
+                that.DETAILED_IN_CHORD_DATA = data.detailedInChordData;
                 
                 that.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
                 that.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
@@ -378,6 +379,7 @@ export default {
             this.DETAILED_OUT_MAP_CURRENT_SELECTION = REGIONS_LIST;
             this.DETAILED_IN_MAP_CURRENT_SELECTION = REGIONS_LIST;
             this.forceDetailedOutComponentReset();
+            this.forceDetailedInComponentReset();
             this.initializeSingleYearSearch();
         },
         updateDetailedOutSectionData() {
@@ -403,14 +405,9 @@ export default {
             this.DETAILED_IN_OTHERS_PERCENTAGE = data.detailedInPercentage.othersPercentage;
 
             this.DETAILED_IN_TAB_DATA = data.detailedInTabData;
+            this.DETAILED_IN_CHORD_DATA = data.detailedInChordData;
 
-            // this.DETAILED_OUT_TAB_DATA = data.detailedOutTabData;
-            // this.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
-            // this.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
-            // this.DETAILED_OUT_SAME_PERCENTAGE = data.detailedOutPercentage.samePercentage;
-            // this.DETAILED_OUT_OTHERS_PERCENTAGE = data.detailedOutPercentage.othersPercentage;
-            // this.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
-            // this.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
+            // this.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;            
         },
         onRegionClick(param) {
             if (param.chartId == this.MAP_OUTGOING_ID) {
@@ -427,7 +424,7 @@ export default {
         },
         forceDetailedInComponentReset() {
             this.$refs.MAP_INCOMING_SY.setRegionsAsActive(this.DETAILED_IN_MAP_CURRENT_SELECTION);
-            // this.$refs.DETAILED_CHORD_OUT_SY.resetHiddenArchState();
+            this.$refs.DETAILED_CHORD_IN_SY.resetHiddenArchState();
         },
         resetDetailedOutSelection () {
             this.DETAILED_OUT_MAP_CURRENT_SELECTION = REGIONS_LIST;
@@ -440,10 +437,10 @@ export default {
             this.updateDetailedInSectionData();
         },
         getDetailedInSelectionText() {
-            return SingleYearSearchService.getDetailedInSelectionText(this.DETAILED_OUT_MAP_CURRENT_SELECTION)
+            return SingleYearSearchService.getDetailedInSelectionText(this.DETAILED_IN_MAP_CURRENT_SELECTION)
         },
         getDetailedOutSelectionText() {
-            return SingleYearSearchService.getDetailedOutSelectionText(this.DETAILED_IN_MAP_CURRENT_SELECTION)
+            return SingleYearSearchService.getDetailedOutSelectionText(this.DETAILED_OUT_MAP_CURRENT_SELECTION)
         }
     }
 }

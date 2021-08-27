@@ -67,21 +67,31 @@ var formatCurrentRegionsName = function(incoming_list_param) {
 
 // SHARED ELAB FUNCTIONS
 
-var elabChordData = function(outgoing_list_param) {
+var elabChordData = function(regions_list, mode) {
     // il parametro mi serve per capire se sto agendo per il chord del general o delle detailed statistics
     var completeData = [];
     var noAutoArchsData = [];
 
-    var from_to_map = null;
-    var outgoingFilteredData = [];
+    var students_map = null;
+    var filteredData = DATA;
 
-    if (outgoing_list_param) {
-        outgoingFilteredData = DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])});
+    if (mode && mode == IN_MODE) {
+        // IN
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_TO])});
+        }
+
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_TO], d => d[CSV_KEYS.REGIONE_FROM])
+    } else {
+        // OUT e GENERAL
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_FROM])});
+        }
+        
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
     }
-    
-    from_to_map = d3.rollup(outgoing_list_param ? outgoingFilteredData: DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO]);
 
-    from_to_map.forEach(function (value, key) {
+    students_map.forEach(function (value, key) {
         value.forEach(function (subValue, subKey) {
             var obj = {}
             obj[FROM_CHORD_FIELD] = key
@@ -90,7 +100,7 @@ var elabChordData = function(outgoing_list_param) {
 
             completeData.push(obj);
 
-            if (key != subKey && outgoing_list_param) {
+            if (key != subKey && mode) {
                 noAutoArchsData.push(obj)
             }
         });
@@ -345,11 +355,12 @@ var loadGeneralStatistics = function() {
         detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
         detailedOutTabData: elabDetailedTabData(null, OUT_MODE),
         detailedOutBarChartData: elabDetailedOutTypologyChart(),
-        detailedOutChordData: elabChordData(REGIONS_LIST),
+        detailedOutChordData: elabChordData(REGIONS_LIST, OUT_MODE),
         detailedOutPercentage: elabDetailedPercentageData(null, OUT_MODE),
         detailedInMapData: elabInMapData(safeMapData.incoming_students),
         detailedInPercentage: elabDetailedPercentageData(null, IN_MODE),
         detailedInTabData: elabDetailedTabData(null, IN_MODE),
+        detailedInChordData: elabChordData(REGIONS_LIST, IN_MODE)
     }
     
     return elabResponse;
@@ -362,7 +373,7 @@ var loadDetailedOutStatistics = function(outgoing_list_param) {
         detailedOutTabData: elabDetailedTabData(outgoing_list_param, OUT_MODE),
         detailedOutBarChartData: elabDetailedOutTypologyChart(outgoing_list_param),
         detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
-        detailedOutChordData: elabChordData(outgoing_list_param),
+        detailedOutChordData: elabChordData(outgoing_list_param, OUT_MODE),
         detailedOutPercentage: elabDetailedPercentageData(outgoing_list_param, OUT_MODE)
     };
     
@@ -376,6 +387,7 @@ var loadDetailedInStatistics = function(incoming_list_param) {
         detailedInMapData: elabInMapData(safeMapData.incoming_students),
         detailedInPercentage: elabDetailedPercentageData(incoming_list_param, IN_MODE),
         detailedInTabData: elabDetailedTabData(incoming_list_param, IN_MODE),
+        detailedInChordData: elabChordData(incoming_list_param, IN_MODE)
     };
     
     return elabResponse;

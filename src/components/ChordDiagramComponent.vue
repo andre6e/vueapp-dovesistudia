@@ -64,6 +64,7 @@ export default {
             this.updateChartData()
         },
         resetHiddenArchState() {
+            console.log(this.chartId, "reset")
             this.autoArchsHidden = false;
         }
     },
