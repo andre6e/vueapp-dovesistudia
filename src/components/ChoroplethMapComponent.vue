@@ -25,7 +25,7 @@
         <span> Studenti uscenti </span>
         
         <div class="gradient">
-          <span v-for="step in gradientSteps" :key="step" class="grad-step" :style="{'background-color': step}"> </span>
+          <span v-for="step in gradientSteps" :key="''+ step + chartId" class="grad-step" :style="{'background-color': step}"> </span>
         </div>
 
         <div class="domain-values">
@@ -258,7 +258,11 @@ export default {
       this.MEDIAN_VALUE = Math.round(this.getMedianValue(amounts));
       
       for (let i=0; i<amounts.length; i++) {
-        this.gradientSteps.push(linear(amounts[i]))
+        var color = linear(amounts[i]);
+
+        if (this.gradientSteps.indexOf(color) == -1) {
+          this.gradientSteps.push(color)
+        }
       }
     },
     getCurrentActivatedRegion() {

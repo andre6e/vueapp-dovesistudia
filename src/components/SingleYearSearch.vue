@@ -75,12 +75,12 @@
             </b-collapse>
         </section>
 
-        <!-- STATISTICHE DETAILED INTERATTIVE SECTION-->
+        <!-- STATISTICHE DETAILED OUT SECTION-->
         <section class="margin-10-tb">
-            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedStatisticSectionOpen">
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedOutSectionOpen">
 
                 <div class="has-text-centered">
-                    <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedInfo()}} </h2>
+                    <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedInSelectionText()}} </h2>
                     
                     <div class="has-text-centered">
                         <b-button @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
@@ -123,12 +123,6 @@
                             </div>
                         </div>
                        
-                    <!--
-                        <div class="column">
-                                <h2 class="subtitle has-text-centered"> Studenti in entrata nelle regioni </h2>
-                                <ChoroplethMapComponent ref="MAP_INCOMING" @region-click="onRegionClick" :map-data="DETAILED_IN_MAP_DATA" v-if="DETAILED_IN_MAP_DATA" :chart-id="MAP_INCOMING_ID"/>
-                        </div>
-                    -->
                     </div>
 
 
@@ -173,11 +167,30 @@
                 </div>
             </b-collapse>
         </section>
-
-
-        <!--
+        
+        <!-- STATISTICHE DETAILED IN SECTION-->
         <section class="margin-10-tb">
-            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3"  v-model="isThirdBoxOpen">
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedInSectionOpen">
+
+                <div class="has-text-centered">
+                    <h2 class="subtitle has-text-centered"> Da quali regioni si arriva? </h2>
+
+                    <div class="has-text-centered">
+                        <p class="heading"> Dalla stessa regione </p>
+                        <p class="title"> {{DETAILED_IN_SAME_GRAND_TOTAL}} ({{DETAILED_IN_SAME_PERCENTAGE}}%) </p> 
+
+                        <p class="heading"> Da altre regioni </p>
+                        <p class="title"> {{DETAILED_IN_OTHERS_GRAND_TOTAL}} ({{DETAILED_IN_OTHERS_PERCENTAGE}}%) </p> 
+                    </div>
+                </div>
+
+                <div class="has-text-centered">
+                    <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
+                    
+                    <div class="has-text-centered">
+                        <b-button @click="resetDetailedInSelection"> Reset selezione regioni </b-button>
+                    </div>
+                </div>
                 
                 <div
                     slot="trigger" 
@@ -187,7 +200,7 @@
                     aria-controls="contentIdForA11y3"
                    >
                     <p class="card-header-title">
-                        Provenienza e corso di studio
+                        Studenti in arrivo
                     </p>
                     <a class="card-header-icon">
                         <b-icon
@@ -197,23 +210,20 @@
                 </div>
 
                 <div class="my-card-content">
-                    
-                     <div class="columns">
-    
-                    <div class="column">
-                        
+                    <div class="columns">
+                        <div class="column is-two-third">
+                            <h2 class="subtitle has-text-centered"> </h2>
+                            <ChoroplethMapComponent ref="MAP_INCOMING_SY" @region-click="onRegionClick" :map-data="DETAILED_IN_MAP_DATA" v-if="DETAILED_IN_MAP_DATA" :chart-id="MAP_INCOMING_ID"/>
+                        </div>
+                    </div>
+                </div>
                        
-                    </div>
 
-                    <div class="column">
-                        
-                    </div>
-                </div>
-        
-                </div>
             </b-collapse>
         </section>
-        -->
+
+
+    
       
     </div> 
 </template>
@@ -233,7 +243,7 @@ import TableComponent from './TableComponent.vue'
 
 // import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
 // import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
-import {  PIECHART_CONF } from '../data/piechart_mock'
+// import {  PIECHART_CONF } from '../data/piechart_mock'
 // import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
 
 import {
@@ -266,7 +276,8 @@ export default {
         return {
             isDetailedOutTabInfoOpen: true,
             isGeneralStatisticSingleYearSearchOpen: false,
-            isDetailedStatisticSectionOpen: false,
+            isDetailedOutSectionOpen: false,
+            isDetailedInSectionOpen: true,
             isThirdBoxOpen: false,
             years: ACCADEMIC_YEARS,
             selectedYear: DEFAULT_SELECTED_YEAR,
@@ -278,7 +289,8 @@ export default {
             GENERAL_CHORD_DATA: null,
             DETAILED_OUT_MAP_DATA: null,
             DETAILED_OUT_MAP_CURRENT_SELECTION: REGIONS_LIST,
-            // DETAILED_IN_MAP_DATA: null,
+            DETAILED_IN_MAP_CURRENT_SELECTION: REGIONS_LIST,
+            DETAILED_IN_MAP_DATA: null,
             DETAILED_OUT_TAB_DATA: null,
             // OUTGOING_PIE_DATA: null,
             DETAILED_OUT_TABLE_DATA: null,
@@ -287,6 +299,10 @@ export default {
             DETAILED_OUT_SAME_GRAND_TOTAL : null,
             DETAILED_OUT_OTHERS_PERCENTAGE: null,
             DETAILED_OUT_OTHERS_GRAND_TOTAL: null,
+            DETAILED_IN_SAME_PERCENTAGE : null,
+            DETAILED_IN_SAME_GRAND_TOTAL : null,
+            DETAILED_IN_OTHERS_PERCENTAGE: null,
+            DETAILED_IN_OTHERS_GRAND_TOTAL: null,
             isLoading: false,
             CHORD_CONFIG,
             BARCHART_OPTIONS,
@@ -299,7 +315,7 @@ export default {
             // TRENDLINE_DATA,
             // TRENDLINE_CONF,
             //PIECHART_DATA,
-            PIECHART_CONF
+            // PIECHART_CONF
         }
     },
     mounted: function() {
@@ -318,18 +334,25 @@ export default {
                 that.GENERAL_TABLE_DATA = data.generalTabData;
                 that.GENERAL_CHORD_DATA = data.generalChordData;
                 that.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
-                // that.DETAILED_IN_MAP_DATA = data.inMapData;
+                that.DETAILED_IN_MAP_DATA = data.detailedInMapData;
                 that.DETAILED_OUT_TAB_DATA = data.detailedOutTabData;
                 that.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
                 // that.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
                 that.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
+                
                 that.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
                 that.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
                 that.DETAILED_OUT_SAME_PERCENTAGE = data.detailedOutPercentage.samePercentage;
                 that.DETAILED_OUT_OTHERS_PERCENTAGE = data.detailedOutPercentage.othersPercentage;
+                
+                that.DETAILED_IN_SAME_GRAND_TOTAL = data.detailedInPercentage.sameGrandTotal;
+                that.DETAILED_IN_OTHERS_GRAND_TOTAL = data.detailedInPercentage.othersGrandTotal;
+                that.DETAILED_IN_SAME_PERCENTAGE = data.detailedInPercentage.samePercentage;
+                that.DETAILED_IN_OTHERS_PERCENTAGE = data.detailedInPercentage.othersPercentage;
 
-                //that.isGeneralStatisticSingleYearSearchOpen = true;
-                that.isDetailedStatisticSectionOpen = true;
+                // that.isGeneralStatisticSingleYearSearchOpen = true;
+                // that.isDetailedOutSectionOpen = true;
+                that.isDetailedInSectionOpen = true;
                 that.isLoading = false;
             }).catch(function (err) {
                 console.log(err)
@@ -337,11 +360,12 @@ export default {
         },
         onYearSelection() {
             this.DETAILED_OUT_MAP_CURRENT_SELECTION = REGIONS_LIST;
+            this.DETAILED_IN_MAP_CURRENT_SELECTION = REGIONS_LIST;
             this.forceDetailedOutComponentReset();
             this.initializeSingleYearSearch();
         },
         updateDetailedOutSectionData() {
-            let data = SingleYearSearchService.updateDetailedView(this.DETAILED_OUT_MAP_CURRENT_SELECTION, null);
+            let data = SingleYearSearchService.updateOutDetailedView(this.DETAILED_OUT_MAP_CURRENT_SELECTION);
             console.log(data)
             this.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
             this.DETAILED_OUT_TAB_DATA = data.detailedOutTabData;
@@ -352,47 +376,56 @@ export default {
             this.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
             this.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
         },
+        updateDetailedInSectionData() {
+            let data = SingleYearSearchService.updateInDetailedView(this.DETAILED_IN_MAP_CURRENT_SELECTION);
+            console.log(data)
+
+            this.DETAILED_IN_MAP_DATA = data.detailedInMapData;
+            this.DETAILED_IN_SAME_GRAND_TOTAL = data.detailedInPercentage.sameGrandTotal;
+            this.DETAILED_IN_OTHERS_GRAND_TOTAL = data.detailedInPercentage.othersGrandTotal;
+            this.DETAILED_IN_SAME_PERCENTAGE = data.detailedInPercentage.samePercentage;
+            this.DETAILED_IN_OTHERS_PERCENTAGE = data.detailedInPercentage.othersPercentage;
+
+            // this.DETAILED_OUT_TAB_DATA = data.detailedOutTabData;
+            // this.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
+            // this.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
+            // this.DETAILED_OUT_SAME_PERCENTAGE = data.detailedOutPercentage.samePercentage;
+            // this.DETAILED_OUT_OTHERS_PERCENTAGE = data.detailedOutPercentage.othersPercentage;
+            // this.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
+            // this.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
+        },
         onRegionClick(param) {
             if (param.chartId == this.MAP_OUTGOING_ID) {
                 this.DETAILED_OUT_MAP_CURRENT_SELECTION = param.activatedRegions;
                 this.updateDetailedOutSectionData();
+            } else {
+                this.DETAILED_IN_MAP_CURRENT_SELECTION = param.activatedRegions;
+                this.updateDetailedInSectionData();
             }
         },
         forceDetailedOutComponentReset() {
             this.$refs.MAP_OUTGOING_SY.setRegionsAsActive(this.DETAILED_OUT_MAP_CURRENT_SELECTION);
             this.$refs.DETAILED_CHORD_OUT_SY.resetHiddenArchState();
         },
+        forceDetailedInComponentReset() {
+            this.$refs.MAP_INCOMING_SY.setRegionsAsActive(this.DETAILED_IN_MAP_CURRENT_SELECTION);
+            // this.$refs.DETAILED_CHORD_OUT_SY.resetHiddenArchState();
+        },
         resetDetailedOutSelection () {
             this.DETAILED_OUT_MAP_CURRENT_SELECTION = REGIONS_LIST;
             this.forceDetailedOutComponentReset();
             this.updateDetailedOutSectionData();
         },
-        formatCurrentRegionsName() {
-            var str = "";
-
-            for (var i=0; i<this.DETAILED_OUT_MAP_CURRENT_SELECTION.length;i++) {
-                str += this.DETAILED_OUT_MAP_CURRENT_SELECTION[i];
-
-                if (i != this.DETAILED_OUT_MAP_CURRENT_SELECTION.length - 1) {
-                    str += ", "
-                }
-            }
-
-            return str;
+        resetDetailedInSelection() {
+            this.DETAILED_IN_MAP_CURRENT_SELECTION = REGIONS_LIST;
+            this.forceDetailedInComponentReset();
+            this.updateDetailedInSectionData();
         },
-        getDetailedInfo() {
-            var base_str = "Stai analizzando gli studenti che vanno via ";
-
-            
-            if (this.DETAILED_OUT_MAP_CURRENT_SELECTION.length == REGIONS_LIST.length) {
-                base_str += "da tutte le regioni";
-            } else if (this.DETAILED_OUT_MAP_CURRENT_SELECTION.length == 1) {
-                base_str += "dalla regione " + this.DETAILED_OUT_MAP_CURRENT_SELECTION[0];
-            } else {
-                base_str += "dalle regioni " + this.formatCurrentRegionsName()
-            }
-
-            return base_str;
+        getDetailedInSelectionText() {
+            return SingleYearSearchService.getDetailedInSelectionText(this.DETAILED_OUT_MAP_CURRENT_SELECTION)
+        },
+        getDetailedOutSelectionText() {
+            return SingleYearSearchService.getDetailedOutSelectionText(this.DETAILED_IN_MAP_CURRENT_SELECTION)
         }
     }
 }

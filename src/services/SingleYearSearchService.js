@@ -2,6 +2,9 @@ import * as d3 from "d3";
 
 import { 
     CSV_KEYS,
+    // mode
+    OUT_MODE,
+    IN_MODE,
     // tab
     TAB_CONFIG,
     OUTGOING_STUDENTS_FIELD,
@@ -46,6 +49,20 @@ var sortStudentsDescending = function(list) {
 
 var getTypologyLegend = function(key) {
     return TYPOLOGY_LEGEND[key];
+};
+
+var formatCurrentRegionsName = function(incoming_list_param) {
+    var str = "";
+
+    for (var i=0; i<incoming_list_param.length;i++) {
+        str += incoming_list_param[i];
+
+        if (i != incoming_list_param.length - 1) {
+            str += ", "
+        }
+    }
+
+    return str;
 };
 
 // SHARED ELAB FUNCTIONS
@@ -119,36 +136,40 @@ var safeElabMapData = function(outgoing_list_param, incoming_list_param, updatin
     var outgoing_students = null;
     var incoming_students = null;
 
-    if (updatingDetailedView) {
+    if (!updatingDetailedView) {
+        // GENERAL SEARCH
+        outgoing_students = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM]);
+        incoming_students = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO]);
+    } else {
         if (outgoing_list_param != null) {
-            // è l'outgoing che diventa gestore del flusso
+            // OUTGOING DETAILED
             var outgoingFilteredData = DATA.filter(function (d) {
                 return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])
             });
-
+    
             outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM])
             incoming_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO])
         } else {
+            // INCOMING DETAILED
             var incomingFilteredData = DATA.filter(function (d){
                 return incoming_list_param.includes(d[CSV_KEYS.REGIONE_TO])
             });
-
+    
             incoming_students = d3.rollup(incomingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO])
             outgoing_students = d3.rollup(incomingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM])
         }
-    } else {
-        outgoing_students = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM])
-        incoming_students = d3.rollup(DATA, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO])
     }
 
-    return elabMapData(outgoing_students, incoming_students)
+    return {
+        outgoing_students: outgoing_students,
+        incoming_students: incoming_students
+    }
 };
 
-var elabMapData = function(outgoing_students, incoming_students) {
+var elabOutMapData = function(outgoing_students) {
     // OUTGOING
     var toReturnOut = {}
     var OBJ_OUT_DATA = {}
-    var outKeyList = []
 
     outgoing_students.forEach(function (value, key) {
         var obj = {};
@@ -157,18 +178,19 @@ var elabMapData = function(outgoing_students, incoming_students) {
         obj[ID_FIELD] = key;
         
         OBJ_OUT_DATA[key] = obj
-        outKeyList.push(key)
     });
 
     toReturnOut["data"] = OBJ_OUT_DATA;
     toReturnOut["min_color"] = MIN_OUT_COLOR;
     toReturnOut["max_color"] = MAX_OUT_COLOR;
-    
-    
+
+    return toReturnOut;
+};
+
+var elabInMapData = function(incoming_students) {
     // INCOMING
     var toReturnIn = {}
     var OBJ_IN_DATA = {}
-    var inKeyList = []
 
     incoming_students.forEach(function (value, key) {
         var obj = {};
@@ -177,19 +199,13 @@ var elabMapData = function(outgoing_students, incoming_students) {
         obj[ID_FIELD] = key;
         
         OBJ_IN_DATA[key] = obj;
-        inKeyList.push(key);
     });
 
     toReturnIn["data"] = OBJ_IN_DATA;
     toReturnIn["min_color"] = MIN_INC_COLOR;
     toReturnIn["max_color"] = MAX_INC_COLOR;
 
-    return {
-        outMapData: toReturnOut,
-        inMapData: toReturnIn,
-        outgoingList: outKeyList,
-        incomingList: inKeyList,
-    }
+    return toReturnIn;
 };
 
 var elabDetailedOutTabData = function(outgoing_list_param) {
@@ -224,7 +240,7 @@ var elabDetailedOutTabData = function(outgoing_list_param) {
         REG_OBJ[DETAILED_TAB_NAME_FIELD] = key;
         REG_OBJ[DETAILED_TAB_ITEMS_FIELD] = sortStudentsDescending(items);
         REG_OBJ[DETAILED_TAB_STUDENTS_FIELD] = totalRegionStudents;
-        REG_OBJ[DETAILED_TAB_PERCENTAGE_FIELD] = "100%"
+        REG_OBJ[DETAILED_TAB_PERCENTAGE_FIELD] = ""
 
         data.push(REG_OBJ);
     });
@@ -254,16 +270,29 @@ var elabDetailedOutTypologyChart = function (outgoing_list_param) {
     return sortStudentsDescending(toReturn);
 };
 
-var elabDetailedPercentageData = function (outgoing_list_param) {
-    var outgoingFilteredData = outgoing_list_param ? 
-        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+var elabDetailedPercentageData = function (regions_list, mode) {
+    var filteredData = DATA;
+    var students_map = null;
 
-    var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+    if (mode == OUT_MODE) {
+        // out detailed view
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_FROM])});
+        }
 
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+    } else {
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_TO])});
+        }
+        // in detailed view
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO], d => d[CSV_KEYS.REGIONE_FROM])
+    }
+    
     var SAME_GRAND_TOTAL = 0;
     var OTHER_GRAND_TOTAL = 0;
 
-    outgoing_students.forEach(function (value, key) {
+    students_map.forEach(function (value, key) {
         var same_region = value.get(key);
         var other_regions = 0;
 
@@ -288,33 +317,44 @@ var elabDetailedPercentageData = function (outgoing_list_param) {
 // LOADERS
 
 var loadGeneralStatistics = function() {
-    var mapData = safeElabMapData(null, null, false);
+    var safeMapData = safeElabMapData(null, null, false);
 
     var elabResponse = {
         totalNumber: elabTotalIscritti(),
         generalTabData: elabGeneralTabData(),
         generalChordData: elabChordData(),
-        detailedOutMapData: mapData.outMapData,
-        inMapData: mapData.inMapData,
+        detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
         detailedOutTabData: elabDetailedOutTabData(),
         detailedOutBarChartData: elabDetailedOutTypologyChart(),
         detailedOutChordData: elabChordData(REGIONS_LIST),
-        detailedOutPercentage: elabDetailedPercentageData()
+        detailedOutPercentage: elabDetailedPercentageData(null, OUT_MODE),
+        detailedInMapData: elabInMapData(safeMapData.incoming_students),
+        detailedInPercentage: elabDetailedPercentageData(null, IN_MODE)
     }
     
     return elabResponse;
 };
 
-var loadDetailedOutStatistics = function(outgoing_list_param, incoming_list_param) {
-    var mapData = safeElabMapData(outgoing_list_param, incoming_list_param, true);
+var loadDetailedOutStatistics = function(outgoing_list_param) {
+    var safeMapData = safeElabMapData(outgoing_list_param, null, true);
 
     var elabResponse = {
         detailedOutTabData: elabDetailedOutTabData(outgoing_list_param),
         detailedOutBarChartData: elabDetailedOutTypologyChart(outgoing_list_param),
-        detailedOutMapData: mapData.outMapData,
-        inMapData: mapData.inMapData,
+        detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
         detailedOutChordData: elabChordData(outgoing_list_param),
-        detailedOutPercentage: elabDetailedPercentageData(outgoing_list_param)
+        detailedOutPercentage: elabDetailedPercentageData(outgoing_list_param, OUT_MODE)
+    };
+    
+    return elabResponse;
+};
+
+var loadDetailedInStatistics = function(incoming_list_param) {
+    var safeMapData = safeElabMapData(null, incoming_list_param, true);
+
+    var elabResponse = {
+        detailedInMapData: elabInMapData(safeMapData.incoming_students),
+        detailedInPercentage: elabDetailedPercentageData(incoming_list_param, IN_MODE)
     };
     
     return elabResponse;
@@ -327,8 +367,41 @@ export async function getSingleYearData(year) {
     return loadGeneralStatistics();
 }
 
-export function updateDetailedView(outgoing_list_param, incoming_list_param) {
-    return loadDetailedOutStatistics(outgoing_list_param, incoming_list_param);
+export function updateOutDetailedView(outgoing_list_param) {
+    return loadDetailedOutStatistics(outgoing_list_param);
+}
+
+export function updateInDetailedView(incoming_list_param) {
+    return loadDetailedInStatistics(incoming_list_param)
+}
+
+export function getDetailedInSelectionText(incoming_list_param) {
+    var base_str = "Stai analizzando gli studenti che arrivano ";
+
+            
+    if (incoming_list_param.length == REGIONS_LIST.length) {
+        base_str += "in tutte le regioni";
+    } else if (incoming_list_param.length == 1) {
+        base_str += "nella regione " + incoming_list_param[0];
+    } else {
+        base_str += "nelle regioni " + formatCurrentRegionsName(incoming_list_param)
+    }
+
+    return base_str;
+}
+
+export function getDetailedOutSelectionText(outgoing_list_param) {
+    var base_str = "Stai analizzando gli studenti che vanno via ";
+
+    if (outgoing_list_param.length == REGIONS_LIST.length) {
+        base_str += "da tutte le regioni";
+    } else if (outgoing_list_param.length == 1) {
+        base_str += "dalla regione " + outgoing_list_param[0];
+    } else {
+        base_str += "dalle regioni " + formatCurrentRegionsName(outgoing_list_param)
+    }
+
+    return base_str;
 }
 
 

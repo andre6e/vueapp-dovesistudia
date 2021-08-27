@@ -21,6 +21,11 @@ export var CSV_KEYS = {
 }
 
 // GENERAL STATISTICS SINGLE SEARCH
+
+// Mode
+export var OUT_MODE = "OUT_MODE"
+export var IN_MODE = "IN_MODE"
+
 // Tab
 export var OUTGOING_STUDENTS_FIELD = 'students'
 export var INCOMING_STUDENTS_FIELD = 'incoming_students'
