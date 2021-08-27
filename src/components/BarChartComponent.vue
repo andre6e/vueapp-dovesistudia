@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div  id="legendwrapper">
-            <div  id="legenddiv"></div>
+        <div id="legendwrapper">
+            <div :id="'legenddiv' + chartId" class="legenddiv"></div>
         </div>
 
         <div class="chartdiv min-height" v-bind:class="{ 'full-height': chartHeight == 'full', 'fixed-height' : chartHeight != 'full'}" :id="chartId"> </div>
@@ -100,7 +100,7 @@ export default {
             legend.itemContainers.template.togglable = false;
 
 
-            var legendContainer = am4core.create("legenddiv", am4core.Container);
+            var legendContainer = am4core.create("legenddiv" + this.chartId, am4core.Container);
             legendContainer.logo.disabled = true;
             legendContainer.width = am4core.percent(100);
             legendContainer.height = am4core.percent(50);
@@ -179,7 +179,7 @@ export default {
   margin: 1em 0;
 }
 
-#legenddiv {
+.legenddiv {
   height: 50px;
 }
 

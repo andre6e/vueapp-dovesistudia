@@ -87,7 +87,7 @@ var elabChordData = function(regions_list, mode) {
         if (regions_list) {
             filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_FROM])});
         }
-        
+
         students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
     }
 
@@ -280,14 +280,25 @@ var elabDetailedTabData = function(regions_list, mode) {
     };
 };
 
-var elabDetailedOutTypologyChart = function (outgoing_list_param) {
-    var outgoingFilteredData = outgoing_list_param ? 
-        DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
+var elabDetailedCourseTypologyChart = function (regions_list, mode) {
+    var filteredData = DATA;
+    var typology_map = null;
 
-    var typology = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
+    if (mode == OUT_MODE) {
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_FROM])})
+        }
+    } else {
+        if (regions_list) {
+            filteredData = DATA.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_TO])})
+        }
+    }
+    
+    typology_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.CORSO])
+
     var toReturn = [];
 
-    typology.forEach(function (value, key) {
+    typology_map.forEach(function (value, key) {
         var obj = {};
 
         obj[DEGREE_FIELD] = getTypologyLegend(key);
@@ -354,13 +365,14 @@ var loadGeneralStatistics = function() {
         generalChordData: elabChordData(),
         detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
         detailedOutTabData: elabDetailedTabData(null, OUT_MODE),
-        detailedOutBarChartData: elabDetailedOutTypologyChart(),
+        detailedOutBarChartData: elabDetailedCourseTypologyChart(null, OUT_MODE),
         detailedOutChordData: elabChordData(REGIONS_LIST, OUT_MODE),
         detailedOutPercentage: elabDetailedPercentageData(null, OUT_MODE),
         detailedInMapData: elabInMapData(safeMapData.incoming_students),
         detailedInPercentage: elabDetailedPercentageData(null, IN_MODE),
         detailedInTabData: elabDetailedTabData(null, IN_MODE),
-        detailedInChordData: elabChordData(REGIONS_LIST, IN_MODE)
+        detailedInChordData: elabChordData(REGIONS_LIST, IN_MODE),
+        detailedInBarChartData: elabDetailedCourseTypologyChart(null, IN_MODE),
     }
     
     return elabResponse;
@@ -371,7 +383,7 @@ var loadDetailedOutStatistics = function(outgoing_list_param) {
 
     var elabResponse = {
         detailedOutTabData: elabDetailedTabData(outgoing_list_param, OUT_MODE),
-        detailedOutBarChartData: elabDetailedOutTypologyChart(outgoing_list_param),
+        detailedOutBarChartData: elabDetailedCourseTypologyChart(outgoing_list_param, OUT_MODE),
         detailedOutMapData: elabOutMapData(safeMapData.outgoing_students),
         detailedOutChordData: elabChordData(outgoing_list_param, OUT_MODE),
         detailedOutPercentage: elabDetailedPercentageData(outgoing_list_param, OUT_MODE)
@@ -387,7 +399,8 @@ var loadDetailedInStatistics = function(incoming_list_param) {
         detailedInMapData: elabInMapData(safeMapData.incoming_students),
         detailedInPercentage: elabDetailedPercentageData(incoming_list_param, IN_MODE),
         detailedInTabData: elabDetailedTabData(incoming_list_param, IN_MODE),
-        detailedInChordData: elabChordData(incoming_list_param, IN_MODE)
+        detailedInChordData: elabChordData(incoming_list_param, IN_MODE),
+        detailedInBarChartData: elabDetailedCourseTypologyChart(incoming_list_param, IN_MODE),
     };
     
     return elabResponse;

@@ -66,14 +66,6 @@
         <!-- STATISTICHE DETAILED OUT SECTION-->
         <section class="margin-10-tb">
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedOutSectionOpen">
-
-                <div class="has-text-centered">
-                    <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
-                    
-                    <div class="has-text-centered">
-                        <b-button @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
-                    </div>
-                </div>
                 
                 <div
                     slot="trigger" 
@@ -93,6 +85,14 @@
                 </div>
 
                 <div class="my-card-content">
+                    <div class="has-text-centered">
+                        <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
+                        
+                        <div class="has-text-centered">
+                            <b-button @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
+                        </div>
+                    </div>
+
                     <div class="columns">
                         <div class="column is-two-third">
                             <h2 class="subtitle has-text-centered"> Da quali regioni si va via? </h2>
@@ -155,6 +155,22 @@
         <section class="margin-10-tb">
             <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isDetailedInSectionOpen">
 
+                <div
+                    slot="trigger" 
+                    slot-scope="props"
+                    class="card-header"
+                    role="button"
+                    aria-controls="contentIdForA11y3"
+                >
+                    <p class="card-header-title">
+                        Studenti in arrivo
+                    </p>
+                    <a class="card-header-icon">
+                        <b-icon
+                            :icon="props.open ? 'menu-down' : 'menu-up'">
+                        </b-icon>
+                    </a>
+                </div>
 
                 <div class="my-card-content">
                     <div class="has-text-centered">
@@ -177,22 +193,6 @@
                         </div>
                     </div>
                     
-                    <div
-                        slot="trigger" 
-                        slot-scope="props"
-                        class="card-header"
-                        role="button"
-                        aria-controls="contentIdForA11y3"
-                    >
-                        <p class="card-header-title">
-                            Studenti in arrivo
-                        </p>
-                        <a class="card-header-icon">
-                            <b-icon
-                                :icon="props.open ? 'menu-down' : 'menu-up'">
-                            </b-icon>
-                        </a>
-                    </div>
 
                     <div class="columns">
                         <div class="column">
@@ -231,6 +231,13 @@
 
                     </div>
 
+                    <div class="columns">
+                        <div class="column">
+                            <h2 class="subtitle has-text-centered"> A conseguire quale titolo? </h2>
+                            <BarChartComponent v-if="DETAILED_IN_BARCHART_DATA" :chart-data="DETAILED_IN_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="IN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
+                        </div>
+                    </div>
+
                 </div>
             </b-collapse>
         </section>
@@ -261,6 +268,7 @@ import {
     MAP_OUTGOING_ID,
     MAIN_BAR_CHART_FIELD_OF_STUDY,
     OUT_BAR_CHART_FIELD_OF_STUDY, 
+    IN_BAR_CHART_FIELD_OF_STUDY, 
     CHORD_DETAILED_OUT_SINGLEY_ID,
     CHORD_DETAILED_IN_SINGLEY_ID,
     ACCADEMIC_YEARS,
@@ -295,6 +303,7 @@ export default {
             // REGIONS_MOCK_DATA2,
             GENERAL_TABLE_DATA: null,
             DETAILED_OUT_BARCHART_DATA: null,
+            DETAILED_IN_BARCHART_DATA: null,
             GENERAL_CHORD_DATA: null,
             DETAILED_OUT_MAP_DATA: null,
             DETAILED_OUT_MAP_CURRENT_SELECTION: REGIONS_LIST,
@@ -322,6 +331,7 @@ export default {
             MAP_OUTGOING_ID,
             MAIN_BAR_CHART_FIELD_OF_STUDY,
             OUT_BAR_CHART_FIELD_OF_STUDY,
+            IN_BAR_CHART_FIELD_OF_STUDY,
             CHORD_DETAILED_OUT_SINGLEY_ID,
             CHORD_DETAILED_IN_SINGLEY_ID,
             // TRENDLINE_DATA,
@@ -353,6 +363,8 @@ export default {
                 that.DETAILED_IN_TAB_DATA = data.detailedInTabData;
 
                 that.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
+                that.DETAILED_IN_BARCHART_DATA = data.detailedInBarChartData;
+
                 // that.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
                 that.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
                 that.DETAILED_IN_CHORD_DATA = data.detailedInChordData;
@@ -407,7 +419,7 @@ export default {
             this.DETAILED_IN_TAB_DATA = data.detailedInTabData;
             this.DETAILED_IN_CHORD_DATA = data.detailedInChordData;
 
-            // this.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;            
+            this.DETAILED_IN_BARCHART_DATA = data.detailedInBarChartData;            
         },
         onRegionClick(param) {
             if (param.chartId == this.MAP_OUTGOING_ID) {
