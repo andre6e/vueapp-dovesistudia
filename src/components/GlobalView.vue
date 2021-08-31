@@ -1,17 +1,19 @@
 <template>
     <section>
-        <b-tabs position="is-centered">
+        <b-tabs position="is-centered" v-model="TAB_MODEL">
             <b-tab-item label="Singolo anno">
                 <SingleYearSeach></SingleYearSeach>
             </b-tab-item>
-            <b-tab-item label="Intervallo temporale"><p>Intervallo temporale search</p></b-tab-item>
+            <b-tab-item label="Multi anno">
+                <MultiYearSearch></MultiYearSearch>
+            </b-tab-item>
         </b-tabs>
     </section>
 </template>
 
 <script>
 import SingleYearSeach from './SingleYearSearch.vue'
-
+import MultiYearSearch from './MultiYearSearch.vue'
 
 export default {
     name: 'GlobalView',
@@ -19,8 +21,14 @@ export default {
         msg: String
     },
     components: {
-        SingleYearSeach
-    }
+        SingleYearSeach,
+        MultiYearSearch
+    },
+    data: function() {
+        return {
+            TAB_MODEL: 1
+        }
+    },
 }
 </script>
 

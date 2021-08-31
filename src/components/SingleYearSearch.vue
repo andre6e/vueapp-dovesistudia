@@ -86,30 +86,43 @@
 
                 <div class="my-card-content">
                     <div class="has-text-centered">
-                        <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
+                        
+                        <div class="media-content info-section">
+                            <div class="content">
+                                <p>
+                                    Questa sezione permette di analizzare gli studenti che emigrano dalla propria regione di residenza. <br>
+                                    Il click su mappa della regione di interesse aggiornerà tutti i grafi filtrando i dati in base alla regione selezionata. <br>
+                                    E' possibile fare una analisi cumulativa aggiungendo diverse regioni tramite click.
+                                </p>
+                            </div>
+                        </div>
                         
                         <div class="has-text-centered">
+                            <h2 class="subtitle "> Verso dove ci si sposta? </h2>
+                            <p class="heading"> Restano nella stessa regione </p>
+                            <p class="title"> {{DETAILED_OUT_SAME_GRAND_TOTAL}} ({{DETAILED_OUT_SAME_PERCENTAGE}}%) </p> 
+
+                            <p class="heading"> Emigrano verso altre regioni </p>
+                            <p class="title"> {{DETAILED_OUT_OTHERS_GRAND_TOTAL}} ({{DETAILED_OUT_OTHERS_PERCENTAGE}}%) </p> 
+                        </div>
+                        
+                        <div>
+                        
+                            <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
                             <b-button @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
+                        </div>
+
+                        
+                        <div class="has-text-centered">
                         </div>
                     </div>
 
                     <div class="columns">
                         <div class="column is-two-third">
-                            <h2 class="subtitle has-text-centered"> Da quali regioni si va via? </h2>
                             <ChoroplethMapComponent ref="MAP_OUTGOING_SY" @region-click="onRegionClick" :map-data="DETAILED_OUT_MAP_DATA" v-if="DETAILED_OUT_MAP_DATA" :chart-id="MAP_OUTGOING_ID"/>
                         </div>
                         
-                        <div class="column is-one-third">
-                            <h2 class="subtitle has-text-centered"> Verso dove ci si sposta? </h2>
-
-                            <div class="has-text-centered">
-                                <p class="heading"> Verso la stessa regione </p>
-                                <p class="title"> {{DETAILED_OUT_SAME_GRAND_TOTAL}} ({{DETAILED_OUT_SAME_PERCENTAGE}}%) </p> 
-
-                                <p class="heading"> Verso altre regioni</p>
-                                <p class="title"> {{DETAILED_OUT_OTHERS_GRAND_TOTAL}} ({{DETAILED_OUT_OTHERS_PERCENTAGE}}%) </p> 
-                            </div>
-                        </div>  
+                        
                     </div>
 
                     <div class="columns">
@@ -253,12 +266,11 @@ import BarChartComponent from './BarChartComponent.vue'
 import DetailedTableView from './DetailedTableView.vue'
 import TableComponent from './TableComponent.vue'
 
-// import TrendLineComponent from './TrendLineComponent.vue'
+
 //import PieChartComponent from './PieChartComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
 // import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
-// import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 // import {  PIECHART_CONF } from '../data/piechart_mock'
 // import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
 
@@ -287,7 +299,6 @@ export default {
         DetailedTableView,
         TableComponent,
         // PieChartComponent,
-        // TrendLineComponent,
         // MultiSelectComponent
     },
     data: function() {
@@ -334,8 +345,6 @@ export default {
             IN_BAR_CHART_FIELD_OF_STUDY,
             CHORD_DETAILED_OUT_SINGLEY_ID,
             CHORD_DETAILED_IN_SINGLEY_ID,
-            // TRENDLINE_DATA,
-            // TRENDLINE_CONF,
             //PIECHART_DATA,
             // PIECHART_CONF
         }
@@ -380,8 +389,8 @@ export default {
                 that.DETAILED_IN_OTHERS_PERCENTAGE = data.detailedInPercentage.othersPercentage;
 
                 // that.isGeneralStatisticSingleYearSearchOpen = true;
-                // that.isDetailedOutSectionOpen = true;
-                that.isDetailedInSectionOpen = true;
+                that.isDetailedOutSectionOpen = true;
+                // that.isDetailedInSectionOpen = true;
                 that.isLoading = false;
             }).catch(function (err) {
                 console.log(err)
@@ -467,5 +476,10 @@ export default {
 
 .my-card-content {
     padding: 1rem;
+}
+
+.info-section {
+    background: rgb(230, 230, 230);
+    border-radius: 5px;
 }
 </style>

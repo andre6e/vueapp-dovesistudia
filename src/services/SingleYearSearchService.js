@@ -115,6 +115,7 @@ var elabChordData = function(regions_list, mode) {
 // GENERAL SECTION
 
 var elabTotalIscritti = function () {
+    console.log(DATA)
     return d3.sum(DATA, d =>  d[CSV_KEYS.ISCRITTI]);
 };
 

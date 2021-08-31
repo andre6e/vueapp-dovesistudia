@@ -49,7 +49,6 @@ export default {
             dateAxis.renderer.grid.template.location = this.chartConfig.dateAxis.location;
             dateAxis.renderer.minGridDistance = this.chartConfig.dateAxis.minGridDistance;
 
-
             chart.yAxes.push(new am4charts.ValueAxis());
 
             // Create series

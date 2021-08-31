@@ -1,16 +1,25 @@
 export var SORTED_BARCHART_DATA = [
     {
     "regione": "Facebook",
-    "students": 2255250000
+    "students": 225525
     },
     {
     "regione": "Google+",
-    "students": 430000000
+    "students": 430000
     },
     {
     "regione": "Instagram",
-    "students": 1000000000
-    }
+    "students": 1000000
+    },
+    {
+    "regione": "Asdfas",
+    "students": 100000
+    },
+    {
+    "regione": "fasfasfa",
+    "students": 200000
+    },
+
 ]
 
 export var SORTED_BARCHART_DATA2 = [
