@@ -12,7 +12,9 @@ import {
     BARCHART_X_AXES,
     TOP_N_REGIONS,
     OUT_MODE,
-    IN_MODE
+    IN_MODE,
+    PIECHART_VALUE_FIELD,
+    PIECHART_CATEGORY_FIELD
 } from '../constants/constants';
 
 var DATA = {}
@@ -99,14 +101,80 @@ var elabBarChartData = function (filteredData, mode) {
     }
 };
 
+var safeElabPieChartData = function(filteredData, outBarChartData, inBarchartData) {
+    var outAscendingPieChartData = elabPieChartData(filteredData, outBarChartData.ascendingData, OUT_MODE);
+    var outDescendingPieChartData = elabPieChartData(filteredData, outBarChartData.descendingData, OUT_MODE);
+
+    var inAscendingPieChartData = elabPieChartData(filteredData, inBarchartData.ascendingData, IN_MODE);
+    var inDescendingPieChartData = elabPieChartData(filteredData, inBarchartData.descendingData, IN_MODE);
+
+    return {
+        out: {
+            ascendingPieChartData: outAscendingPieChartData,
+            descendingPieChartData: outDescendingPieChartData,
+        },
+        in: {
+            ascendingPieChartData: inAscendingPieChartData,
+            descendingPieChartData: inDescendingPieChartData
+        }
+    }
+};
+
+var elabPieChartData = function(filteredData, regions_list, mode) {
+    // var filteredData = filteredData;
+    var students_map = null;
+    regions_list = regions_list.map(d => d.regione);
+
+    if (mode == OUT_MODE) {
+        // OUTGOING
+        filteredData = filteredData.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_FROM])});
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
+    } else {
+        // INCOMING
+        filteredData = filteredData.filter(function (d) { return regions_list.includes(d[CSV_KEYS.REGIONE_TO])});
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO], d => d[CSV_KEYS.REGIONE_FROM])
+    }
+    
+    var SAME_GRAND_TOTAL = 0;
+    var OTHER_GRAND_TOTAL = 0;
+
+    students_map.forEach(function (value, key) {
+        var same_region = value.get(key);
+        var other_regions = 0;
+
+        value.forEach(function (subValue, subKey) {
+            if (key != subKey) {
+                other_regions += subValue
+            }
+        });
+
+        SAME_GRAND_TOTAL += same_region;
+        OTHER_GRAND_TOTAL += other_regions;
+    });
+
+    var same_obj = {}
+    same_obj[PIECHART_CATEGORY_FIELD] = "Stessa regione"
+    same_obj[PIECHART_VALUE_FIELD] = SAME_GRAND_TOTAL
+    
+    var other_obj = {}
+    other_obj[PIECHART_CATEGORY_FIELD] = "Altre regioni"
+    other_obj[PIECHART_VALUE_FIELD] = OTHER_GRAND_TOTAL
+
+    return [same_obj, other_obj]
+};
+
 // LOADER
 
 var loadMultiYearData = function(filteredData) {
+    var outBarChartData = elabBarChartData(filteredData, OUT_MODE);
+    var inBarchartData = elabBarChartData(filteredData, IN_MODE);
+    
     return {
         totalNumber: elabTotalIscritti(filteredData),
         singleTrandChartData: elabSingleTrandChartData(filteredData),
-        outBarChartData: elabBarChartData(filteredData, OUT_MODE),
-        inBarChartData: elabBarChartData(filteredData, IN_MODE),
+        outBarChartData: outBarChartData,
+        inBarChartData: inBarchartData,
+        pieChartData: safeElabPieChartData(filteredData, outBarChartData, inBarchartData)
     }
 }
 

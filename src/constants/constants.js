@@ -293,3 +293,19 @@ export var HORIZONTAL_BARCHART_CONFIG = {
         locationX: 1
     }
 }
+
+export var PIECHART_OUT_ID = "PIECHART_OUT_ID"
+export var PIECHART_IN_ID = "PIECHART_IN_ID"
+export var PIECHART_VALUE_FIELD = "students"
+export var PIECHART_CATEGORY_FIELD = "region"
+
+export var PIECHART_CONF = {
+    pieSeries: {
+        value: PIECHART_VALUE_FIELD,
+        category: PIECHART_CATEGORY_FIELD,
+        strokeOpacity: 1,
+        opacity: 1,
+        endAngle: -90,
+        startAngle: -90
+    }
+};

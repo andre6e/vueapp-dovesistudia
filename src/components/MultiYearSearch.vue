@@ -35,31 +35,49 @@
         </section>
        
         <section>
-            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti uscenti </p>
-            
-            <b-field class="has-text-centered">
-                <b-switch v-model="isOutgoingSwitchOn"
-                    @input="outGoingSwitchChanged"
-                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
-                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
-                    {{ isOutgoingSwitchOn }}
-                </b-switch>
-            </b-field>
-            <HorizontalBarChartComponent :chart-data="HORIZONTAL_OUT_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_OUT_ID"/>
+            <div class="columns">
+                <div class="column is-two-third">
+                    <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti uscenti </p>
+                    
+                    <b-field class="has-text-centered">
+                        <b-switch v-model="isOutgoingSwitchOn"
+                            @input="outGoingSwitchChanged"
+                            :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                            :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                            {{ isOutgoingSwitchOn }}
+                        </b-switch>
+                    </b-field>
+                    <HorizontalBarChartComponent :chart-data="HORIZONTAL_OUT_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_OUT_ID"/>
+                </div>
+
+                <div class="column is-one-third">
+                    <p class="has-text-centered"> Verso dove si sono spostati? </p>
+                    <PieChartComponent :chart-data="OUT_PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="PIECHART_OUT_ID"/>
+                </div>
+            </div>
         </section>
         
         <section>
-            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti in arrivo </p>
-            
-            <b-field class="has-text-centered">
-                <b-switch v-model="isIncomingSwitchOn"
-                    @input="incomingSwitchChanged"
-                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
-                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
-                    {{ isIncomingSwitchOn }}
-                </b-switch>
-            </b-field>
-            <HorizontalBarChartComponent :chart-data="HORIZONTAL_IN_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_IN_ID"/>
+            <div class="columns">
+                <div class="column is-two-third">
+                    <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti in arrivo </p>
+                    
+                    <b-field class="has-text-centered">
+                        <b-switch v-model="isIncomingSwitchOn"
+                            @input="incomingSwitchChanged"
+                            :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                            :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                            {{ isIncomingSwitchOn }}
+                        </b-switch>
+                    </b-field>
+                    <HorizontalBarChartComponent :chart-data="HORIZONTAL_IN_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_IN_ID"/>
+                </div>
+
+                <div class="column is-one-third">
+                    <p class="has-text-centered"> Da dove sono arrivati? </p>
+                    <PieChartComponent :chart-data="IN_PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="PIECHART_IN_ID"/>
+                </div>
+            </div>
         </section>
 
     </div>
@@ -70,6 +88,7 @@
 import * as MultiYearSearchService from '../services/MultiYearSearchService.js'
 import TrendLineComponent from './TrendLineComponent.vue'
 import HorizontalBarChartComponent from './HorizontalBarChartComponent.vue'
+import PieChartComponent from './PieChartComponent.vue'
 
 import {
     ACCADEMIC_YEARS_MULTI, 
@@ -80,7 +99,10 @@ import {
     HORIZONTAL_BARCHART_CONFIG,
     HORIZONTAL_BARCHART_OUT_ID,
     HORIZONTAL_BARCHART_IN_ID,
-    TOP_N_REGIONS
+    TOP_N_REGIONS,
+    PIECHART_CONF,
+    PIECHART_OUT_ID,
+    PIECHART_IN_ID
 } from '../constants/constants';
 
 
@@ -88,7 +110,8 @@ export default {
     name: 'MultiYearSearch',
     components: {
         TrendLineComponent,
-        HorizontalBarChartComponent
+        HorizontalBarChartComponent,
+        PieChartComponent
     },
     data: function() {
         return {
@@ -111,7 +134,15 @@ export default {
             HORIZONTAL_BARCHART_IN_DATA_COPY: null,
             HORIZONTAL_BARCHART_OUT_ID,
             HORIZONTAL_BARCHART_IN_ID,
-            totalNumber: 0
+            totalNumber: 0,
+            OUT_PIECHART_DATA: null,
+            OUT_PIECHART_DATA_COPY: null,
+            PIECHART_CONF,
+            PIECHART_OUT_ID,
+            PIECHART_IN_ID,
+            IN_PIECHART_DATA: null,
+            IN_PIECHART_DATA_COPY: null,
+
         }
     },
     mounted: function() {
@@ -130,9 +161,15 @@ export default {
 
                 that.HORIZONTAL_BARCHART_OUT_DATA_COPY = data.outBarChartData;
                 that.HORIZONTAL_BARCHART_IN_DATA_COPY = data.inBarChartData;
-                
+
                 that.HORIZONTAL_OUT_BARCHART_DATA = that.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData
                 that.HORIZONTAL_IN_BARCHART_DATA = that.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.inBarChartData.descendingData : data.inBarChartData.ascendingData
+
+                that.OUT_PIECHART_DATA_COPY = data.pieChartData.out;
+                that.OUT_PIECHART_DATA = that.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.pieChartData.out.descendingPieChartData : data.pieChartData.out.ascendingPieChartData
+                
+                that.IN_PIECHART_DATA_COPY = data.pieChartData.in;
+                that.IN_PIECHART_DATA = that.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.pieChartData.in.descendingPieChartData : data.pieChartData.in.ascendingPieChartData
             }).catch(function (err) {
                 console.log(err)
             });
@@ -151,13 +188,21 @@ export default {
 
                 this.HORIZONTAL_OUT_BARCHART_DATA = this.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData;
                 this.HORIZONTAL_IN_BARCHART_DATA = this.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.inBarChartData.descendingData : data.inBarChartData.ascendingData;
+
+                this.OUT_PIECHART_DATA_COPY = data.pieChartData.out;
+                this.OUT_PIECHART_DATA = this.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.pieChartData.out.descendingPieChartData : data.pieChartData.out.ascendingPieChartData
+
+                this.IN_PIECHART_DATA_COPY = data.pieChartData.in;
+                this.IN_PIECHART_DATA = this.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.pieChartData.in.descendingPieChartData : data.pieChartData.in.ascendingPieChartData
             }
         },
         outGoingSwitchChanged(e) {
-            this.HORIZONTAL_OUT_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.HORIZONTAL_BARCHART_OUT_DATA_COPY.descendingData : this.HORIZONTAL_BARCHART_OUT_DATA_COPY.ascendingData
+            this.HORIZONTAL_OUT_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.HORIZONTAL_BARCHART_OUT_DATA_COPY.descendingData : this.HORIZONTAL_BARCHART_OUT_DATA_COPY.ascendingData;
+            this.OUT_PIECHART_DATA = this.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? this.OUT_PIECHART_DATA_COPY.descendingPieChartData : this.OUT_PIECHART_DATA_COPY.ascendingPieChartData;
         },
         incomingSwitchChanged(e) {
             this.HORIZONTAL_IN_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.HORIZONTAL_BARCHART_IN_DATA_COPY.descendingData : this.HORIZONTAL_BARCHART_IN_DATA_COPY.ascendingData
+            this.IN_PIECHART_DATA = this.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? this.IN_PIECHART_DATA_COPY.descendingPieChartData : this.IN_PIECHART_DATA_COPY.ascendingPieChartData
         },
     }
 

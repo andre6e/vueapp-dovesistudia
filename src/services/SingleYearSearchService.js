@@ -241,11 +241,7 @@ var elabDetailedTabData = function(regions_list, mode) {
         total_outgoing = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_TO]);
     }
 
-    
-
-    // var outgoing_region_provinces = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.PROVINCIA_FROM])
     var data = []
-
 
     students_map.forEach(function (out_regs, key) {
         var totalRegionStudents = 0;
@@ -449,42 +445,3 @@ export function getDetailedOutSelectionText(outgoing_list_param) {
 
     return base_str;
 }
-
-
-// BACKUPS
-
-
-// var elabOutgoingPieChartData = function(outgoing_list_param) {
-//     var outgoingFilteredData = outgoing_list_param ? 
-//         DATA.filter(function (d) { return outgoing_list_param.includes(d[CSV_KEYS.REGIONE_FROM])}) : DATA;
-
-//     var outgoing_students = d3.rollup(outgoingFilteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM], d => d[CSV_KEYS.REGIONE_TO])
-
-//     var SAME_GRAND_TOTAL = 0;
-//     var OTHER_GRAND_TOTAL = 0;
-
-//     outgoing_students.forEach(function (value, key) {
-//         var same_region = value.get(key);
-//         var other_regions = 0;
-
-//         value.forEach(function (subValue, subKey) {
-//             if (key != subKey) {
-//                 other_regions += subValue
-//             }
-//         });
-
-//         SAME_GRAND_TOTAL += same_region;
-//         OTHER_GRAND_TOTAL += other_regions;
-//     });
-
-//     return [
-//         {
-//             "region" : "Stessa regione",
-//             "students": SAME_GRAND_TOTAL
-//         },
-//         {
-//             "region": "Altre regioni",
-//             "students": OTHER_GRAND_TOTAL
-//         }
-//     ]
-// }
