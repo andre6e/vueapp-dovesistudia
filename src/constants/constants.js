@@ -258,7 +258,7 @@ export var TRENDLINE_CONF = {
     series: {
         tooltipText: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Iscritti: {valueY}[/]",
         valueY: TRANDLINE_VALUE_FIELD,
-        dateX: TOOLTIP_TOOLTIP_FIELD
+        dateX: TRANDLINE_KEY_FIELD
     }
 
 };
