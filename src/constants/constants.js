@@ -247,7 +247,9 @@ export var ACCADEMIC_YEARS_MULTI_MAX = 2018
 export var GLOBAL_TRAND_ISCRITTI_CHART_ID = "GLOBAL_TRAND_ISCRITTI_CHART_ID"
 
 export var TRANDLINE_KEY_FIELD = "year"
+export var TRANDLINE_KEY_FIELD2 = "year2"
 export var TRANDLINE_VALUE_FIELD = "value"
+export var TRANDLINE_VALUE_FIELD2 = "value2"
 export var TOOLTIP_TOOLTIP_FIELD = "tooltip"
 
 export var TRENDLINE_CONF = {
@@ -260,7 +262,26 @@ export var TRENDLINE_CONF = {
         valueY: TRANDLINE_VALUE_FIELD,
         dateX: TRANDLINE_KEY_FIELD
     }
+};
 
+export var DOUBLE_TRAND_ISCRITTI_CHART_ID = "DOUBLE_TRAND_ISCRITTI_CHART_ID"
+export var ESCLUDI_SNR_STUDENTS = "escludi studenti che restano nella stessa regione"
+export var INCLUDI_SNR_STUDENTS = "includi studenti che restano nella stessa regione"
+export var DOUBLE_TRENDLINE_CONF = {
+    dateAxis: {
+        location: 0.5,
+        minGridDistance: 40
+    },
+    series: {
+        tooltipText: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Iscritti uscenti: {valueY}[/]",
+        tooltipText2: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Iscritti entranti: {valueY}[/]",
+        valueY: TRANDLINE_VALUE_FIELD,
+        dateX: TRANDLINE_KEY_FIELD,
+        valueY2: TRANDLINE_VALUE_FIELD2,
+        dateX2: TRANDLINE_KEY_FIELD2,
+        name: "Studenti in uscita",
+        name2: "Studenti in arrivo"
+    }
 };
 
 export var HORIZONTAL_BARCHART_OUT_ID = "HORIZONTAL_BARCHART_OUT_ID"

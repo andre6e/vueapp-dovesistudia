@@ -59,9 +59,20 @@ export default {
             series.dataFields.dateX = this.chartConfig.series.dateX;
             
             series.bullets.push(new am4charts.CircleBullet());
+
+            if (this.chartConfig.series.valueY2) {    
+                var series2 = chart.series.push(new am4charts.LineSeries());
+                series2.tooltipText = this.chartConfig.series.tooltipText2;
+                series2.dataFields.valueY = this.chartConfig.series.valueY2;
+                series2.dataFields.dateX = this.chartConfig.series.dateX2;
+                series2.bullets.push(new am4charts.CircleBullet());
+
+                series.name = this.chartConfig.series.name;
+                series2.name = this.chartConfig.series.name2;
+                chart.legend = new am4charts.Legend();
+            }
             
             chart.logo.disabled = true;
-            
             this.chart = chart
         }
     },

@@ -80,6 +80,42 @@
             </div>
         </section>
 
+        <section>
+            <h1 class="has-text-centered"> FOCUS SU UNA SINGOLA REGIONE </h1>
+
+            
+            <div class="has-text-centered">
+                <b-field label="Selezione regione">
+                    <b-select class="has-text-centered" placeholder="Seleziona una regione" @change.native="onRegionSelection()" v-model="selectedRegion">
+                        <option :value="null"> --- seleziona una regione --- </option>
+                        <option
+                            v-for="region in REGIONS_LIST"
+                            :value="region"
+                            :key="region"
+                            >
+                            {{ region }}
+                        </option>
+                    </b-select>
+                </b-field>
+            </div>
+            
+            <div v-if="selectedRegion">
+                <p class=" has-text-centered"> Trend studenti iscritti uscenti vs entranti </p>
+
+                <b-field class="has-text-centered">
+                    <b-switch v-model="isRegionNsrSwitchOn"
+                        @input="regionFocusSnrClicked"
+                        :true-value="INCLUDI_SNR_STUDENTS"
+                        :false-value="ESCLUDI_SNR_STUDENTS">
+                        {{ isRegionNsrSwitchOn }}
+                    </b-switch>
+                </b-field>
+
+                <TrendLineComponent :v-if="DOUBLE_TRENDLINE_DATA" :chart-data="DOUBLE_TRENDLINE_DATA" :chart-config="DOUBLE_TRENDLINE_CONF" :chart-id="DOUBLE_TRAND_ISCRITTI_CHART_ID"/>    
+            </div>
+        
+        </section>
+
     </div>
 </template>
 
@@ -94,6 +130,7 @@ import {
     ACCADEMIC_YEARS_MULTI, 
     GLOBAL_TRAND_ISCRITTI_CHART_ID,
     TRENDLINE_CONF,
+    DOUBLE_TRENDLINE_CONF,
     MAGGIOR_NUMERO_SWITCH_TEXT,
     MINOR_NUMERO_SWITCH_TEXT,
     HORIZONTAL_BARCHART_CONFIG,
@@ -102,7 +139,11 @@ import {
     TOP_N_REGIONS,
     PIECHART_CONF,
     PIECHART_OUT_ID,
-    PIECHART_IN_ID
+    PIECHART_IN_ID,
+    DOUBLE_TRAND_ISCRITTI_CHART_ID,
+    REGIONS_LIST,
+    ESCLUDI_SNR_STUDENTS,
+    INCLUDI_SNR_STUDENTS
 } from '../constants/constants';
 
 
@@ -119,13 +160,19 @@ export default {
             isLoading: true,
             MAGGIOR_NUMERO_SWITCH_TEXT,
             MINOR_NUMERO_SWITCH_TEXT,
+            ESCLUDI_SNR_STUDENTS,
+            INCLUDI_SNR_STUDENTS,
             isOutgoingSwitchOn: MAGGIOR_NUMERO_SWITCH_TEXT,
             isIncomingSwitchOn: MAGGIOR_NUMERO_SWITCH_TEXT,
+            isRegionNsrSwitchOn: INCLUDI_SNR_STUDENTS,
             ACCADEMIC_YEARS: ACCADEMIC_YEARS_MULTI,
             SELECTED_YEARS: [2010, 2019],
             TRENDLINE_DATA: null,
+            DOUBLE_TRENDLINE_DATA: null,
             TRENDLINE_CONF,
+            DOUBLE_TRENDLINE_CONF,
             GLOBAL_TRAND_ISCRITTI_CHART_ID,
+            DOUBLE_TRAND_ISCRITTI_CHART_ID,
             HORIZONTAL_OUT_BARCHART_DATA: null,
             HORIZONTAL_IN_BARCHART_DATA: null,
             HORIZONTAL_BARCHART_CONFIG,
@@ -142,7 +189,10 @@ export default {
             PIECHART_IN_ID,
             IN_PIECHART_DATA: null,
             IN_PIECHART_DATA_COPY: null,
-
+            selectedRegion: null,
+            REGIONS_LIST: REGIONS_LIST,
+            DOUBLE_TRENDLINE_DATA_COPY: null,
+            
         }
     },
     mounted: function() {
@@ -178,6 +228,10 @@ export default {
             if (selection[1] - selection[0] == 0) {
                 console.log("seleziona meglio l'anno")
             } else {
+                // resetto la selezione del focus sulla regione e la copia dei dati
+                this.selectedRegion = null;
+                this.DOUBLE_TRENDLINE_DATA_COPY = null;
+
                 var data = MultiYearSearchService.getMultiYearData(selection);
                 console.log("MULTIYEAR SEARCH RECEIVED ELAB DATA", data);
                 this.totalNumber = data.totalNumber;
@@ -204,6 +258,17 @@ export default {
             this.HORIZONTAL_IN_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.HORIZONTAL_BARCHART_IN_DATA_COPY.descendingData : this.HORIZONTAL_BARCHART_IN_DATA_COPY.ascendingData
             this.IN_PIECHART_DATA = this.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? this.IN_PIECHART_DATA_COPY.descendingPieChartData : this.IN_PIECHART_DATA_COPY.ascendingPieChartData
         },
+        onRegionSelection() {
+            if (this.selectedRegion) {
+                var data = MultiYearSearchService.getRegionDoubleTrandLineData(this.selectedRegion);
+                this.DOUBLE_TRENDLINE_DATA_COPY = data;
+                console.log(data)
+                this.DOUBLE_TRENDLINE_DATA = this.isRegionNsrSwitchOn == ESCLUDI_SNR_STUDENTS ? data.nsrData : data.fullData
+            }
+        },
+        regionFocusSnrClicked(e) {
+            this.DOUBLE_TRENDLINE_DATA = e == ESCLUDI_SNR_STUDENTS ? this.DOUBLE_TRENDLINE_DATA_COPY.nsrData : this.DOUBLE_TRENDLINE_DATA_COPY.fullData
+        }
     }
 
 }

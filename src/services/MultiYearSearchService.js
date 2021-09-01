@@ -8,6 +8,8 @@ import {
     TRANDLINE_KEY_FIELD,
     TRANDLINE_VALUE_FIELD,
     TOOLTIP_TOOLTIP_FIELD,
+    TRANDLINE_KEY_FIELD2,
+    TRANDLINE_VALUE_FIELD2,
     BARCHART_Y_AXES,
     BARCHART_X_AXES,
     TOP_N_REGIONS,
@@ -18,15 +20,9 @@ import {
 } from '../constants/constants';
 
 var DATA = {}
+var FILTERED_DATA = []
 
 // HELPERS
-// var sortStudentsDescending = function(arr) {
-//     return arr.sort(function (a, b) {
-//         if (b.students > a.students) return -1;
-//         else if (a.students > b.students) return 1;
-//         else return 0;
-//     });
-// };
 
 var sortStudentsAscending = function(arr) {
     return arr.sort(function (a, b) {
@@ -38,7 +34,7 @@ var sortStudentsAscending = function(arr) {
 
 var getFirstNElementsFromArray = function(arr, N) {
     return arr.slice(0, N);
-}
+};
 
 // ELABORATORS
 
@@ -163,20 +159,67 @@ var elabPieChartData = function(filteredData, regions_list, mode) {
     return [same_obj, other_obj]
 };
 
+var elabRegionDoubleTrandLineData = function (region) {
+    var toReturn = [];
+    var nsrToReturn = [];
+
+    // Dati completi
+    var filteredDataOut = FILTERED_DATA.filter(function (d) { return d[CSV_KEYS.REGIONE_FROM] == region});
+    var filteredDataIn = FILTERED_DATA.filter(function (d) { return d[CSV_KEYS.REGIONE_TO] == region});
+    var students_map_out =  d3.rollup(filteredDataOut, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.ANNO]);
+    var students_map_in =  d3.rollup(filteredDataIn, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.ANNO]);
+    
+    students_map_out.forEach(function (value, key) {
+        var year_obj = {};
+        
+        year_obj[TRANDLINE_KEY_FIELD] = key.split('/')[0]
+        year_obj[TRANDLINE_VALUE_FIELD] = value;
+        year_obj[TOOLTIP_TOOLTIP_FIELD] = key
+        
+        year_obj[TRANDLINE_KEY_FIELD2] = key.split('/')[0]
+        year_obj[TRANDLINE_VALUE_FIELD2] = students_map_in.get(key);
+        toReturn.push(year_obj)
+    });
+    
+    // NO SAME REGION (escludo quelli che si muovono all'interno della stessa regione)
+    var filteredDataNoSameRegion = FILTERED_DATA.filter(function (d) { return d[CSV_KEYS.REGIONE_FROM] != d[CSV_KEYS.REGIONE_TO]});
+    var filteredDataOutNSR = filteredDataNoSameRegion.filter(function (d) { return d[CSV_KEYS.REGIONE_FROM] == region});
+    var filteredDataInNSR = filteredDataNoSameRegion.filter(function (d) { return d[CSV_KEYS.REGIONE_TO] == region});
+    var students_map_out_NSR =  d3.rollup(filteredDataOutNSR, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.ANNO]);
+    var students_map_in_NSR =  d3.rollup(filteredDataInNSR, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.ANNO]);
+    
+    students_map_out_NSR.forEach(function (value, key) {
+        var year_obj = {};
+
+        year_obj[TRANDLINE_KEY_FIELD] = key.split('/')[0]
+        year_obj[TRANDLINE_VALUE_FIELD] = value;
+        year_obj[TOOLTIP_TOOLTIP_FIELD] = key
+
+        year_obj[TRANDLINE_KEY_FIELD2] = key.split('/')[0]
+        year_obj[TRANDLINE_VALUE_FIELD2] = students_map_in_NSR.get(key);
+        nsrToReturn.push(year_obj)
+    });
+
+    return {
+        fullData: toReturn,
+        nsrData: nsrToReturn
+    }
+};
+
 // LOADER
 
-var loadMultiYearData = function(filteredData) {
-    var outBarChartData = elabBarChartData(filteredData, OUT_MODE);
-    var inBarchartData = elabBarChartData(filteredData, IN_MODE);
+var loadMultiYearData = function() {
+    var outBarChartData = elabBarChartData(FILTERED_DATA, OUT_MODE);
+    var inBarchartData = elabBarChartData(FILTERED_DATA, IN_MODE);
     
     return {
-        totalNumber: elabTotalIscritti(filteredData),
-        singleTrandChartData: elabSingleTrandChartData(filteredData),
+        totalNumber: elabTotalIscritti(FILTERED_DATA),
+        singleTrandChartData: elabSingleTrandChartData(FILTERED_DATA),
         outBarChartData: outBarChartData,
         inBarChartData: inBarchartData,
-        pieChartData: safeElabPieChartData(filteredData, outBarChartData, inBarchartData)
+        pieChartData: safeElabPieChartData(FILTERED_DATA, outBarChartData, inBarchartData),
     }
-}
+};
 
 // API
 export function getMultiYearData(selection) {
@@ -191,7 +234,8 @@ export function getMultiYearData(selection) {
         filteredData = filteredData.concat(DATA[key_to_read]);
     }
 
-    return loadMultiYearData(filteredData);
+    FILTERED_DATA = filteredData;
+    return loadMultiYearData();
 }
 
 export async function loadAllData() {
@@ -206,3 +250,6 @@ export async function loadAllData() {
     return getMultiYearData([ACCADEMIC_YEARS_MULTI_MIN, ACCADEMIC_YEARS_MULTI_MAX]);
 }
 
+export function getRegionDoubleTrandLineData(region) {
+    return elabRegionDoubleTrandLineData(region);
+}
