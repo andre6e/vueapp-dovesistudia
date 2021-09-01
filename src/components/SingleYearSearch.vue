@@ -266,12 +266,6 @@ import BarChartComponent from './BarChartComponent.vue'
 import DetailedTableView from './DetailedTableView.vue'
 import TableComponent from './TableComponent.vue'
 
-
-// import MultiSelectComponent from './MultiSelectComponent.vue'
-
-// import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
-// import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
-
 import {
     CHORD_GENERAL_SINGLEY_ID,
     MAP_INCOMING_ID,
@@ -295,8 +289,7 @@ export default {
         ChordDiagramComponent,
         BarChartComponent,
         DetailedTableView,
-        TableComponent,
-        // MultiSelectComponent
+        TableComponent
     },
     data: function() {
         return {
@@ -307,8 +300,6 @@ export default {
             years: ACCADEMIC_YEARS,
             selectedYear: DEFAULT_SELECTED_YEAR,
             totalNumber: 0,
-            // REGIONS_MOCK_DATA,
-            // REGIONS_MOCK_DATA2,
             GENERAL_TABLE_DATA: null,
             DETAILED_OUT_BARCHART_DATA: null,
             DETAILED_IN_BARCHART_DATA: null,
