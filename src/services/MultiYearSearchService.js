@@ -4,7 +4,10 @@ import {
     CSV_KEYS,
     ACCADEMIC_YEARS,
     ACCADEMIC_YEARS_MULTI_MIN,
-    ACCADEMIC_YEARS_MULTI_MAX
+    ACCADEMIC_YEARS_MULTI_MAX,
+    TRANDLINE_KEY_FIELD,
+    TRANDLINE_VALUE_FIELD,
+    TOOLTIP_TOOLTIP_FIELD
 } from '../constants/constants';
 
 var DATA = {}
@@ -30,9 +33,27 @@ var elabTotalIscritti = function (filteredData) {
     return d3.sum(filteredData, d =>  d[CSV_KEYS.ISCRITTI]);
 };
 
+var elabSingleTrandChartData = function (filteredData) {
+    var toReturn = [];
+
+    var students_map =  d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.ANNO]);
+
+    students_map.forEach(function (value, key) {
+        var year_obj = {};
+
+        year_obj[TRANDLINE_KEY_FIELD] = key.split('/')[0]
+        year_obj[TRANDLINE_VALUE_FIELD] = value;
+        year_obj[TOOLTIP_TOOLTIP_FIELD] = key
+        toReturn.push(year_obj)
+    });
+
+    return toReturn;
+};
+
 var elabMultiYearData = function(filteredData) {
     return {
-        totalNumber: elabTotalIscritti(filteredData)
+        totalNumber: elabTotalIscritti(filteredData),
+        singleTrandChartData: elabSingleTrandChartData(filteredData)
     }
 }
 

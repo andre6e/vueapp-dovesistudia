@@ -24,16 +24,18 @@
 
         <section>
             <div v-if="!isLoading" class="has-text-centered margin-10-tb">
-                <p class="heading">Studenti immatricolati</p>
+                <p class="heading">Studenti iscritti</p>
                 <p class="title"> {{totalNumber}} </p> 
             </div>
         </section>
     
         <section>
-            <TrendLineComponent :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="GLOBAL_TRAND_ISCRITTI_CHART_ID"/>
+            <p class=" has-text-centered"> Trend studenti iscritti </p>
+            <TrendLineComponent :v-if="TRENDLINE_DATA" :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="GLOBAL_TRAND_ISCRITTI_CHART_ID"/>
         </section>
        
         <section>
+            <p class=" has-text-centered"> Top 5 region in base agli studenti uscenti </p>
             <SortedBarChartComponent :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" chart-id="sdasd"/>
         </section>
     </div>
@@ -47,10 +49,10 @@ import SortedBarChartComponent from './SortedBarChartComponent.vue'
 
 import {
     ACCADEMIC_YEARS_MULTI, 
-    GLOBAL_TRAND_ISCRITTI_CHART_ID
+    GLOBAL_TRAND_ISCRITTI_CHART_ID,
+    TRENDLINE_CONF
 } from '../constants/constants';
 
-import { TRENDLINE_DATA, TRENDLINE_CONF } from '../data/trendline_mock'
 import { SORTED_BARCHART_DATA, SORTED_BARCHART_CONFIG } from '../data/sortedbarchart_mock'
 
 export default {
@@ -65,7 +67,7 @@ export default {
             isLoading: true,
             ACCADEMIC_YEARS: ACCADEMIC_YEARS_MULTI,
             SELECTED_YEARS: [2010, 2019],
-            TRENDLINE_DATA,
+            TRENDLINE_DATA: null,
             TRENDLINE_CONF,
             GLOBAL_TRAND_ISCRITTI_CHART_ID,
             SORTED_BARCHART_DATA,
@@ -82,9 +84,10 @@ export default {
             var that = this;
 
             MultiYearSearchService.loadAllData().then(function (data) {
-                console.log(data)
+                console.log("MULTIYEAR SEARCH RECEIVED ELAB DATA", data);
                 that.isLoading = false;
                 that.totalNumber = data.totalNumber;
+                that.TRENDLINE_DATA = data.singleTrandChartData;
             }).catch(function (err) {
                 console.log(err)
             });
@@ -94,7 +97,9 @@ export default {
                 console.log("seleziona meglio l'anno")
             } else {
                 var data = MultiYearSearchService.getMultiYearData(selection);
+                console.log("MULTIYEAR SEARCH RECEIVED ELAB DATA", data);
                 this.totalNumber = data.totalNumber;
+                this.TRENDLINE_DATA = data.singleTrandChartData;
             }
         }
     }

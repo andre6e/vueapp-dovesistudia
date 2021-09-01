@@ -244,3 +244,20 @@ export var ACCADEMIC_YEARS_MULTI = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 20
 export var ACCADEMIC_YEARS_MULTI_MIN = 2010
 export var ACCADEMIC_YEARS_MULTI_MAX = 2018
 export var GLOBAL_TRAND_ISCRITTI_CHART_ID = "GLOBAL_TRAND_ISCRITTI_CHART_ID"
+
+export var TRANDLINE_KEY_FIELD = "year"
+export var TRANDLINE_VALUE_FIELD = "value"
+export var TOOLTIP_TOOLTIP_FIELD = "tooltip"
+
+export var TRENDLINE_CONF = {
+    dateAxis: {
+        location: 0.5,
+        minGridDistance: 40
+    },
+    series: {
+        tooltipText: "{tooltip}\n[bold font-size: 17px]Iscritti: {valueY}[/]",
+        valueY: "value",
+        dateX: "year"
+    }
+
+};

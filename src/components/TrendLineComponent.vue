@@ -36,10 +36,11 @@ export default {
         mountChart() {
             let chart = am4core.create(this.chartId, am4charts.XYChart);
 
-            // Enable chart cursor
+            // Disable chart cursor
             chart.cursor = new am4charts.XYCursor();
             chart.cursor.lineX.disabled = true;
             chart.cursor.lineY.disabled = true;
+            chart.cursor.behavior = "none";
 
             // Add data
             chart.data = this.chartData

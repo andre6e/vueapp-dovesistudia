@@ -360,7 +360,7 @@ export default {
             this.isLoading = true;
 
             SingleYearSearchService.getSingleYearData(this.selectedYear).then(function (data) {
-                console.log(data)
+                console.log("SINGLE YEAR SEARCH RECEIVED ELAB DATA", data)
                 that.totalNumber = data.totalNumber;
                 that.GENERAL_TABLE_DATA = data.generalTabData;
                 that.GENERAL_CHORD_DATA = data.generalChordData;
@@ -405,7 +405,7 @@ export default {
         },
         updateDetailedOutSectionData() {
             let data = SingleYearSearchService.updateOutDetailedView(this.DETAILED_OUT_MAP_CURRENT_SELECTION);
-            console.log(data)
+            console.log("SINGLE YEAR SEARCH OUT SECTION RECEIVED ELAB DATA", data)
             this.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
             this.DETAILED_OUT_TAB_DATA = data.detailedOutTabData;
             this.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
@@ -417,7 +417,7 @@ export default {
         },
         updateDetailedInSectionData() {
             let data = SingleYearSearchService.updateInDetailedView(this.DETAILED_IN_MAP_CURRENT_SELECTION);
-            console.log(data)
+            console.log("SINGLE YEAR SEARCH IN SECTION RECEIVED ELAB DATA", data)
 
             this.DETAILED_IN_MAP_DATA = data.detailedInMapData;
             this.DETAILED_IN_SAME_GRAND_TOTAL = data.detailedInPercentage.sameGrandTotal;
