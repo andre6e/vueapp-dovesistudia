@@ -263,15 +263,15 @@ export var TRENDLINE_CONF = {
 
 };
 
+export var HORIZONTAL_BARCHART_OUT_ID = "HORIZONTAL_BARCHART_OUT_ID"
+export var HORIZONTAL_BARCHART_IN_ID = "HORIZONTAL_BARCHART_IN_ID"
 export var MAGGIOR_NUMERO_SWITCH_TEXT = "MAGGIOR NUMERO"
 export var MINOR_NUMERO_SWITCH_TEXT = "MINOR NUMERO"
 export var TOP_N_REGIONS = 5
-
 export var BARCHART_Y_AXES = "students"
 export var BARCHART_X_AXES = "regione"
 
-
-export var SORTED_BARCHART_CONFIG = {
+export var HORIZONTAL_BARCHART_CONFIG = {
     x_axes: BARCHART_X_AXES,
     y_axes: BARCHART_Y_AXES,
     categoryAxis: {

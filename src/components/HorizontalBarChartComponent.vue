@@ -12,7 +12,7 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 am4core.useTheme(am4themes_animated);
 
 export default {
-    name: 'SortedBarChartComponent',
+    name: 'HorizontalBarChartComponent',
     props: {
         chartData: {
             type: Array,
@@ -65,8 +65,7 @@ export default {
             series.columns.template.adapter.add("fill", function(fill, target){
                 return chart.colors.getIndex(target.dataItem.index);
             });
-
-            // categoryAxis.sortBySeries = series;
+ 
             chart.data = this.chartData;
 
             chart.logo.disabled = true;

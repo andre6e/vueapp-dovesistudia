@@ -10,7 +10,9 @@ import {
     TOOLTIP_TOOLTIP_FIELD,
     BARCHART_Y_AXES,
     BARCHART_X_AXES,
-    TOP_N_REGIONS
+    TOP_N_REGIONS,
+    OUT_MODE,
+    IN_MODE
 } from '../constants/constants';
 
 var DATA = {}
@@ -66,11 +68,21 @@ var elabSingleTrandChartData = function (filteredData) {
     return toReturn;
 };
 
-var elabOutBarChartData = function (filteredData) {
+var elabBarChartData = function (filteredData, mode) {
     var toReturn = [];
-    var outgoing_students = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM]);
 
-    outgoing_students.forEach(function (value, key) {
+    var students_map = null;
+
+    if (mode == OUT_MODE) {
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM]);
+    } else {
+        students_map = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_TO]);
+    }
+
+  
+    // var outgoing_students = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM]);
+
+    students_map.forEach(function (value, key) {
         var obj = {};
 
         obj[BARCHART_X_AXES] = key;
@@ -93,7 +105,8 @@ var loadMultiYearData = function(filteredData) {
     return {
         totalNumber: elabTotalIscritti(filteredData),
         singleTrandChartData: elabSingleTrandChartData(filteredData),
-        outBarChartData: elabOutBarChartData(filteredData)
+        outBarChartData: elabBarChartData(filteredData, OUT_MODE),
+        inBarChartData: elabBarChartData(filteredData, IN_MODE),
     }
 }
 

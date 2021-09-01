@@ -45,8 +45,23 @@
                     {{ isOutgoingSwitchOn }}
                 </b-switch>
             </b-field>
-            <HorizontalBarChartComponent :chart-data="SORTED_OUT_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" chart-id="sdasd"/>
+            <HorizontalBarChartComponent :chart-data="HORIZONTAL_OUT_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_OUT_ID"/>
         </section>
+        
+        <section>
+            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti in arrivo </p>
+            
+            <b-field class="has-text-centered">
+                <b-switch v-model="isIncomingSwitchOn"
+                    @input="incomingSwitchChanged"
+                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                    {{ isIncomingSwitchOn }}
+                </b-switch>
+            </b-field>
+            <HorizontalBarChartComponent :chart-data="HORIZONTAL_IN_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_IN_ID"/>
+        </section>
+
     </div>
 </template>
 
@@ -62,7 +77,9 @@ import {
     TRENDLINE_CONF,
     MAGGIOR_NUMERO_SWITCH_TEXT,
     MINOR_NUMERO_SWITCH_TEXT,
-    SORTED_BARCHART_CONFIG,
+    HORIZONTAL_BARCHART_CONFIG,
+    HORIZONTAL_BARCHART_OUT_ID,
+    HORIZONTAL_BARCHART_IN_ID,
     TOP_N_REGIONS
 } from '../constants/constants';
 
@@ -80,15 +97,20 @@ export default {
             MAGGIOR_NUMERO_SWITCH_TEXT,
             MINOR_NUMERO_SWITCH_TEXT,
             isOutgoingSwitchOn: MAGGIOR_NUMERO_SWITCH_TEXT,
+            isIncomingSwitchOn: MAGGIOR_NUMERO_SWITCH_TEXT,
             ACCADEMIC_YEARS: ACCADEMIC_YEARS_MULTI,
             SELECTED_YEARS: [2010, 2019],
             TRENDLINE_DATA: null,
             TRENDLINE_CONF,
             GLOBAL_TRAND_ISCRITTI_CHART_ID,
-            SORTED_OUT_BARCHART_DATA: null,
-            SORTED_BARCHART_CONFIG,
+            HORIZONTAL_OUT_BARCHART_DATA: null,
+            HORIZONTAL_IN_BARCHART_DATA: null,
+            HORIZONTAL_BARCHART_CONFIG,
             TOP_N_REGIONS,
-            SORTED_BARCHART_OUT_DATA_COPY: null,
+            HORIZONTAL_BARCHART_OUT_DATA_COPY: null,
+            HORIZONTAL_BARCHART_IN_DATA_COPY: null,
+            HORIZONTAL_BARCHART_OUT_ID,
+            HORIZONTAL_BARCHART_IN_ID,
             totalNumber: 0
         }
     },
@@ -106,8 +128,11 @@ export default {
                 that.totalNumber = data.totalNumber;
                 that.TRENDLINE_DATA = data.singleTrandChartData;
 
-                that.SORTED_BARCHART_OUT_DATA_COPY = data.outBarChartData;
-                that.SORTED_OUT_BARCHART_DATA = that.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData
+                that.HORIZONTAL_BARCHART_OUT_DATA_COPY = data.outBarChartData;
+                that.HORIZONTAL_BARCHART_IN_DATA_COPY = data.inBarChartData;
+                
+                that.HORIZONTAL_OUT_BARCHART_DATA = that.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData
+                that.HORIZONTAL_IN_BARCHART_DATA = that.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.inBarChartData.descendingData : data.inBarChartData.ascendingData
             }).catch(function (err) {
                 console.log(err)
             });
@@ -121,13 +146,19 @@ export default {
                 this.totalNumber = data.totalNumber;
                 this.TRENDLINE_DATA = data.singleTrandChartData;
 
-                this.SORTED_BARCHART_OUT_DATA_COPY = data.outBarChartData;
-                this.SORTED_OUT_BARCHART_DATA = this.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData
+                this.HORIZONTAL_BARCHART_OUT_DATA_COPY = data.outBarChartData;
+                this.HORIZONTAL_BARCHART_IN_DATA_COPY = data.inBarChartData;
+
+                this.HORIZONTAL_OUT_BARCHART_DATA = this.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData;
+                this.HORIZONTAL_IN_BARCHART_DATA = this.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.inBarChartData.descendingData : data.inBarChartData.ascendingData;
             }
         },
         outGoingSwitchChanged(e) {
-            this.SORTED_OUT_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.SORTED_BARCHART_OUT_DATA_COPY.descendingData : this.SORTED_BARCHART_OUT_DATA_COPY.ascendingData
-        }
+            this.HORIZONTAL_OUT_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.HORIZONTAL_BARCHART_OUT_DATA_COPY.descendingData : this.HORIZONTAL_BARCHART_OUT_DATA_COPY.ascendingData
+        },
+        incomingSwitchChanged(e) {
+            this.HORIZONTAL_IN_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.HORIZONTAL_BARCHART_IN_DATA_COPY.descendingData : this.HORIZONTAL_BARCHART_IN_DATA_COPY.ascendingData
+        },
     }
 
 }
