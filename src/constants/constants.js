@@ -239,6 +239,7 @@ export var TYPOLOGY_LEGEND = {
     "VECCHIO ORDINAMENTO": "V.O."
 }
 
+
 // MULTIYEAR SELECTION
 export var ACCADEMIC_YEARS_MULTI = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 export var ACCADEMIC_YEARS_MULTI_MIN = 2010
@@ -255,9 +256,40 @@ export var TRENDLINE_CONF = {
         minGridDistance: 40
     },
     series: {
-        tooltipText: "{tooltip}\n[bold font-size: 17px]Iscritti: {valueY}[/]",
-        valueY: "value",
-        dateX: "year"
+        tooltipText: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Iscritti: {valueY}[/]",
+        valueY: TRANDLINE_VALUE_FIELD,
+        dateX: TOOLTIP_TOOLTIP_FIELD
     }
 
 };
+
+export var MAGGIOR_NUMERO_SWITCH_TEXT = "MAGGIOR NUMERO"
+export var MINOR_NUMERO_SWITCH_TEXT = "MINOR NUMERO"
+export var TOP_N_REGIONS = 5
+
+export var BARCHART_Y_AXES = "students"
+export var BARCHART_X_AXES = "regione"
+
+
+export var SORTED_BARCHART_CONFIG = {
+    x_axes: BARCHART_X_AXES,
+    y_axes: BARCHART_Y_AXES,
+    categoryAxis: {
+        location: 0,
+        minGridDistance: 1,
+        inversed: true,
+        template_disabled: true
+    },
+    series: {
+        tooltipText: "{valueX.value}",
+        strokeOpacity: 0,
+        cornerRadiusBottomRight: 5,
+        cornerRadiusTopRight: 5
+    },
+    labelBullet: {
+        horizontalCenter: "left",
+        dx: 10,
+        text: "{values.valueX.workingValue.formatNumber('#.0as')}",
+        locationX: 1
+    }
+}

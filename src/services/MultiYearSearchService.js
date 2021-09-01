@@ -7,19 +7,36 @@ import {
     ACCADEMIC_YEARS_MULTI_MAX,
     TRANDLINE_KEY_FIELD,
     TRANDLINE_VALUE_FIELD,
-    TOOLTIP_TOOLTIP_FIELD
+    TOOLTIP_TOOLTIP_FIELD,
+    BARCHART_Y_AXES,
+    BARCHART_X_AXES,
+    TOP_N_REGIONS
 } from '../constants/constants';
 
 var DATA = {}
 
-
-
-// LOADERS
-
-// var loadGeneralStatistics = function() {
-    
-    
+// HELPERS
+// var sortStudentsDescending = function(arr) {
+//     return arr.sort(function (a, b) {
+//         if (b.students > a.students) return -1;
+//         else if (a.students > b.students) return 1;
+//         else return 0;
+//     });
 // };
+
+var sortStudentsAscending = function(arr) {
+    return arr.sort(function (a, b) {
+        if (a.students > b.students) return 1;
+        else if (b.students > a.students) return -1;
+        else return 0;
+    });
+};
+
+var getFirstNElementsFromArray = function(arr, N) {
+    return arr.slice(0, N);
+}
+
+// ELABORATORS
 
 var elabRawData = function(data) {
     for (var i = 0; i<data.length; i++) {
@@ -35,7 +52,6 @@ var elabTotalIscritti = function (filteredData) {
 
 var elabSingleTrandChartData = function (filteredData) {
     var toReturn = [];
-
     var students_map =  d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]),  d => d[CSV_KEYS.ANNO]);
 
     students_map.forEach(function (value, key) {
@@ -50,13 +66,36 @@ var elabSingleTrandChartData = function (filteredData) {
     return toReturn;
 };
 
-var elabMultiYearData = function(filteredData) {
+var elabOutBarChartData = function (filteredData) {
+    var toReturn = [];
+    var outgoing_students = d3.rollup(filteredData, v => d3.sum(v, d => d[CSV_KEYS.ISCRITTI]), d => d[CSV_KEYS.REGIONE_FROM]);
+
+    outgoing_students.forEach(function (value, key) {
+        var obj = {};
+
+        obj[BARCHART_X_AXES] = key;
+        obj[BARCHART_Y_AXES] = value;
+        toReturn.push(obj);
+    });
+
+    var ascendingList = sortStudentsAscending(toReturn);
+    var descendingList = ascendingList.slice().reverse();
+
+    return {
+        ascendingData: getFirstNElementsFromArray(ascendingList, TOP_N_REGIONS),
+        descendingData: getFirstNElementsFromArray(descendingList, TOP_N_REGIONS)
+    }
+};
+
+// LOADER
+
+var loadMultiYearData = function(filteredData) {
     return {
         totalNumber: elabTotalIscritti(filteredData),
-        singleTrandChartData: elabSingleTrandChartData(filteredData)
+        singleTrandChartData: elabSingleTrandChartData(filteredData),
+        outBarChartData: elabOutBarChartData(filteredData)
     }
 }
-
 
 // API
 export function getMultiYearData(selection) {
@@ -71,7 +110,7 @@ export function getMultiYearData(selection) {
         filteredData = filteredData.concat(DATA[key_to_read]);
     }
 
-    return elabMultiYearData(filteredData);
+    return loadMultiYearData(filteredData);
 }
 
 export async function loadAllData() {

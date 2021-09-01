@@ -35,8 +35,17 @@
         </section>
        
         <section>
-            <p class=" has-text-centered"> Top 5 region in base agli studenti uscenti </p>
-            <SortedBarChartComponent :chart-data="SORTED_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" chart-id="sdasd"/>
+            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti uscenti </p>
+            
+            <b-field class="has-text-centered">
+                <b-switch v-model="isOutgoingSwitchOn"
+                    @input="outGoingSwitchChanged"
+                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                    {{ isOutgoingSwitchOn }}
+                </b-switch>
+            </b-field>
+            <HorizontalBarChartComponent :chart-data="SORTED_OUT_BARCHART_DATA" :chart-config="SORTED_BARCHART_CONFIG" chart-id="sdasd"/>
         </section>
     </div>
 </template>
@@ -45,33 +54,41 @@
 
 import * as MultiYearSearchService from '../services/MultiYearSearchService.js'
 import TrendLineComponent from './TrendLineComponent.vue'
-import SortedBarChartComponent from './SortedBarChartComponent.vue'
+import HorizontalBarChartComponent from './HorizontalBarChartComponent.vue'
 
 import {
     ACCADEMIC_YEARS_MULTI, 
     GLOBAL_TRAND_ISCRITTI_CHART_ID,
-    TRENDLINE_CONF
+    TRENDLINE_CONF,
+    MAGGIOR_NUMERO_SWITCH_TEXT,
+    MINOR_NUMERO_SWITCH_TEXT,
+    SORTED_BARCHART_CONFIG,
+    TOP_N_REGIONS
 } from '../constants/constants';
 
-import { SORTED_BARCHART_DATA, SORTED_BARCHART_CONFIG } from '../data/sortedbarchart_mock'
 
 export default {
     name: 'MultiYearSearch',
     components: {
         TrendLineComponent,
-        SortedBarChartComponent
+        HorizontalBarChartComponent
     },
     data: function() {
         return {
             // isGeneralStatisticSingleYearSearchOpen: true,
             isLoading: true,
+            MAGGIOR_NUMERO_SWITCH_TEXT,
+            MINOR_NUMERO_SWITCH_TEXT,
+            isOutgoingSwitchOn: MAGGIOR_NUMERO_SWITCH_TEXT,
             ACCADEMIC_YEARS: ACCADEMIC_YEARS_MULTI,
             SELECTED_YEARS: [2010, 2019],
             TRENDLINE_DATA: null,
             TRENDLINE_CONF,
             GLOBAL_TRAND_ISCRITTI_CHART_ID,
-            SORTED_BARCHART_DATA,
+            SORTED_OUT_BARCHART_DATA: null,
             SORTED_BARCHART_CONFIG,
+            TOP_N_REGIONS,
+            SORTED_BARCHART_OUT_DATA_COPY: null,
             totalNumber: 0
         }
     },
@@ -88,6 +105,9 @@ export default {
                 that.isLoading = false;
                 that.totalNumber = data.totalNumber;
                 that.TRENDLINE_DATA = data.singleTrandChartData;
+
+                that.SORTED_BARCHART_OUT_DATA_COPY = data.outBarChartData;
+                that.SORTED_OUT_BARCHART_DATA = that.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData
             }).catch(function (err) {
                 console.log(err)
             });
@@ -100,7 +120,13 @@ export default {
                 console.log("MULTIYEAR SEARCH RECEIVED ELAB DATA", data);
                 this.totalNumber = data.totalNumber;
                 this.TRENDLINE_DATA = data.singleTrandChartData;
+
+                this.SORTED_BARCHART_OUT_DATA_COPY = data.outBarChartData;
+                this.SORTED_OUT_BARCHART_DATA = this.isOutgoingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.outBarChartData.descendingData : data.outBarChartData.ascendingData
             }
+        },
+        outGoingSwitchChanged(e) {
+            this.SORTED_OUT_BARCHART_DATA = e == MAGGIOR_NUMERO_SWITCH_TEXT ? this.SORTED_BARCHART_OUT_DATA_COPY.descendingData : this.SORTED_BARCHART_OUT_DATA_COPY.ascendingData
         }
     }
 

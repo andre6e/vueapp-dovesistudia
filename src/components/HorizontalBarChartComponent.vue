@@ -66,7 +66,7 @@ export default {
                 return chart.colors.getIndex(target.dataItem.index);
             });
 
-            categoryAxis.sortBySeries = series;
+            // categoryAxis.sortBySeries = series;
             chart.data = this.chartData;
 
             chart.logo.disabled = true;
