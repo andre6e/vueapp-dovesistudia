@@ -306,6 +306,7 @@ export var PIECHART_CONF = {
         strokeOpacity: 1,
         opacity: 1,
         endAngle: -90,
-        startAngle: -90
+        startAngle: -90,
+        labelsTemplateText: "{category}\n{value.percent.formatNumber('#.0')}%"
     }
 };

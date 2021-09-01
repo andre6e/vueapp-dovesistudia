@@ -48,14 +48,14 @@ export default {
             pieSeries.slices.template.strokeOpacity = this.chartConfig.pieSeries.strokeOpacity;
             pieSeries.slices.template.stroke = am4core.color("#fff");
 
-            // This creates initial animation
-            pieSeries.hiddenState.properties.opacity = this.chartConfig.pieSeries.opacity;
-            pieSeries.hiddenState.properties.endAngle = this.chartConfig.pieSeries.endAngle;
-            pieSeries.hiddenState.properties.startAngle = this.chartConfig.pieSeries.startAngle;
+            pieSeries.ticks.template.disabled = true;
+            pieSeries.alignLabels = false;
+            pieSeries.labels.template.text = this.chartConfig.pieSeries.labelsTemplateText;
+            pieSeries.labels.template.radius = am4core.percent(-40);
+            pieSeries.labels.template.fill = am4core.color("white");
 
-            chart.hiddenState.properties.radius = am4core.percent(0);
+            // chart.hiddenState.properties.radius = am4core.percent(0);
             chart.logo.disabled = true;
-
             this.chart = chart;
         }
     },
