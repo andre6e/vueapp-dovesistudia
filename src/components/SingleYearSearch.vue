@@ -267,11 +267,9 @@ import DetailedTableView from './DetailedTableView.vue'
 import TableComponent from './TableComponent.vue'
 
 
-//import PieChartComponent from './PieChartComponent.vue'
 // import MultiSelectComponent from './MultiSelectComponent.vue'
 
 // import { REGIONS_MOCK_DATA, REGIONS_MOCK_DATA2} from '../data/regions_map_mock'
-// import {  PIECHART_CONF } from '../data/piechart_mock'
 // import { PROVINCESTABLE_MOCK, PROVINCESTABLE_MOCK2 } from '../data/provincestable_mock'
 
 import {
@@ -298,7 +296,6 @@ export default {
         BarChartComponent,
         DetailedTableView,
         TableComponent,
-        // PieChartComponent,
         // MultiSelectComponent
     },
     data: function() {
@@ -322,7 +319,6 @@ export default {
             DETAILED_IN_MAP_DATA: null,
             DETAILED_OUT_TAB_DATA: null,
             DETAILED_IN_TAB_DATA: null,
-            // OUTGOING_PIE_DATA: null,
             DETAILED_OUT_TABLE_DATA: null,
             DETAILED_OUT_CHORD_DATA: null,
             DETAILED_OUT_SAME_PERCENTAGE : null,
@@ -345,8 +341,6 @@ export default {
             IN_BAR_CHART_FIELD_OF_STUDY,
             CHORD_DETAILED_OUT_SINGLEY_ID,
             CHORD_DETAILED_IN_SINGLEY_ID,
-            //PIECHART_DATA,
-            // PIECHART_CONF
         }
     },
     mounted: function() {
@@ -374,7 +368,6 @@ export default {
                 that.DETAILED_OUT_BARCHART_DATA = data.detailedOutBarChartData;
                 that.DETAILED_IN_BARCHART_DATA = data.detailedInBarChartData;
 
-                // that.OUTGOING_PIE_DATA = data.detailedOutPieChartData;
                 that.DETAILED_OUT_CHORD_DATA = data.detailedOutChordData;
                 that.DETAILED_IN_CHORD_DATA = data.detailedInChordData;
                 
