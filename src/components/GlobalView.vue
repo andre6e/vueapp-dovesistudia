@@ -23,12 +23,7 @@ export default {
     components: {
         SingleYearSeach,
         MultiYearSearch
-    },
-    // data: function() {
-    //     return {
-    //         TAB_MODEL: 1
-    //     }
-    // },
+    }
 }
 </script>
 

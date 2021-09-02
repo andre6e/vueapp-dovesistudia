@@ -11,16 +11,6 @@
         :options="geoJsonOptions"
       ></l-geo-json>
 
-      <!--
-      <div class="my-info-container">
-        <ul>
-          <li v-for="region in activatedRegions" :key="region">
-            {{region}} : {{mapDataCopy.data[region].amount}}
-          </li>
-        </ul>
-      </div>
-      -->
-
       <div class="my-info-container">
         <span> Studenti {{mapData.tooltip_text}} </span>
         

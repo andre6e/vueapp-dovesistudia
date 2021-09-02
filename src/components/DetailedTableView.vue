@@ -19,7 +19,6 @@
             </template>
         </b-table>
     </div>
-    
 </template>
 
 <script>

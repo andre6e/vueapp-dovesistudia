@@ -45,23 +45,23 @@ export default {
         this.chart.nodes.template.clickable = false;
         this.chart.nodes.template.draggable = false;
 
-        this.updateChartData()
-        this.updateChartConfig()
+        this.updateChartData();
+        this.updateChartConfig();
     },
     methods: {
         updateChartData() {
             if (this.archsHidable) {
-                this.chart.data = this.autoArchsHidden ? this.chartData.noAutoArchsData : this.chartData.completeData
+                this.chart.data = this.autoArchsHidden ? this.chartData.noAutoArchsData : this.chartData.completeData;
             } else {
-                this.chart.data = this.chartData.completeData
+                this.chart.data = this.chartData.completeData;
             }
         },
         updateChartConfig() {
-            this.chart.dataFields = this.chartConfig.dataFields
+            this.chart.dataFields = this.chartConfig.dataFields;
         },
         onHideAutoArchs() {
             this.autoArchsHidden = !this.autoArchsHidden;
-            this.updateChartData()
+            this.updateChartData();
         },
         resetHiddenArchState() {
             this.autoArchsHidden = false;

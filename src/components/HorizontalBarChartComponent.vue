@@ -67,9 +67,7 @@ export default {
             });
  
             chart.data = this.chartData;
-
             chart.logo.disabled = true;
-
             this.chart = chart
         }
     },
