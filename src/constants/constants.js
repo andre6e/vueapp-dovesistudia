@@ -267,6 +267,7 @@ export var TRENDLINE_CONF = {
 export var DOUBLE_TRAND_ISCRITTI_CHART_ID = "DOUBLE_TRAND_ISCRITTI_CHART_ID"
 export var ESCLUDI_SNR_STUDENTS = "escludi studenti che restano nella stessa regione"
 export var INCLUDI_SNR_STUDENTS = "includi studenti che restano nella stessa regione"
+export var DEFAULT_DOUBLE_TREND_SELECTED_REGION = "BASILICATA"
 export var DOUBLE_TRENDLINE_CONF = {
     dateAxis: {
         location: 0.5,

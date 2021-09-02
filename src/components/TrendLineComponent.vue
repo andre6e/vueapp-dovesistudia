@@ -70,6 +70,7 @@ export default {
                 series.name = this.chartConfig.series.name;
                 series2.name = this.chartConfig.series.name2;
                 chart.legend = new am4charts.Legend();
+                chart.legend.itemContainers.template.togglable = false;
             }
             
             chart.logo.disabled = true;

@@ -16,7 +16,8 @@ import {
     OUT_MODE,
     IN_MODE,
     PIECHART_VALUE_FIELD,
-    PIECHART_CATEGORY_FIELD
+    PIECHART_CATEGORY_FIELD,
+    DEFAULT_DOUBLE_TREND_SELECTED_REGION
 } from '../constants/constants';
 
 var DATA = {}
@@ -218,6 +219,7 @@ var loadMultiYearData = function() {
         outBarChartData: outBarChartData,
         inBarChartData: inBarchartData,
         pieChartData: safeElabPieChartData(FILTERED_DATA, outBarChartData, inBarchartData),
+        doubleTrandLineData: elabRegionDoubleTrandLineData(DEFAULT_DOUBLE_TREND_SELECTED_REGION)
     }
 };
 

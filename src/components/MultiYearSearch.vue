@@ -27,94 +27,126 @@
                 <p class="title"> {{totalNumber}} </p> 
             </div>
         </section>
-    
+
+        <!-- GENERAL STATISTICS -->
         <section>
-            <p class=" has-text-centered"> Trend studenti iscritti </p>
-            <TrendLineComponent :v-if="TRENDLINE_DATA" :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="GLOBAL_TRAND_ISCRITTI_CHART_ID"/>
-        </section>
-       
-        <section>
-            <div class="columns">
-                <div class="column is-two-third">
-                    <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti uscenti </p>
-                    
-                    <b-field class="has-text-centered">
-                        <b-switch v-model="isOutgoingSwitchOn"
-                            @input="outGoingSwitchChanged"
-                            :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
-                            :false-value="MINOR_NUMERO_SWITCH_TEXT">
-                            {{ isOutgoingSwitchOn }}
-                        </b-switch>
-                    </b-field>
-                    <HorizontalBarChartComponent :chart-data="HORIZONTAL_OUT_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_OUT_ID"/>
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isGeneralStatisticsOpen">
+                <div
+                    slot="trigger" 
+                    slot-scope="props"
+                    class="card-header"
+                    role="button"
+                    aria-controls="contentIdForA11y3"
+                   >
+                    <p class="card-header-title">
+                        Statistiche generali
+                    </p>
+                    <a class="card-header-icon">
+                        <b-icon
+                            :icon="props.open ? 'menu-down' : 'menu-up'">
+                        </b-icon>
+                    </a>
                 </div>
 
-                <div class="column is-one-third">
-                    <p class="has-text-centered"> Verso dove si sono spostati? </p>
-                    <PieChartComponent :chart-data="OUT_PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="PIECHART_OUT_ID"/>
+                <div class="my-card-content">
+                    <div>
+                        <p class=" has-text-centered"> Trend studenti iscritti </p>
+                        <TrendLineComponent :v-if="TRENDLINE_DATA" :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="GLOBAL_TRAND_ISCRITTI_CHART_ID"/>
+                    </div>
+
+                    <div class="columns">
+                        <div class="column is-two-third">
+                            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base al numero di studenti che partono dalla propria regione di residenza </p>
+                            
+                            <b-field class="has-text-centered">
+                                <b-switch v-model="isOutgoingSwitchOn"
+                                    @input="outGoingSwitchChanged"
+                                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                                    {{ isOutgoingSwitchOn }}
+                                </b-switch>
+                            </b-field>
+                            <HorizontalBarChartComponent :chart-data="HORIZONTAL_OUT_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_OUT_ID"/>
+                        </div>
+
+                        <div class="column is-one-third">
+                            <p class="has-text-centered"> Verso dove si sono spostati? </p>
+                            <PieChartComponent :chart-data="OUT_PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="PIECHART_OUT_ID"/>
+                        </div>
+                    </div>
+         
+                    <div class="columns">
+                        <div class="column is-two-third">
+                            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base al numero di studenti in arrivo nelle regioni dell'Ateneo scelto </p>
+                            
+                            <b-field class="has-text-centered">
+                                <b-switch v-model="isIncomingSwitchOn"
+                                    @input="incomingSwitchChanged"
+                                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                                    {{ isIncomingSwitchOn }}
+                                </b-switch>
+                            </b-field>
+                            <HorizontalBarChartComponent :chart-data="HORIZONTAL_IN_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_IN_ID"/>
+                        </div>
+
+                        <div class="column is-one-third">
+                            <p class="has-text-centered"> Da dove sono arrivati? </p>
+                            <PieChartComponent :chart-data="IN_PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="PIECHART_IN_ID"/>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </b-collapse>
         </section>
         
-        <section>
-            <div class="columns">
-                <div class="column is-two-third">
-                    <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base agli studenti in arrivo </p>
+        <!-- SINGLE REGION TRENDS -->
+        <section class="margin-10-tb">
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isSingleRegionStatisticOpen">
+                <div
+                    slot="trigger" 
+                    slot-scope="props"
+                    class="card-header"
+                    role="button"
+                    aria-controls="contentIdForA11y3"
+                   >
+                    <p class="card-header-title">
+                        Trand studenti in uscita vs in entrata (singola regione)
+                    </p>
+                    <a class="card-header-icon">
+                        <b-icon
+                            :icon="props.open ? 'menu-down' : 'menu-up'">
+                        </b-icon>
+                    </a>
+                </div>
+
+                <div class="has-text-centered margin-10-tb">
                     
+                        <b-select class="has-text-centered" placeholder="Seleziona una regione" @change.native="onRegionSelection()" v-model="selectedRegion">
+                            <option
+                                v-for="region in REGIONS_LIST"
+                                :value="region"
+                                :key="region"
+                                >
+                                {{ region }}
+                            </option>
+                        </b-select>
+                    
+                </div>
+                
+                <div v-if="selectedRegion">
                     <b-field class="has-text-centered">
-                        <b-switch v-model="isIncomingSwitchOn"
-                            @input="incomingSwitchChanged"
-                            :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
-                            :false-value="MINOR_NUMERO_SWITCH_TEXT">
-                            {{ isIncomingSwitchOn }}
+                        <b-switch v-model="isRegionNsrSwitchOn"
+                            @input="regionFocusSnrClicked"
+                            :true-value="INCLUDI_SNR_STUDENTS"
+                            :false-value="ESCLUDI_SNR_STUDENTS">
+                            {{ isRegionNsrSwitchOn }}
                         </b-switch>
                     </b-field>
-                    <HorizontalBarChartComponent :chart-data="HORIZONTAL_IN_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_IN_ID"/>
+
+                    <TrendLineComponent :v-if="DOUBLE_TRENDLINE_DATA" :chart-data="DOUBLE_TRENDLINE_DATA" :chart-config="DOUBLE_TRENDLINE_CONF" :chart-id="DOUBLE_TRAND_ISCRITTI_CHART_ID"/>    
                 </div>
-
-                <div class="column is-one-third">
-                    <p class="has-text-centered"> Da dove sono arrivati? </p>
-                    <PieChartComponent :chart-data="IN_PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="PIECHART_IN_ID"/>
-                </div>
-            </div>
+            </b-collapse>
         </section>
-
-        <section>
-            <h1 class="has-text-centered"> FOCUS SU UNA SINGOLA REGIONE </h1>
-
-            
-            <div class="has-text-centered">
-                <b-field label="Selezione regione">
-                    <b-select class="has-text-centered" placeholder="Seleziona una regione" @change.native="onRegionSelection()" v-model="selectedRegion">
-                        <option :value="null"> --- seleziona una regione --- </option>
-                        <option
-                            v-for="region in REGIONS_LIST"
-                            :value="region"
-                            :key="region"
-                            >
-                            {{ region }}
-                        </option>
-                    </b-select>
-                </b-field>
-            </div>
-            
-            <div v-if="selectedRegion">
-                <p class=" has-text-centered"> Trend studenti iscritti uscenti vs entranti </p>
-
-                <b-field class="has-text-centered">
-                    <b-switch v-model="isRegionNsrSwitchOn"
-                        @input="regionFocusSnrClicked"
-                        :true-value="INCLUDI_SNR_STUDENTS"
-                        :false-value="ESCLUDI_SNR_STUDENTS">
-                        {{ isRegionNsrSwitchOn }}
-                    </b-switch>
-                </b-field>
-
-                <TrendLineComponent :v-if="DOUBLE_TRENDLINE_DATA" :chart-data="DOUBLE_TRENDLINE_DATA" :chart-config="DOUBLE_TRENDLINE_CONF" :chart-id="DOUBLE_TRAND_ISCRITTI_CHART_ID"/>    
-            </div>
-        
-        </section>
-
     </div>
 </template>
 
@@ -142,9 +174,9 @@ import {
     DOUBLE_TRAND_ISCRITTI_CHART_ID,
     REGIONS_LIST,
     ESCLUDI_SNR_STUDENTS,
-    INCLUDI_SNR_STUDENTS
+    INCLUDI_SNR_STUDENTS,
+    DEFAULT_DOUBLE_TREND_SELECTED_REGION
 } from '../constants/constants';
-
 
 export default {
     name: 'MultiYearSearch',
@@ -155,7 +187,6 @@ export default {
     },
     data: function() {
         return {
-            // isGeneralStatisticSingleYearSearchOpen: true,
             isLoading: true,
             MAGGIOR_NUMERO_SWITCH_TEXT,
             MINOR_NUMERO_SWITCH_TEXT,
@@ -188,14 +219,14 @@ export default {
             PIECHART_IN_ID,
             IN_PIECHART_DATA: null,
             IN_PIECHART_DATA_COPY: null,
-            selectedRegion: null,
+            selectedRegion: DEFAULT_DOUBLE_TREND_SELECTED_REGION,
             REGIONS_LIST: REGIONS_LIST,
             DOUBLE_TRENDLINE_DATA_COPY: null,
-            
+            isGeneralStatisticsOpen: true,
+            isSingleRegionStatisticOpen: true
         }
     },
     mounted: function() {
-        // ci sarà da controllare se al cambio tab si ripassa da qui e si fa un refresh non richiesto
         this.initializeSingleYearSearch();
     },
     methods: {
@@ -219,6 +250,9 @@ export default {
                 
                 that.IN_PIECHART_DATA_COPY = data.pieChartData.in;
                 that.IN_PIECHART_DATA = that.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.pieChartData.in.descendingPieChartData : data.pieChartData.in.ascendingPieChartData
+
+                that.DOUBLE_TRENDLINE_DATA_COPY = data.doubleTrandLineData;
+                that.DOUBLE_TRENDLINE_DATA = that.isRegionNsrSwitchOn == ESCLUDI_SNR_STUDENTS ? data.doubleTrandLineData.nsrData : data.doubleTrandLineData.fullData
             }).catch(function (err) {
                 console.log(err)
             });
@@ -227,10 +261,6 @@ export default {
             if (selection[1] - selection[0] == 0) {
                 console.log("seleziona meglio l'anno")
             } else {
-                // resetto la selezione del focus sulla regione e la copia dei dati
-                this.selectedRegion = null;
-                this.DOUBLE_TRENDLINE_DATA_COPY = null;
-
                 var data = MultiYearSearchService.getMultiYearData(selection);
                 console.log("MULTIYEAR SEARCH RECEIVED ELAB DATA", data);
                 this.totalNumber = data.totalNumber;
@@ -247,6 +277,9 @@ export default {
 
                 this.IN_PIECHART_DATA_COPY = data.pieChartData.in;
                 this.IN_PIECHART_DATA = this.isIncomingSwitchOn == MAGGIOR_NUMERO_SWITCH_TEXT ? data.pieChartData.in.descendingPieChartData : data.pieChartData.in.ascendingPieChartData
+                
+                this.DOUBLE_TRENDLINE_DATA_COPY = data.doubleTrandLineData;
+                this.DOUBLE_TRENDLINE_DATA = this.isRegionNsrSwitchOn == ESCLUDI_SNR_STUDENTS ? data.doubleTrandLineData.nsrData : data.doubleTrandLineData.fullData
             }
         },
         outGoingSwitchChanged(e) {
@@ -269,7 +302,6 @@ export default {
             this.DOUBLE_TRENDLINE_DATA = e == ESCLUDI_SNR_STUDENTS ? this.DOUBLE_TRENDLINE_DATA_COPY.nsrData : this.DOUBLE_TRENDLINE_DATA_COPY.fullData
         }
     }
-
 }
 </script>
 

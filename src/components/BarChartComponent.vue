@@ -64,7 +64,6 @@ export default {
             let series = chart.series.push(new am4charts.ColumnSeries());  
             series.columns.template.width = am4core.percent(50);
    
-
             series.columns.template.adapter.add("fill", function(fill, target) {
                 return chart.colors.getIndex(target.dataItem.index);
             })
@@ -82,32 +81,21 @@ export default {
 
             chart.logo.disabled = true;
 
-            // var legend = new am4charts.Legend();
-            // legend.parent = chart.chartContainer;
-            // legend.itemContainers.template.togglable = false;
-            // legend.marginTop = 20;
-
             var legend = new am4charts.Legend();
             chart.legend = legend;
             legend.itemContainers.template.togglable = false;
 
-
-
-
-    
-
-          series.events.on("ready", function() {
-            var legenddata = [];
-            series.columns.each(function(column) {
-                legenddata.push({
-                name: column.dataItem.categoryX,
-                fill: column.fill
+            series.events.on("ready", function() {
+                var legenddata = [];
+                series.columns.each(function(column) {
+                    legenddata.push({
+                    name: column.dataItem.categoryX,
+                    fill: column.fill
+                    });
                 });
+                
+                legend.data = legenddata;
             });
-            legend.data = legenddata;
-        });
-
-
 
             this.chart = chart
         }
@@ -130,7 +118,7 @@ export default {
 }
 
 .full-height {
-    height: 90%;
+    height: 95%;
 }
 
 .fixed-height {

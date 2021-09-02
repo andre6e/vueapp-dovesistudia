@@ -29,9 +29,9 @@
         </div>
 
         <div class="domain-values">
-          <span class="domain-min"> {{mapDataCopy.min}} </span>
+          <span class="domain-min"> {{mapDataCopy.min.toLocaleString()}} </span>
           <span class="domain-med"> {{ MEDIAN_VALUE }} </span>
-          <span class="domain-max"> {{mapDataCopy.max}} </span>
+          <span class="domain-max"> {{mapDataCopy.max.toLocaleString()}} </span>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ export default {
             "<strong> Regione: </strong>" + region_name + 
           "</div>" +
           "<div> "+
-            "<strong> Studenti " + this.mapData.tooltip_text + ": </strong> " + reg.amount + 
+            "<strong> Studenti " + this.mapData.tooltip_text + ": </strong> " + reg.amount.toLocaleString() + 
           "</div>";
       
       return html;
@@ -255,7 +255,7 @@ export default {
         else return 0;
       });
 
-      this.MEDIAN_VALUE = Math.round(this.getMedianValue(amounts));
+      this.MEDIAN_VALUE = Math.round(this.getMedianValue(amounts)).toLocaleString();
       
       for (let i=0; i<amounts.length; i++) {
         var color = linear(amounts[i]);

@@ -149,7 +149,7 @@
                         </div>
 
                         <div class="column">
-                            <p class="subtitle has-text-centered"> A conseguire quale titolo? </p>
+                            <p class="has-text-centered"> A conseguire quale titolo? </p>
                             <BarChartComponent v-if="DETAILED_OUT_BARCHART_DATA" :chart-data="DETAILED_OUT_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUT_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
                         </div>
                     </div>      
@@ -183,8 +183,8 @@
                         <div class="media-content margin-10-b">
                             <div class="content info-section">
                                 <p class="has-text-centered">
-                                    Questa sezione permette di analizzare il flusso di studenti in uscita dalle regioni.
-                                    Il click su mappa della regione di interesse permetterà di analizzare "verso dove" si sono spostati gli studenti residenti nella regione selezionata.
+                                    Questa sezione permette di analizzare il flusso di studenti in arrivo in determinate regioni.
+                                    Il click su mappa della regione di interesse permetterà di analizzare "da dove" gli studenti sono arrivati nella regione selezionata.
                                     I dati di tutti i grafi appartenenti a questa sezione verranno aggiornati interattivamente in base alla selezione delle regioni effettuata tramite mappa.
                                 </p>
                             </div>
@@ -215,7 +215,7 @@
                     
                     <div class="columns">
                         <div class="column">
-                            <p class="subtitle has-text-centered"> Flusso studenti arrivano </p>
+                            <p class="has-text-centered"> Flusso degli studenti </p>
                             <ChordDiagramComponent ref="DETAILED_CHORD_IN_SY" v-if="DETAILED_IN_CHORD_DATA" :chart-data="DETAILED_IN_CHORD_DATA" :chart-id="CHORD_DETAILED_IN_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                                     class="panel-heading"
                                     role="button"
                                     aria-controls="contentIdForA11y2">
-                                    <strong> Suddivisione regione arrivo su regioni di partenza </strong>
+                                    <strong> Suddivisione regione di destinazione su regioni di partenza </strong>
                                 </div>
                                 
                                 <div class="panel-block">
@@ -242,7 +242,7 @@
                         </div>
 
                         <div class="column">
-                            <p class="subtitle has-text-centered"> A conseguire quale titolo? </p>
+                            <p class="has-text-centered"> A conseguire quale titolo? </p>
                             <BarChartComponent v-if="DETAILED_IN_BARCHART_DATA" :chart-data="DETAILED_IN_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="IN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
                         </div>
                     </div>
@@ -331,12 +331,10 @@ export default {
         }
     },
     mounted: function() {
-        // ci sarà da controllare se al cambio tab si ripassa da qui e si fa un refresh non richiesto
         this.initializeSingleYearSearch();
     },
     methods: {
         initializeSingleYearSearch() {
-            // alla search al cambio dell'anno resetto le mappe alla totalità
             var that = this;
             this.isLoading = true;
 
@@ -368,8 +366,8 @@ export default {
                 that.DETAILED_IN_SAME_PERCENTAGE = data.detailedInPercentage.samePercentage;
                 that.DETAILED_IN_OTHERS_PERCENTAGE = data.detailedInPercentage.othersPercentage;
 
-                // that.isGeneralStatisticSingleYearSearchOpen = true;
-                // that.isDetailedOutSectionOpen = true;
+                that.isGeneralStatisticSingleYearSearchOpen = true;
+                that.isDetailedOutSectionOpen = true;
                 that.isDetailedInSectionOpen = true;
                 that.isLoading = false;
             }).catch(function (err) {
