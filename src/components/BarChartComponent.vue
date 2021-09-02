@@ -1,11 +1,5 @@
 <template>
-    <div>
-        <div id="legendwrapper">
-            <div :id="'legenddiv' + chartId" class="legenddiv"></div>
-        </div>
-
-        <div class="chartdiv min-height" v-bind:class="{ 'full-height': chartHeight == 'full', 'fixed-height' : chartHeight != 'full'}" :id="chartId"> </div>
-    </div>
+    <div class="chartdiv min-height" v-bind:class="{ 'full-height': chartHeight == 'full', 'fixed-height' : chartHeight != 'full'}" :id="chartId"> </div>
 </template>
 
 <script>
@@ -64,8 +58,6 @@ export default {
                 return dy;
             });
 
-           
-
             chart.yAxes.push(new am4charts.ValueAxis());
 
             // Create series
@@ -100,26 +92,7 @@ export default {
             legend.itemContainers.template.togglable = false;
 
 
-            var legendContainer = am4core.create("legenddiv" + this.chartId, am4core.Container);
-            legendContainer.logo.disabled = true;
-            legendContainer.width = am4core.percent(100);
-            legendContainer.height = am4core.percent(50);
-            chart.legend.parent = legendContainer;
 
-            //legend.valueLabels.template.align = "right";
-            //legend.valueLabels.template.textAlign = "end";
-
-            //legend.position = "right";
-            // legend.contentAlign = "right";
-            //legend.valign = "top";
-
-            
-
-            // var bullet = series.bullets.push(new am4charts.LabelBullet);
-            // bullet.label.text = "{"+this.chartConfig.xaxes_name+"}";
-            // bullet.label.rotation = 90;
-            // bullet.label.truncate = false;
-            // bullet.label.hideOversized = false;
 
     
 
@@ -157,7 +130,7 @@ export default {
 }
 
 .full-height {
-    height: 100%;
+    height: 90%;
 }
 
 .fixed-height {
@@ -167,21 +140,5 @@ export default {
 .min-height {
     min-height: 300px;
 }
-
-#legendwrapper {
-  max-height: 50px;
-}
-
-#legendwrapper {
-  width: 100%;
-  height: 50px;
-  border: 1px dotted #c99;
-  margin: 1em 0;
-}
-
-.legenddiv {
-  height: 50px;
-}
-
 
 </style>

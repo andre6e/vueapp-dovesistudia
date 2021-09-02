@@ -1,6 +1,6 @@
 <template>
     <section>
-        <b-tabs position="is-centered" v-model="TAB_MODEL">
+        <b-tabs position="is-centered">
             <b-tab-item label="Singolo anno">
                 <SingleYearSeach></SingleYearSeach>
             </b-tab-item>
@@ -24,11 +24,11 @@ export default {
         SingleYearSeach,
         MultiYearSearch
     },
-    data: function() {
-        return {
-            TAB_MODEL: 1
-        }
-    },
+    // data: function() {
+    //     return {
+    //         TAB_MODEL: 1
+    //     }
+    // },
 }
 </script>
 

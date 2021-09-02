@@ -418,29 +418,29 @@ export function updateInDetailedView(incoming_list_param) {
 }
 
 export function getDetailedInSelectionText(incoming_list_param) {
-    var base_str = "Stai analizzando gli studenti che arrivano ";
+    var base_str = "Regioni selezionate: ";
 
             
     if (incoming_list_param.length == REGIONS_LIST.length) {
-        base_str += "in tutte le regioni";
+        base_str += "TUTTE";
     } else if (incoming_list_param.length == 1) {
-        base_str += "nella regione " + incoming_list_param[0];
+        base_str += "" + incoming_list_param[0];
     } else {
-        base_str += "nelle regioni " + formatCurrentRegionsName(incoming_list_param)
+        base_str += "" + formatCurrentRegionsName(incoming_list_param)
     }
 
     return base_str;
 }
 
 export function getDetailedOutSelectionText(outgoing_list_param) {
-    var base_str = "Stai analizzando gli studenti che vanno via ";
+    var base_str = "Regioni selezionate: ";
 
     if (outgoing_list_param.length == REGIONS_LIST.length) {
-        base_str += "da tutte le regioni";
+        base_str += "TUTTE";
     } else if (outgoing_list_param.length == 1) {
-        base_str += "dalla regione " + outgoing_list_param[0];
+        base_str += "" + outgoing_list_param[0];
     } else {
-        base_str += "dalle regioni " + formatCurrentRegionsName(outgoing_list_param)
+        base_str += "" + formatCurrentRegionsName(outgoing_list_param)
     }
 
     return base_str;

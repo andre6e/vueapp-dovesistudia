@@ -30,13 +30,8 @@ export default {
   /* margin-top: 60px; */
 }
 
-/* WORKAROUND: vue-choropleth non carica la classe se la componente l-info-control non viene usata */
-.info {
-  padding: 6px 8px;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  /* font: 18px/20px sans-serif; */
-  background: hsla(0,0%,100%,.8);
-  box-shadow: 0 0 15px rgba(0,0,0,.2);
-  border-radius: 5px;
+/* OVERRIDE */
+.heading {
+    font-size: 13px !important;
 }
 </style>

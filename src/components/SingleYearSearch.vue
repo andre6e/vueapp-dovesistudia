@@ -7,7 +7,7 @@
         <!-- COUNTER STUDENTI SECTION -->
         <section>
             <div class="has-text-centered">
-                <b-field label="Selezione anno accademico">
+                <b-field label="Seleziona l'anno accademico">
                     <b-select class="has-text-centered" placeholder="Select a name" @change.native="onYearSelection()" v-model="selectedYear">
                         <option
                             v-for="year in years"
@@ -21,10 +21,16 @@
             </div>
         </section>
 
+        <section v-if="!isLoading">
+            <div class="has-text-centered margin-10-tb">
+                <p class="heading">Studenti iscritti</p>
+                <p class="title"> {{getLocaleStringValue(totalNumber)}}  </p> 
+            </div>
+        </section>
+
         <!-- STATISTICHE GENERALI SECTION -->
         <section>
-            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3"  v-model="isGeneralStatisticSingleYearSearchOpen">
-                
+            <b-collapse class="card" animation="slide" aria-id="contentIdForA11y3" v-model="isGeneralStatisticSingleYearSearchOpen">
                 <div
                     slot="trigger" 
                     slot-scope="props"
@@ -43,14 +49,9 @@
                 </div>
 
                 <div class="my-card-content">
-                    <div v-if="!isLoading" class="has-text-centered margin-10-tb">
-                        <p class="heading">Studenti immatricolati</p>
-                        <p class="title"> {{totalNumber}} </p> 
-                    </div>
-
                     <div class="columns">
                         <div class="column is-one-third">
-                            <p class=" has-text-centered"> Informazioni studenti immatricolati </p>
+                            <p class="has-text-centered"> Recap studenti per regione </p>
                             <TableComponent v-if="GENERAL_TABLE_DATA" :chart-data="GENERAL_TABLE_DATA"/>
                         </div>
 
@@ -84,51 +85,50 @@
                     </a>
                 </div>
 
-                <div class="my-card-content">
-                    <div class="has-text-centered">
-                        
-                        <div class="media-content info-section">
-                            <div class="content">
-                                <p>
-                                    Questa sezione permette di analizzare gli studenti che emigrano dalla propria regione di residenza. <br>
-                                    Il click su mappa della regione di interesse aggiornerà tutti i grafi filtrando i dati in base alla regione selezionata. <br>
-                                    E' possibile fare una analisi cumulativa aggiungendo diverse regioni tramite click.
+                <div class="my-card-content" v-if="!isLoading">
+                    <div>       
+                        <div class="media-content margin-10-b">
+                            <div class="content info-section">
+                                <p class="has-text-centered">
+                                    Questa sezione permette di analizzare il flusso di studenti in uscita dalle regioni.
+                                    Il click su mappa della regione di interesse permetterà di analizzare "verso dove" si sono spostati gli studenti residenti nella regione selezionata.
+                                    I dati di tutti i grafi appartenenti a questa sezione verranno aggiornati interattivamente in base alla selezione delle regioni effettuata tramite mappa.
                                 </p>
                             </div>
                         </div>
                         
                         <div class="has-text-centered">
-                            <h2 class="subtitle "> Verso dove ci si sposta? </h2>
-                            <p class="heading"> Restano nella stessa regione </p>
-                            <p class="title"> {{DETAILED_OUT_SAME_GRAND_TOTAL}} ({{DETAILED_OUT_SAME_PERCENTAGE}}%) </p> 
+                            <p class="heading"> Totale studenti iscritti </p>
+                            <p class="title"> {{getLocaleStringValue(DETAILED_OUT_SAME_GRAND_TOTAL + DETAILED_OUT_OTHERS_GRAND_TOTAL)}} </p> 
 
-                            <p class="heading"> Emigrano verso altre regioni </p>
-                            <p class="title"> {{DETAILED_OUT_OTHERS_GRAND_TOTAL}} ({{DETAILED_OUT_OTHERS_PERCENTAGE}}%) </p> 
-                        </div>
-                        
-                        <div>
-                        
-                            <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedOutSelectionText()}} </h2>
-                            <b-button @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
-                        </div>
+                            <p class="heading"> Studenti che restano nella stessa regione </p>
+                            <p class="title"> {{getLocaleStringValue(DETAILED_OUT_SAME_GRAND_TOTAL)}} ({{DETAILED_OUT_SAME_PERCENTAGE}}%) </p> 
 
-                        
-                        <div class="has-text-centered">
+                            <p class="heading"> Studenti che si spostano verso altre regioni </p>
+                            <p class="title"> {{getLocaleStringValue(DETAILED_OUT_OTHERS_GRAND_TOTAL)}} ({{DETAILED_OUT_OTHERS_PERCENTAGE}}%) </p> 
                         </div>
+                        
+                        <div class="margin-10-tb selected-region-section">
+                            <p> {{getDetailedOutSelectionText()}} </p>
+                            <b-button class="auto-margin-left" size="is-small" @click="resetDetailedOutSelection"> Reset selezione regioni </b-button>
+                        </div> 
                     </div>
 
                     <div class="columns">
-                        <div class="column is-two-third">
+                        <div class="column">
                             <ChoroplethMapComponent ref="MAP_OUTGOING_SY" @region-click="onRegionClick" :map-data="DETAILED_OUT_MAP_DATA" v-if="DETAILED_OUT_MAP_DATA" :chart-id="MAP_OUTGOING_ID"/>
                         </div>
-                        
-                        
                     </div>
 
                     <div class="columns">
-                        <div class="column is-one-third">
-                            <h2 class="subtitle has-text-centered"> Flusso studenti dettagliato </h2>
+                        <div class="column">
+                            <p class="has-text-centered"> Flusso degli studenti </p>
+                            <ChordDiagramComponent ref="DETAILED_CHORD_OUT_SY" v-if="DETAILED_OUT_CHORD_DATA" :chart-data="DETAILED_OUT_CHORD_DATA" :chart-id="CHORD_DETAILED_OUT_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
+                        </div>
+                    </div>
 
+                    <div class="columns">
+                        <div class="column">
                             <b-collapse
                                 aria-id="contentIdForA11y2"
                                 class="panel"
@@ -147,16 +147,9 @@
                                 </div>
                             </b-collapse>
                         </div>
-                        
-                        <div class="column is-two-third">
-                            <h2 class="subtitle has-text-centered"> Flusso studenti che vanno via </h2>
-                            <ChordDiagramComponent ref="DETAILED_CHORD_OUT_SY" v-if="DETAILED_OUT_CHORD_DATA" :chart-data="DETAILED_OUT_CHORD_DATA" :chart-id="CHORD_DETAILED_OUT_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
-                        </div>
-                    </div>
 
-                    <div class="columns">
                         <div class="column">
-                            <h2 class="subtitle has-text-centered"> A conseguire quale titolo? </h2>
+                            <p class="subtitle has-text-centered"> A conseguire quale titolo? </p>
                             <BarChartComponent v-if="DETAILED_OUT_BARCHART_DATA" :chart-data="DETAILED_OUT_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="OUT_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
                         </div>
                     </div>      
@@ -185,44 +178,55 @@
                     </a>
                 </div>
 
-                <div class="my-card-content">
-                    <div class="has-text-centered">
-                        <h2 class="subtitle has-text-centered"> Da quali regioni si arriva? </h2>
+                <div class="my-card-content" v-if="!isLoading">
+                    <div>
+                        <div class="media-content margin-10-b">
+                            <div class="content info-section">
+                                <p class="has-text-centered">
+                                    Questa sezione permette di analizzare il flusso di studenti in uscita dalle regioni.
+                                    Il click su mappa della regione di interesse permetterà di analizzare "verso dove" si sono spostati gli studenti residenti nella regione selezionata.
+                                    I dati di tutti i grafi appartenenti a questa sezione verranno aggiornati interattivamente in base alla selezione delle regioni effettuata tramite mappa.
+                                </p>
+                            </div>
+                        </div>
 
                         <div class="has-text-centered">
-                            <p class="heading"> Dalla stessa regione </p>
-                            <p class="title"> {{DETAILED_IN_SAME_GRAND_TOTAL}} ({{DETAILED_IN_SAME_PERCENTAGE}}%) </p> 
+                            <p class="heading"> Totale studenti iscritti </p>
+                            <p class="title"> {{getLocaleStringValue(DETAILED_IN_OTHERS_GRAND_TOTAL + DETAILED_IN_SAME_GRAND_TOTAL)}}  </p> 
 
-                            <p class="heading"> Da altre regioni </p>
-                            <p class="title"> {{DETAILED_IN_OTHERS_GRAND_TOTAL}} ({{DETAILED_IN_OTHERS_PERCENTAGE}}%) </p> 
+                            <p class="heading"> Studenti che arrivano dalla stessa regione </p>
+                            <p class="title"> {{getLocaleStringValue(DETAILED_IN_SAME_GRAND_TOTAL)}} ({{DETAILED_IN_SAME_PERCENTAGE}}%) </p> 
+
+                            <p class="heading"> Studenti che arrivano da altre regioni </p>
+                            <p class="title"> {{getLocaleStringValue(DETAILED_IN_OTHERS_GRAND_TOTAL)}} ({{DETAILED_IN_OTHERS_PERCENTAGE}}%) </p> 
+                        </div>
+
+                        <div class="margin-10-tb selected-region-section">
+                            <p> {{getDetailedInSelectionText()}} </p>
+                            <b-button class="auto-margin-left" size="is-small" @click="resetDetailedInSelection"> Reset selezione regioni </b-button>
                         </div>
                     </div>
-
-                    <div class="has-text-centered">
-                        <h2 class="subtitle margin-10-tb has-text-centered"> {{getDetailedInSelectionText()}} </h2>
-                        
-                        <div class="has-text-centered">
-                            <b-button @click="resetDetailedInSelection"> Reset selezione regioni </b-button>
-                        </div>
-                    </div>
-                    
 
                     <div class="columns">
                         <div class="column">
-                            <h2 class="subtitle has-text-centered"> </h2>
                             <ChoroplethMapComponent ref="MAP_INCOMING_SY" @region-click="onRegionClick" :map-data="DETAILED_IN_MAP_DATA" v-if="DETAILED_IN_MAP_DATA" :chart-id="MAP_INCOMING_ID"/>
+                        </div>
+                    </div>
+                    
+                    <div class="columns">
+                        <div class="column">
+                            <p class="subtitle has-text-centered"> Flusso studenti arrivano </p>
+                            <ChordDiagramComponent ref="DETAILED_CHORD_IN_SY" v-if="DETAILED_IN_CHORD_DATA" :chart-data="DETAILED_IN_CHORD_DATA" :chart-id="CHORD_DETAILED_IN_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
                         </div>
                     </div>
 
                     <div class="columns">
-                        <div class="column is-one-third">
-                            <h2 class="subtitle has-text-centered"> Flusso studenti dettagliato </h2>
-
+                        <div class="column">
                             <b-collapse
                                 aria-id="contentIdForA11y2"
                                 class="panel"
                                 animation="slide"
-                                v-model="isDetailedOutTabInfoOpen">
+                                v-model="isDetailedInTabInfoOpen">
                                 <div
                                     slot="trigger"
                                     class="panel-heading"
@@ -237,20 +241,11 @@
                             </b-collapse>
                         </div>
 
-                        <div class="column is-two-third">
-                            <h2 class="subtitle has-text-centered"> Flusso studenti arrivano </h2>
-                            <ChordDiagramComponent ref="DETAILED_CHORD_IN_SY" v-if="DETAILED_IN_CHORD_DATA" :chart-data="DETAILED_IN_CHORD_DATA" :chart-id="CHORD_DETAILED_IN_SINGLEY_ID" :chart-config="CHORD_CONFIG" :archs-hidable="true"/>
-                        </div>
-
-                    </div>
-
-                    <div class="columns">
                         <div class="column">
-                            <h2 class="subtitle has-text-centered"> A conseguire quale titolo? </h2>
+                            <p class="subtitle has-text-centered"> A conseguire quale titolo? </p>
                             <BarChartComponent v-if="DETAILED_IN_BARCHART_DATA" :chart-data="DETAILED_IN_BARCHART_DATA" :chart-config="BARCHART_OPTIONS" :chart-id="IN_BAR_CHART_FIELD_OF_STUDY" chart-height="full"/>                             
                         </div>
                     </div>
-
                 </div>
             </b-collapse>
         </section>
@@ -294,9 +289,10 @@ export default {
     data: function() {
         return {
             isDetailedOutTabInfoOpen: true,
+            isDetailedInTabInfoOpen: true,
             isGeneralStatisticSingleYearSearchOpen: false,
             isDetailedOutSectionOpen: false,
-            isDetailedInSectionOpen: true,
+            isDetailedInSectionOpen: false,
             years: ACCADEMIC_YEARS,
             selectedYear: DEFAULT_SELECTED_YEAR,
             totalNumber: 0,
@@ -373,8 +369,8 @@ export default {
                 that.DETAILED_IN_OTHERS_PERCENTAGE = data.detailedInPercentage.othersPercentage;
 
                 // that.isGeneralStatisticSingleYearSearchOpen = true;
-                that.isDetailedOutSectionOpen = true;
-                // that.isDetailedInSectionOpen = true;
+                // that.isDetailedOutSectionOpen = true;
+                that.isDetailedInSectionOpen = true;
                 that.isLoading = false;
             }).catch(function (err) {
                 console.log(err)
@@ -388,6 +384,7 @@ export default {
             this.initializeSingleYearSearch();
         },
         updateDetailedOutSectionData() {
+            this.isLoading = true;
             let data = SingleYearSearchService.updateOutDetailedView(this.DETAILED_OUT_MAP_CURRENT_SELECTION);
             console.log("SINGLE YEAR SEARCH OUT SECTION RECEIVED ELAB DATA", data)
             this.DETAILED_OUT_MAP_DATA = data.detailedOutMapData;
@@ -398,8 +395,10 @@ export default {
             this.DETAILED_OUT_OTHERS_PERCENTAGE = data.detailedOutPercentage.othersPercentage;
             this.DETAILED_OUT_SAME_GRAND_TOTAL = data.detailedOutPercentage.sameGrandTotal;
             this.DETAILED_OUT_OTHERS_GRAND_TOTAL = data.detailedOutPercentage.othersGrandTotal;
+            this.isLoading = false;
         },
         updateDetailedInSectionData() {
+            this.isLoading = true;
             let data = SingleYearSearchService.updateInDetailedView(this.DETAILED_IN_MAP_CURRENT_SELECTION);
             console.log("SINGLE YEAR SEARCH IN SECTION RECEIVED ELAB DATA", data)
 
@@ -412,7 +411,8 @@ export default {
             this.DETAILED_IN_TAB_DATA = data.detailedInTabData;
             this.DETAILED_IN_CHORD_DATA = data.detailedInChordData;
 
-            this.DETAILED_IN_BARCHART_DATA = data.detailedInBarChartData;            
+            this.DETAILED_IN_BARCHART_DATA = data.detailedInBarChartData;
+            this.isLoading = false;
         },
         onRegionClick(param) {
             if (param.chartId == this.MAP_OUTGOING_ID) {
@@ -446,6 +446,9 @@ export default {
         },
         getDetailedOutSelectionText() {
             return SingleYearSearchService.getDetailedOutSelectionText(this.DETAILED_OUT_MAP_CURRENT_SELECTION)
+        },
+        getLocaleStringValue(val) {
+            return val ? val.toLocaleString() : null;
         }
     }
 }
@@ -458,6 +461,10 @@ export default {
     margin: 10px 0px
 }
 
+.margin-10-b {
+    margin-bottom: 10px;
+}
+
 .my-card-content {
     padding: 1rem;
 }
@@ -465,5 +472,13 @@ export default {
 .info-section {
     background: rgb(230, 230, 230);
     border-radius: 5px;
+}
+
+.selected-region-section {
+    display: flex
+}
+
+.auto-margin-left {
+    margin-left: auto
 }
 </style>

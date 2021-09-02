@@ -47,7 +47,7 @@ export var TAB_CONFIG = {
         },
         {
             field: INCOMING_STUDENTS_FIELD,
-            label: 'Studenti in entrata',
+            label: 'Studenti in arrivo',
             width: '40',
             numeric: true,
             sortable: true
@@ -233,10 +233,10 @@ export var DETAILED_TAB_COLUMNS_CONFIG = [
 ]
 
 export var TYPOLOGY_LEGEND = {
-    "LAUREA" : "LAUREA",
-    "LAUREA MAGISTRALE": "L.M.",
-    "LAUREA MAGISTRALE CICLO UNICO": "LM C.U.",
-    "VECCHIO ORDINAMENTO": "V.O."
+    "LAUREA" : "TRIENNALE",
+    "LAUREA MAGISTRALE": "MAGISTRALE",
+    "LAUREA MAGISTRALE CICLO UNICO": "CICLO UNICO",
+    "VECCHIO ORDINAMENTO": "VECCHIO ORDINAMENTO"
 }
 
 

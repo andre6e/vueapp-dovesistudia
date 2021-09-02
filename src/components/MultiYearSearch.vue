@@ -20,7 +20,6 @@
                 </b-field>
             </div>
         </section>
-        
 
         <section>
             <div v-if="!isLoading" class="has-text-centered margin-10-tb">
