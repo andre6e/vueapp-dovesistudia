@@ -446,7 +446,7 @@ export default {
             return SingleYearSearchService.getDetailedOutSelectionText(this.DETAILED_OUT_MAP_CURRENT_SELECTION)
         },
         getLocaleStringValue(val) {
-            return val ? val.toLocaleString() : null;
+            return SingleYearSearchService.getLocaleStringValue(val)
         }
     }
 }

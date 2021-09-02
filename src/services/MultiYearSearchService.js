@@ -255,3 +255,7 @@ export async function loadAllData() {
 export function getRegionDoubleTrandLineData(region) {
     return elabRegionDoubleTrandLineData(region);
 }
+
+export function getLocaleStringValue(val) {
+    return val ? val.toLocaleString() : null;
+}

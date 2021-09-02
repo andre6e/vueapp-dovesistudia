@@ -445,3 +445,7 @@ export function getDetailedOutSelectionText(outgoing_list_param) {
 
     return base_str;
 }
+
+export function getLocaleStringValue(val) {
+    return val ? val.toLocaleString() : null;
+}

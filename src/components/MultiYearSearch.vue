@@ -24,7 +24,7 @@
         <section>
             <div v-if="!isLoading" class="has-text-centered margin-10-tb">
                 <p class="heading">Studenti iscritti</p>
-                <p class="title"> {{totalNumber}} </p> 
+                <p class="title"> {{getLocaleStringValue(totalNumber)}} </p> 
             </div>
         </section>
 
@@ -300,6 +300,9 @@ export default {
         },
         regionFocusSnrClicked(e) {
             this.DOUBLE_TRENDLINE_DATA = e == ESCLUDI_SNR_STUDENTS ? this.DOUBLE_TRENDLINE_DATA_COPY.nsrData : this.DOUBLE_TRENDLINE_DATA_COPY.fullData
+        },
+        getLocaleStringValue(val) {
+            return MultiYearSearchService.getLocaleStringValue(val)
         }
     }
 }
