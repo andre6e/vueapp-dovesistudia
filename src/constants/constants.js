@@ -274,8 +274,8 @@ export var DOUBLE_TRENDLINE_CONF = {
         minGridDistance: 40
     },
     series: {
-        tooltipText: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Iscritti uscenti: {valueY}[/]",
-        tooltipText2: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Iscritti entranti: {valueY}[/]",
+        tooltipText: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Studenti in uscita: {valueY}[/]",
+        tooltipText2: "{"+TOOLTIP_TOOLTIP_FIELD+"}\n[bold font-size: 17px]Studenti in arrivo: {valueY}[/]",
         valueY: TRANDLINE_VALUE_FIELD,
         dateX: TRANDLINE_KEY_FIELD,
         valueY2: TRANDLINE_VALUE_FIELD2,

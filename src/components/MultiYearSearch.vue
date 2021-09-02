@@ -54,18 +54,20 @@
                         <TrendLineComponent :v-if="TRENDLINE_DATA" :chart-data="TRENDLINE_DATA" :chart-config="TRENDLINE_CONF" :chart-id="GLOBAL_TRAND_ISCRITTI_CHART_ID"/>
                     </div>
 
+                    <div class="has-text-centered">
+                        <p> Top {{TOP_N_REGIONS}} regioni in base al numero di studenti che partono dalla propria regione di residenza </p>
+                        <b-field>
+                            <b-switch v-model="isOutgoingSwitchOn"
+                                @input="outGoingSwitchChanged"
+                                :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                                :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                                {{ isOutgoingSwitchOn }}
+                            </b-switch>
+                        </b-field>
+                    </div>
+                    
                     <div class="columns">
                         <div class="column is-two-third">
-                            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base al numero di studenti che partono dalla propria regione di residenza </p>
-                            
-                            <b-field class="has-text-centered">
-                                <b-switch v-model="isOutgoingSwitchOn"
-                                    @input="outGoingSwitchChanged"
-                                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
-                                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
-                                    {{ isOutgoingSwitchOn }}
-                                </b-switch>
-                            </b-field>
                             <HorizontalBarChartComponent :chart-data="HORIZONTAL_OUT_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_OUT_ID"/>
                         </div>
 
@@ -74,19 +76,21 @@
                             <PieChartComponent :chart-data="OUT_PIECHART_DATA" :chart-config="PIECHART_CONF" :chart-id="PIECHART_OUT_ID"/>
                         </div>
                     </div>
-         
+
+                    <div class="has-text-centered">            
+                        <p> Top {{TOP_N_REGIONS}} regioni in base al numero di studenti in arrivo nelle regioni dell'Ateneo scelto </p>
+                        <b-field>
+                            <b-switch v-model="isIncomingSwitchOn"
+                                @input="incomingSwitchChanged"
+                                :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
+                                :false-value="MINOR_NUMERO_SWITCH_TEXT">
+                                {{ isIncomingSwitchOn }}
+                            </b-switch>
+                        </b-field>
+                    </div>
+        
                     <div class="columns">
-                        <div class="column is-two-third">
-                            <p class="has-text-centered"> Top {{TOP_N_REGIONS}} regioni in base al numero di studenti in arrivo nelle regioni dell'Ateneo scelto </p>
-                            
-                            <b-field class="has-text-centered">
-                                <b-switch v-model="isIncomingSwitchOn"
-                                    @input="incomingSwitchChanged"
-                                    :true-value="MAGGIOR_NUMERO_SWITCH_TEXT"
-                                    :false-value="MINOR_NUMERO_SWITCH_TEXT">
-                                    {{ isIncomingSwitchOn }}
-                                </b-switch>
-                            </b-field>
+                        <div class="column is-two-third">   
                             <HorizontalBarChartComponent :chart-data="HORIZONTAL_IN_BARCHART_DATA" :chart-config="HORIZONTAL_BARCHART_CONFIG" :chart-id="HORIZONTAL_BARCHART_IN_ID"/>
                         </div>
 
