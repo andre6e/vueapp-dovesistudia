@@ -89,9 +89,9 @@
                     <div>       
                         <div class="media-content margin-10-b">
                             <div class="content info-section">
-                                <p class="has-text-centered">
+                                <p class="has-text-justified">
                                     Questa sezione permette di analizzare il flusso di studenti in uscita dalle regioni.
-                                    Il click su mappa della regione di interesse permetterà di analizzare "verso dove" si sono spostati gli studenti residenti nella regione selezionata.
+                                    Il click su mappa della regione di interesse permetterà di analizzare <strong> verso dove </strong> si sono spostati gli studenti residenti nella regione selezionata.
                                     I dati di tutti i grafi appartenenti a questa sezione verranno aggiornati interattivamente in base alla selezione delle regioni effettuata tramite mappa.
                                 </p>
                             </div>
@@ -182,9 +182,9 @@
                     <div>
                         <div class="media-content margin-10-b">
                             <div class="content info-section">
-                                <p class="has-text-centered">
+                                <p class="has-text-justified">
                                     Questa sezione permette di analizzare il flusso di studenti in arrivo in determinate regioni.
-                                    Il click su mappa della regione di interesse permetterà di analizzare "da dove" gli studenti sono arrivati nella regione selezionata.
+                                    Il click su mappa della regione di interesse permetterà di analizzare <strong> da dove </strong> gli studenti sono arrivati nella regione selezionata.
                                     I dati di tutti i grafi appartenenti a questa sezione verranno aggiornati interattivamente in base alla selezione delle regioni effettuata tramite mappa.
                                 </p>
                             </div>

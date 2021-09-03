@@ -259,3 +259,7 @@ export function getRegionDoubleTrandLineData(region) {
 export function getLocaleStringValue(val) {
     return val ? val.toLocaleString() : null;
 }
+
+export function formatSliderTooltipText(val) {
+    return "" + val;
+}

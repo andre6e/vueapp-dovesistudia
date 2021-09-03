@@ -50,7 +50,8 @@ export default {
             let series = chart.series.push(new am4charts.ColumnSeries());
             series.dataFields.categoryY = this.chartConfig.x_axes;
             series.dataFields.valueX = this.chartConfig.y_axes;
-            series.tooltipText = this.chartConfig.series.tooltipText
+            series.tooltipText = this.chartConfig.series.tooltipText;
+
             series.columns.template.strokeOpacity = this.chartConfig.series.strokeOpacity;
             series.columns.template.column.cornerRadiusBottomRight = this.chartConfig.series.cornerRadiusBottomRight;
             series.columns.template.column.cornerRadiusTopRight = this.chartConfig.series.cornerRadiusTopRight;

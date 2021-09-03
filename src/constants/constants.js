@@ -265,8 +265,8 @@ export var TRENDLINE_CONF = {
 };
 
 export var DOUBLE_TRAND_ISCRITTI_CHART_ID = "DOUBLE_TRAND_ISCRITTI_CHART_ID"
-export var ESCLUDI_SNR_STUDENTS = "escludi studenti che restano nella stessa regione"
-export var INCLUDI_SNR_STUDENTS = "includi studenti che restano nella stessa regione"
+export var ESCLUDI_SNR_STUDENTS = "Studenti che restano nella stessa regione: ESCLUSI"
+export var INCLUDI_SNR_STUDENTS = "Studenti che restano nella stessa regione: INCLUSI"
 export var DEFAULT_DOUBLE_TREND_SELECTED_REGION = "BASILICATA"
 export var DOUBLE_TRENDLINE_CONF = {
     dateAxis: {
@@ -303,7 +303,7 @@ export var HORIZONTAL_BARCHART_CONFIG = {
         template_disabled: true
     },
     series: {
-        tooltipText: "{valueX.value}",
+        tooltipText: "{values.valueX.workingValue.formatNumber('#.0as')}",
         strokeOpacity: 0,
         cornerRadiusBottomRight: 5,
         cornerRadiusTopRight: 5

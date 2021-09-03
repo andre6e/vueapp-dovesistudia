@@ -12,7 +12,7 @@
 
             <div>
                 <b-field>
-                    <b-slider v-model="SELECTED_YEARS" :min="ACCADEMIC_YEARS[0]" :max="ACCADEMIC_YEARS[ACCADEMIC_YEARS.length - 1]" ticks @change="onSelectionChange">
+                    <b-slider v-model="SELECTED_YEARS" :min="ACCADEMIC_YEARS[0]" :max="ACCADEMIC_YEARS[ACCADEMIC_YEARS.length - 1]" ticks @change="onSelectionChange" :custom-formatter="formatSliderTooltipText">
                     <template v-for="val in ACCADEMIC_YEARS">
                         <b-slider-tick :value="val" :key="val"> {{val}} </b-slider-tick>
                     </template>
@@ -114,7 +114,7 @@
                     aria-controls="contentIdForA11y3"
                    >
                     <p class="card-header-title">
-                        Trand studenti in uscita vs in entrata (singola regione)
+                        Trand studenti in uscita vs in arrivo
                     </p>
                     <a class="card-header-icon">
                         <b-icon
@@ -307,6 +307,9 @@ export default {
         },
         getLocaleStringValue(val) {
             return MultiYearSearchService.getLocaleStringValue(val)
+        },
+        formatSliderTooltipText(val) {
+            return MultiYearSearchService.formatSliderTooltipText(val)
         }
     }
 }

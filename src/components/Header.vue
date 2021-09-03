@@ -7,7 +7,7 @@
                         Come ci si sposta per gli studi universitari?
                     </h1>
                     <h2 class="subtitle whitecolor">
-                        Analisi interattiva dello spostamento degli studenti Italiani al momento della scelta Universitaria.
+                        Analisi interattiva dello spostamento degli studenti universitari italiani all'interno della penisola.
                     </h2>
                 </div>
             </div>
