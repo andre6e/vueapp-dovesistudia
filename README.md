@@ -7,8 +7,6 @@ Questa piattaforma si fonda sull’idea di voler rendere facile ed intuitiva l�
 ## Project Demo
 La dashboard è accessibile tramite [questo link](https://vuestudenti.herokuapp.com/).
 
-La seguente demo ha il solo ruolo d'esempio e non racchiude tutte le funzionalità della piattaforma.
-
 ![](demo.gif)
 
 
